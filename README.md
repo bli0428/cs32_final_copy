@@ -28,11 +28,13 @@ Need to create an intuitive gui that does not boggle user down with input fields
 
 ### Reid Merzbacher
 
-###Charles Cutting
+### Charles Cutting
 
 ### Peiran Long
 Intro Seq: CS 15/16
+
 Strengths: Backend
+
 Weakness: Minimal front end experience
 
 ### Brandon Li
