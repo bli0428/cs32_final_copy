@@ -44,3 +44,8 @@ Strengths: Backend
 Weakness: Minimal front end experience
 
 ### Brandon Li
+Intro Seq: CS 19
+
+Strengths: I have experience with both front end and backend outside of the classroom
+
+Weakness: Gets stuck for very long times on small bugs
