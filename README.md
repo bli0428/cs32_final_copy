@@ -5,7 +5,7 @@
 ## IDEA 1
 Create a (tentatively Brown specific) meal planner that given cost (default 1 meal credit), dietary restrictions, eatery,
 and other restrictions/preferences, generate suggestions that creates a balanced meal for that cost.
-###REQUIREMENTS
+### REQUIREMENTS
 Tries to solve a constraint problem where objects (meal suggestions) must satisfy certain requirements (Searching problem).
 
 Will need to know all eateries at brown, all food offered at eatery and ingredients/nutrition (can use information found on brown dining and
@@ -24,15 +24,15 @@ Need to create an intuitive gui that does not boggle user down with input fields
 ## IDEA 2
 
 ## MEMBERS
-###Karolyn Lee
+### Karolyn Lee
 
-###Reid Merzbacher
+### Reid Merzbacher
 
 ###Charles Cutting
 
-###Peiran Long
+### Peiran Long
 Intro Seq: CS 15/16
 Strengths: Backend
 Weakness: Minimal front end experience
 
-###Brandon Li
+### Brandon Li
