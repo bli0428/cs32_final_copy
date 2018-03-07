@@ -22,7 +22,7 @@ Needs to be able to customize cost, and also customize definition of balanced (n
 Need to create an intuitive gui that does not boggle user down with input fields.
 
 ## IDEA 2
-A travel site that that given length of stay, places to visit + amount of time at each place, restaurants to try, 
+A travel site that that given length of stay, places to visit + amount of time at each place, restaurants to try,
 accomodations, access to car, etc. Based on factors such as location and weather creates an itinerary for the trip
 ### REQUIREMENTS
 Very similar to idea 1, it is also a search problem.
@@ -35,6 +35,12 @@ Should integrate google maps api and some weather api.
 ### Reid Merzbacher
 
 ### Charles Cutting
+Intro Seq: CS 19
+
+Strengths: I'm sorta ok at backend, am pretty good at testing, and have no life,
+and thus a lot of time on my hands to spend on 32.
+
+Weakness: No frontend experience prior to 32, never worked on a project on this scale.
 
 ### Peiran Long
 Intro Seq: CS 15/16
