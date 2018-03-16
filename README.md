@@ -2,34 +2,7 @@
 
 # README
 
-## IDEA 1
-Create a (tentatively Brown specific) meal planner that given cost (default 1 meal credit), dietary restrictions, eatery,
-and other restrictions/preferences, generate suggestions that creates a balanced meal for that cost.
-### REQUIREMENTS
-Tries to solve a constraint problem where objects (meal suggestions) must satisfy certain requirements (Searching problem).
-
-Will need to know all eateries at brown, all food offered at eatery and ingredients/nutrition (can use information found on brown dining and
-mymeal, but may need to manually find this info). (Some sort of database?) (Gathering this data may prove troublesome).
-
-Option to favorite some meals and based on those give suggestions/reminders when eatery is serving similar dishes.
-
-Option to pick a best location to eat for a group of users.
-
-Take into account past meals. (To diversify suggested meals, or pick best location for a group of users).
-
-Needs to be able to customize cost, and also customize definition of balanced (nutrition, user customized, or calories).
-
-Need to create an intuitive gui that does not boggle user down with input fields.
-
-## IDEA 2
-A travel site that that given length of stay, places to visit + amount of time at each place, restaurants to try,
-accomodations, access to car, etc. Based on factors such as location and weather creates an itinerary for the trip
-### REQUIREMENTS
-Very similar to idea 1, it is also a search problem.
-
-Should integrate google maps api and some weather api.
-
-## IDEA 3
+## Project
 Bughouse (https://en.wikipedia.org/wiki/Bughouse_chess) is a multiplayer chess variant.  Usually, it
 consists of two teams of two players each, one of each color.  Teammates sit next to each other such
 and each play on separate boards against a player on the opposing team.  The games progress
@@ -52,6 +25,12 @@ simultaneously.
 For the regular chess part of the AI, we could look into ML libraries, existing chess AIs with good APIs,
 or write a simple DFS/Minimax algorithm.  Either way, the bughouse components would be the more
 interesting part of the project, since regular chess AIs have been done lots of times.
+
+## Project Slides
+https://docs.google.com/presentation/d/1CBy9VAo5s7LM1R_RUezRUQE3lgKl-V4_hFOz-FBYCYQ/edit?usp=sharing
+
+## Project Specifications and Design
+https://docs.google.com/document/d/1gDhoG916Igd_hjO9kmuDQJCmVno8Z-vhBxpSAFTRscQ/edit
 
 
 ## MEMBERS
