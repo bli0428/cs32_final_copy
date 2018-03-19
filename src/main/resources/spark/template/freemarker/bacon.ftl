@@ -1,51 +1,22 @@
 <#assign content>
-<h1> ${title} </h1>
-<h2> ${message} </h2>
 
-<button onclick="help()">Instructions</button> &nbsp;
-<button id="smalldb"> Small Bacon Database</button> &nbsp;
-<button id="db"> Bacon Database</button> &nbsp;
+<h1> Bacon </h1>
+<p>Enter the names of two actors to see the connection between them.</p><br>
+<p>
+<form method="GET" action="/baconresults">
+<table>
+<tr>
+  <td>Actor 1:</td><td><textarea name="actor1" id="searchbar1" class="searchbar" style="width: 20vw"></textarea></td>
+  <td>Actor 2:</td><td><textarea name="actor2" id="searchbar2" class="searchbar" style="width: 20vw"></textarea></td>
+  <td><input type="submit"></td></tr>
+<tr>
+  <td></td><td><div id="suggestions1" class="suggestions"></div></td>
+  <td></td><td><div id="suggestions2" class="suggestions"></div></td>
+</tr>
+</table>
+</form>
+</p>
 
-
-<div>
-<br />
-Actor 1:
-<input type="text" id="actor1" name="actor1" placeholder="Enter actor one"></input>
-<ul style="" id = "ac1"></ul>
-
-Actor 2:
-<input type="text" id="actor2" name="actor2" placeholder="Enter actor two"></input>
-<ul style="" id = "ac2"></ul>
-
-<br />
-
-<div>
-
-
-</div>
-
-<input type="submit" id = "submit" name = "submit">
-
-<h3 id = "message"></h3>
-
-
-<div>
-<ul id="finalpath"></ul>
-</div>
-
-</div>
-
-<style>
-
-</style>
-
-<script>
-function help() {
-    
-    alert("Welcome to my Bacon! First, load a database of actors and movies. Then simply type two actors you wish to find a path between and let the program do the rest! (capitalize first and last names!)");
-    
-}
-</script>
 
 </#assign>
 <#include "main.ftl">
