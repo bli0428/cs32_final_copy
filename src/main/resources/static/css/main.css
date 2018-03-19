@@ -1,18 +1,44 @@
+body {
+  margin: 5vw;
+}
+p {
+  margin: 0;
+  padding: 0;
+}
 input[type="number"] {
   width: 3em;
 }
-body {
-    background-color: #67BCDB;
-    color: black;
-text-align: center;
-font-family: "Comic Sans MS", cursive, sans-serif;
+form textarea {
+  height: 16px;
+  width: 48px;
+  resize: none;
 }
-
-ul{
-list-style: none;
+input[type="submit"] {
+  height: 100%;
 }
-
-a{
-color: black;
-text-decoration: none;
+.searchbar {
+  resize: none;
+  height: 20px;
+}
+.suggestions ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.suggestions li {
+  border: 1px solid #C0C0C0;
+  color: black;
+}
+.suggestions li:hover {
+  background-color: #6C6EAD;
+  color: white;
+}
+.suggestions li:active {
+  background-color: #DDDDDD;
+  color: white;
+}
+td {
+  vertical-align: top;
+  margin: 0;
+  padding-top: 0;
 }
