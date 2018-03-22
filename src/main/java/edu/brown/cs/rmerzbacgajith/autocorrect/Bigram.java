@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbac.main;
+package edu.brown.cs.rmerzbacgajith.autocorrect;
 
 /**
  * Bigram object that stores a word with its previous word. Also stores

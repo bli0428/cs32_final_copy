@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbac.main;
+package edu.brown.cs.rmerzbacgajith.main;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import com.google.common.collect.Multimap;
+
+import edu.brown.cs.rmerzbacgajith.autocorrect.Bigram;
+import edu.brown.cs.rmerzbacgajith.autocorrect.Trie;
 
 /**
  * Class that handles all commands for Autocorrect.

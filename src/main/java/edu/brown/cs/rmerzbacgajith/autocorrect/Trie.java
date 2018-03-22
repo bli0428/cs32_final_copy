@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbac.main;
+package edu.brown.cs.rmerzbacgajith.autocorrect;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +9,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
-
-import edu.brown.cs.rmerzbac.main.Bigram;
 
 /**
  * Trie class that is built on mapping characters to other Tries, so that words

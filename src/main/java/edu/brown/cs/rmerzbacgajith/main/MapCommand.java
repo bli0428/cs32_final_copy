@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbac.main;
+package edu.brown.cs.rmerzbacgajith.main;
 
 import java.io.File;
 import java.sql.Connection;
@@ -7,9 +7,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import edu.brown.cs.rmerzbac.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.autocorrect.Trie;
+import edu.brown.cs.rmerzbacgajith.bacon.MapsDatabaseHelper;
+import edu.brown.cs.rmerzbacgajith.bacon.MapsGraphBuilder;
+import edu.brown.cs.rmerzbacgajith.bacon.Way;
+import edu.brown.cs.rmerzbacgajith.graph.Graph;
+import edu.brown.cs.rmerzbacgajith.graph.GraphEdge;
+import edu.brown.cs.rmerzbacgajith.graph.GraphNode;
+import edu.brown.cs.rmerzbacgajith.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.tree.KDTree;
+import edu.brown.cs.rmerzbacgajith.tree.Node;
+import edu.brown.cs.rmerzbacgajith.tree.Point;
+import edu.brown.cs.rmerzbacgajith.tree.TreeBuilder;
 
 /**
  * BaconCommand Class that handles all of the bacon specific commands and
@@ -20,9 +35,13 @@ import edu.brown.cs.rmerzbac.handling.Handling;
  *
  */
 public class MapCommand {
+  private static final int DIMENSIONS = 2;
 
   private static Connection conn = null;
   private AutocorrectCommand acCommandHelper = new AutocorrectCommand();
+  private TreeBuilder<Point> builder;
+  private MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>> graphBuilder;
+  private Graph<GraphNode<Node>, GraphEdge<Way>> graph = null;
 
   /**
    * Method that deals with the mdb command to connect to a database, as well as
@@ -70,16 +89,16 @@ public class MapCommand {
       return;
     }
 
-    System.out.println(new StringBuilder("map set to " + dbname).toString());
-
     // Create Trie for autocorrect.
     Trie trie = new Trie();
+    HashSet<String> ids = new HashSet<>();
+    List<Point> nodeList = new ArrayList<>();
 
     // Query every actor in db
     PreparedStatement prep;
     ResultSet rs;
     try {
-      prep = conn.prepareStatement("SELECT name FROM way");
+      prep = conn.prepareStatement("SELECT name FROM way;");
       rs = prep.executeQuery();
 
       while (rs.next()) {
@@ -94,6 +113,34 @@ public class MapCommand {
           trie.insert(name);
         }
       }
+
+      prep = conn.prepareStatement(
+          "SELECT start,end FROM way WHERE type != \"\" AND type != \"undefined\";");
+      PreparedStatement nodeQuery = conn
+          .prepareStatement("SELECT * FROM node WHERE id=? OR id=?");
+      ResultSet nodeRs;
+      rs = prep.executeQuery();
+
+      while (rs.next()) {
+        String startId = rs.getString(1);
+        String endId = rs.getString(2);
+
+        nodeQuery.setString(1, startId);
+        nodeQuery.setString(2, endId);
+        nodeRs = nodeQuery.executeQuery();
+
+        while (nodeRs.next()) {
+          String id = nodeRs.getString(1);
+          double lat = nodeRs.getDouble(2);
+          double lon = nodeRs.getDouble(3);
+          double[] coords = { lat, lon };
+          Node n = new Node(id, coords);
+          if (!ids.contains(id)) {
+            nodeList.add(n);
+            ids.add(id);
+          }
+        }
+      }
       prep.close();
       rs.close();
     } catch (SQLException e) {
@@ -103,12 +150,23 @@ public class MapCommand {
 
     // Set trie to AutocorrectCommand Helper for autocorrect
     acCommandHelper.setTrie(trie);
+    builder = new TreeBuilder<Point>(nodeList, DIMENSIONS);
+    MapsDatabaseHelper dbHelper = new MapsDatabaseHelper(conn);
 
+    graphBuilder = new MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>>(
+        dbHelper);
+
+    System.out.println(new StringBuilder("map set to " + dbname).toString());
     return;
   }
 
-  public List<String> suggest(String ac) {
+  public Point nearestCommand(double[] coords) {
+    KDTree<Point> tree = builder.getTree();
+    Point nearest = Neighbors.handleNeighborsCommandWithCoords(coords, tree);
+    return nearest;
+  }
 
+  public List<String> suggest(String ac) {
     // Turn prefix on if not on.
     if (!acCommandHelper.getPrefixStatus().equals("on")) {
       String[] prefixOn = new String[2];
@@ -123,6 +181,21 @@ public class MapCommand {
 
     List<String> suggestions = acCommandHelper.acCommand(input);
     return suggestions;
+  }
+
+  public void route(Node n1, Node n2) {
+    // TODO Auto-generated method stub
+
+    Map<GraphNode<Node>, GraphEdge<Way>> finalAnswer = new LinkedHashMap<GraphNode<Node>, GraphEdge<Way>>();
+
+    graph = new Graph<GraphNode<Node>, GraphEdge<Way>>(graphBuilder);
+
+    GraphNode<Node> node1 = new GraphNode<Node>(n1.getID(), n1);
+    GraphNode<Node> node2 = new GraphNode<Node>(n2.getID(), n2);
+
+    // The finalPath is found as a result of calling the djisktras method
+    // between the 2 nodes.
+    finalAnswer = graph.djikstras(node1, node2);
 
   }
 }

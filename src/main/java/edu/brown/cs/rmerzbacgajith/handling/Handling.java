@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbac.handling;
+package edu.brown.cs.rmerzbacgajith.handling;
 
 /**
  * A class that handles all error messages and prints them in the desired

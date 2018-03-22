@@ -1,11 +1,12 @@
-package edu.brown.cs.rmerzbac.main;
+package edu.brown.cs.rmerzbacgajith.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import edu.brown.cs.rmerzbac.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.tree.Node;
 
 public class REPL {
   private MapCommand mc;
@@ -54,7 +55,10 @@ public class REPL {
       }
     } else if (parsed[0].equals("nearest")) {
       if (parsed.length == 3) {
-        System.out.println("nearest");
+        double[] coords = { Double.parseDouble(parsed[1]),
+            Double.parseDouble(parsed[2]) };
+        Node nearest = (Node) mc.nearestCommand(coords);
+        System.out.println(nearest.getID());
       } else {
         Handling.improperCommandUse("nearest <latitude> <longitude>");
       }
@@ -71,7 +75,13 @@ public class REPL {
         System.out.println("route w/ names");
       } else {
         if (parsed.length == 5 && numQuotes == 0) {
-          System.out.println("route w/ lat lon");
+          double[] coords1 = { Double.parseDouble(parsed[1]),
+              Double.parseDouble(parsed[2]) };
+          Node n1 = (Node) mc.nearestCommand(coords1);
+          double[] coords2 = { Double.parseDouble(parsed[3]),
+              Double.parseDouble(parsed[4]) };
+          Node n2 = (Node) mc.nearestCommand(coords2);
+          mc.route(n1, n2);
         } else {
           Handling.improperCommandUse("route <lat1> <lon1> <lat2> <lon2>");
         }
