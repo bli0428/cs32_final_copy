@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbacgajith.main;
+package edu.brown.cs.rmerzbacgajith.maps;
 
 import java.util.ArrayList;
 
@@ -14,9 +14,9 @@ import edu.brown.cs.rmerzbacgajith.tree.TreeNode;
  *
  * @author rmerzbac
  */
-public class Neighbors {
+public class Nearest {
   // TODO: REMOVE LIST STUFF
-  protected Neighbors() {
+  protected Nearest() {
   }
 
   /**
@@ -263,7 +263,7 @@ public class Neighbors {
    */
   public static void printResults(ArrayList<Node> results) {
     for (int i = 0; i < results.size(); i++) {
-      System.out.println(results.get(i).getID());
+      System.out.println(results.get(i).getId());
     }
   }
 }

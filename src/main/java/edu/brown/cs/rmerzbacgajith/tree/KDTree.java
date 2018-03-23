@@ -142,7 +142,7 @@ public class KDTree<T extends Point> {
   public TreeNode<Node> findNodeRecurs(String id, TreeNode<Node> n) {
     if (n == null) {
       return null;
-    } else if (n.getItem().getID().equals(id)) {
+    } else if (n.getItem().getId().equals(id)) {
       return n;
     } else {
       TreeNode<Node> l = findNodeRecurs(id, n.getLeft());

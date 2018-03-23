@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbacgajith.bacon;
+package edu.brown.cs.rmerzbacgajith.maps;
 
 import java.util.Objects;
 

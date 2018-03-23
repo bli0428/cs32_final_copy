@@ -29,7 +29,7 @@ public class Node extends Point {
    *
    * @return id
    */
-  public String getID() {
+  public String getId() {
     return id;
   }
 

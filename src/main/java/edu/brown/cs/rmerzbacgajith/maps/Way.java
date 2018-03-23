@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbacgajith.bacon;
+package edu.brown.cs.rmerzbacgajith.maps;
 
 /**
  * Movie object that is created for every Movie that is a value of a GraphEdge

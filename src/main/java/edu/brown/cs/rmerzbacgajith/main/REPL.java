@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import edu.brown.cs.rmerzbacgajith.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.maps.MapCommand;
 import edu.brown.cs.rmerzbacgajith.tree.Node;
 
 public class REPL {
@@ -49,7 +50,11 @@ public class REPL {
       }
     } else if (parsed[0].equals("ways")) {
       if (parsed.length == 5) {
-        System.out.println("ways");
+        double[] coords1 = { Double.parseDouble(parsed[1]),
+            Double.parseDouble(parsed[2]) };
+        double[] coords2 = { Double.parseDouble(parsed[3]),
+            Double.parseDouble(parsed[4]) };
+        mc.waysCommand(coords1, coords2);
       } else {
         Handling.improperCommandUse("ways <lat1> <lon1> <lat2> <lon2>");
       }
@@ -58,7 +63,7 @@ public class REPL {
         double[] coords = { Double.parseDouble(parsed[1]),
             Double.parseDouble(parsed[2]) };
         Node nearest = (Node) mc.nearestCommand(coords);
-        System.out.println(nearest.getID());
+        System.out.println(nearest.getId());
       } else {
         Handling.improperCommandUse("nearest <latitude> <longitude>");
       }
@@ -72,7 +77,17 @@ public class REPL {
     } else if (parsed[0].equals("route")) {
       int numQuotes = line.length() - line.replace("\"", "").length();
       if (numQuotes == NUM_INTERSECTIONS * 4) {
-        System.out.println("route w/ names");
+        parsed = line.split("\"");
+        Node n1 = mc.getIntersection(parsed[1], parsed[3]);
+        if (n1 == null) {
+          Handling.error("first intersection not found");
+        }
+        Node n2 = mc.getIntersection(parsed[5], parsed[7]);
+        if (n2 == null) {
+          Handling.error("second intersection not found");
+        } else {
+          mc.route(n1, n2);
+        }
       } else {
         if (parsed.length == 5 && numQuotes == 0) {
           double[] coords1 = { Double.parseDouble(parsed[1]),

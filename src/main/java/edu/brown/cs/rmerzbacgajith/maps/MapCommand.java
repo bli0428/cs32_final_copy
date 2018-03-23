@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbacgajith.main;
+package edu.brown.cs.rmerzbacgajith.maps;
 
 import java.io.File;
 import java.sql.Connection;
@@ -9,18 +9,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.brown.cs.rmerzbacgajith.autocorrect.Trie;
-import edu.brown.cs.rmerzbacgajith.bacon.MapsDatabaseHelper;
-import edu.brown.cs.rmerzbacgajith.bacon.MapsGraphBuilder;
-import edu.brown.cs.rmerzbacgajith.bacon.Way;
 import edu.brown.cs.rmerzbacgajith.graph.Graph;
 import edu.brown.cs.rmerzbacgajith.graph.GraphEdge;
 import edu.brown.cs.rmerzbacgajith.graph.GraphNode;
 import edu.brown.cs.rmerzbacgajith.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.main.AutocorrectCommand;
 import edu.brown.cs.rmerzbacgajith.tree.KDTree;
 import edu.brown.cs.rmerzbacgajith.tree.Node;
 import edu.brown.cs.rmerzbacgajith.tree.Point;
@@ -42,6 +41,7 @@ public class MapCommand {
   private TreeBuilder<Point> builder;
   private MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>> graphBuilder;
   private Graph<GraphNode<Node>, GraphEdge<Way>> graph = null;
+  private MapsDatabaseHelper dbHelper;
 
   /**
    * Method that deals with the mdb command to connect to a database, as well as
@@ -151,7 +151,7 @@ public class MapCommand {
     // Set trie to AutocorrectCommand Helper for autocorrect
     acCommandHelper.setTrie(trie);
     builder = new TreeBuilder<Point>(nodeList, DIMENSIONS);
-    MapsDatabaseHelper dbHelper = new MapsDatabaseHelper(conn);
+    dbHelper = new MapsDatabaseHelper(conn);
 
     graphBuilder = new MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>>(
         dbHelper);
@@ -162,7 +162,7 @@ public class MapCommand {
 
   public Point nearestCommand(double[] coords) {
     KDTree<Point> tree = builder.getTree();
-    Point nearest = Neighbors.handleNeighborsCommandWithCoords(coords, tree);
+    Point nearest = Nearest.handleNeighborsCommandWithCoords(coords, tree);
     return nearest;
   }
 
@@ -190,12 +190,50 @@ public class MapCommand {
 
     graph = new Graph<GraphNode<Node>, GraphEdge<Way>>(graphBuilder);
 
-    GraphNode<Node> node1 = new GraphNode<Node>(n1.getID(), n1);
-    GraphNode<Node> node2 = new GraphNode<Node>(n2.getID(), n2);
+    GraphNode<Node> node1 = new GraphNode<Node>(n1.getId(), n1);
+    GraphNode<Node> node2 = new GraphNode<Node>(n2.getId(), n2);
 
     // The finalPath is found as a result of calling the djisktras method
     // between the 2 nodes.
     finalAnswer = graph.djikstras(node1, node2);
 
+    if (finalAnswer.size() == 0) {
+      System.out.println(
+          new StringBuilder(n1.getId() + " -/- " + n2.getId()).toString());
+    } else {
+
+      Iterator<GraphNode<Node>> it = finalAnswer.keySet().iterator();
+
+      // Iterate through all the nodes, printing accordingly with the movie from
+      // the edge connecting the nodes.
+      GraphNode<Node> curr = it.next();
+      while (it.hasNext()) {
+
+        GraphNode<Node> next = it.next();
+
+        Way movie = finalAnswer.get(curr).getValue();
+
+        System.out.println(new StringBuilder(curr.getValue().getId() + " -> "
+            + next.getValue().getId() + " : " + movie.getId()).toString());
+
+        curr = next;
+
+      }
+
+      // Print final line to target node.
+      System.out.println(
+          new StringBuilder(curr.getValue().getId() + " -> " + n2.getId()
+              + " : " + finalAnswer.get(curr).getValue().getId()).toString());
+
+    }
+
+  }
+
+  public Node getIntersection(String way1Name, String way2Name) {
+    return dbHelper.getIntersection(way1Name, way2Name);
+  }
+
+  public List<Way> waysCommand(double[] coords1, double[] coords2) {
+    return dbHelper.getWays(coords1, coords2);
   }
 }
