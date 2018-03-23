@@ -114,8 +114,9 @@ public class MapCommand {
         }
       }
 
-      prep = conn.prepareStatement(
-          "SELECT start,end FROM way WHERE type != \"\" AND type != \"undefined\";");
+      prep = conn
+          .prepareStatement("SELECT start,end FROM way WHERE type != \"\" AND "
+              + "type != \"undefined\";");
       PreparedStatement nodeQuery = conn
           .prepareStatement("SELECT * FROM node WHERE id=? OR id=?");
       ResultSet nodeRs;
