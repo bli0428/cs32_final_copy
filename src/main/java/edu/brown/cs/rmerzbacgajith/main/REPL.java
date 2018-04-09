@@ -54,7 +54,7 @@ public class REPL {
             Double.parseDouble(parsed[2]) };
         double[] coords2 = { Double.parseDouble(parsed[3]),
             Double.parseDouble(parsed[4]) };
-        mc.waysCommand(coords1, coords2);
+        mc.waysCommand(coords1, coords2, true);
       } else {
         Handling.improperCommandUse("ways <lat1> <lon1> <lat2> <lon2>");
       }
@@ -123,5 +123,9 @@ public class REPL {
       }
     }
     return false;
+  }
+
+  public MapCommand getMapCommand() {
+    return mc;
   }
 }

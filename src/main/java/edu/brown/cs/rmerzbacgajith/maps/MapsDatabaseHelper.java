@@ -106,7 +106,8 @@ public class MapsDatabaseHelper {
 
     // Find the id and name of a way given actor id
     try {
-      prep = conn.prepareStatement("SELECT id, name from way WHERE start = ?;");
+      prep = conn.prepareStatement(
+          "SELECT id, name FROM way WHERE start = ? AND type != \"\" AND type != \"undefined\";");
       prep.setString(1, nodeId);
       rs = prep.executeQuery();
 
@@ -185,14 +186,15 @@ public class MapsDatabaseHelper {
     ResultSet innerRs;
     ResultSet nodeRs;
     try {
-      prep = conn.prepareStatement("SELECT start, end FROM way WHERE name = ?");
+      prep = conn.prepareStatement(
+          "SELECT start, end FROM way WHERE name = ? AND type != \"\" AND type != \"undefined\";");
       prep.setString(1, way1Name);
       rs = prep.executeQuery();
       while (rs.next()) {
         String currStart1 = rs.getString(1);
         String currEnd1 = rs.getString(2);
-        prep = conn
-            .prepareStatement("SELECT start, end FROM way WHERE name = ?");
+        prep = conn.prepareStatement(
+            "SELECT start, end FROM way WHERE name = ? AND type != \"\" AND type != \"undefined\";");
         prep.setString(1, way2Name);
         innerRs = prep.executeQuery();
         while (innerRs.next()) {
@@ -228,16 +230,26 @@ public class MapsDatabaseHelper {
     return null;
   }
 
-  public List<Way> getWays(double[] coords1, double[] coords2) {
+  public List<String> getWays(double[] coords1, double[] coords2,
+      boolean traversable) {
     PreparedStatement prep;
     ResultSet rs;
+    List<String> ids = new ArrayList<>();
     try {
-      prep = conn.prepareStatement(
-          "SELECT way.id FROM way, node AS n1, node AS n2 WHERE n1.id = "
-              + "way.start AND n2.id = way.end "
-              + "AND n1.latitude > ? AND n1.latitude < ? AND n1.longitude > ? "
-              + "AND n1.longitude < ? AND n2.latitude > ? AND n2.latitude < ? "
-              + "AND n2.longitude > ? AND n2.longitude < ? ORDER BY way.id;");
+      if (traversable) {
+        prep = conn.prepareStatement(
+            "SELECT way.id FROM way, node AS n1, node AS n2 WHERE way.type != \"\" AND way.type != \"undefined\" AND n1.id = "
+                + "way.start AND n2.id = way.end "
+                + "AND ((n1.latitude > ? AND n1.latitude < ? AND n1.longitude > ? "
+                + "AND n1.longitude < ?) OR (n2.latitude > ? AND n2.latitude < ? "
+                + "AND n2.longitude > ? AND n2.longitude < ?)) ORDER BY way.id;");
+      } else {
+        prep = conn.prepareStatement(
+            "SELECT way.id FROM way, node AS n1, node AS n2 WHERE n1.id = way.start AND n2.id = way.end "
+                + "AND ((n1.latitude > ? AND n1.latitude < ? AND n1.longitude > ? "
+                + "AND n1.longitude < ?) OR (n2.latitude > ? AND n2.latitude < ? "
+                + "AND n2.longitude > ? AND n2.longitude < ?)) ORDER BY way.id;");
+      }
       prep.setDouble(1, coords2[0]);
       prep.setDouble(2, coords1[0]);
       prep.setDouble(3, coords1[1]);
@@ -249,8 +261,45 @@ public class MapsDatabaseHelper {
 
       rs = prep.executeQuery();
       while (rs.next()) {
-        System.out.println(rs.getString(1));
+        String id = rs.getString(1);
+        System.out.println(id);
+        ids.add(id);
       }
+      return ids;
+    } catch (SQLException e) {
+      Handling.error("Database does not contain proper tables.");
+    }
+    return null;
+  }
+
+  public List<double[]> getWayLocation(String wayId) {
+    PreparedStatement prep;
+    ResultSet rs;
+    try {
+      double[] coords1 = new double[2];
+      prep = conn.prepareStatement(
+          "SELECT latitude, longitude FROM node, way WHERE way.id = ? AND node.id = way.start;");
+      prep.setString(1, wayId);
+
+      rs = prep.executeQuery();
+      while (rs.next()) {
+        coords1[0] = rs.getDouble(1);
+        coords1[1] = rs.getDouble(2);
+      }
+      double[] coords2 = new double[2];
+      prep = conn.prepareStatement(
+          "SELECT latitude, longitude FROM node, way WHERE way.id = ? AND node.id = way.end;");
+      prep.setString(1, wayId);
+
+      rs = prep.executeQuery();
+      while (rs.next()) {
+        coords2[0] = rs.getDouble(1);
+        coords2[1] = rs.getDouble(2);
+      }
+      List<double[]> coords = new ArrayList<>();
+      coords.add(coords1);
+      coords.add(coords2);
+      return coords;
     } catch (SQLException e) {
       Handling.error("Database does not contain proper tables.");
     }

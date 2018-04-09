@@ -114,9 +114,7 @@ public class MapCommand {
         }
       }
 
-      prep = conn
-          .prepareStatement("SELECT start,end FROM way WHERE type != \"\" AND "
-              + "type != \"undefined\";");
+      prep = conn.prepareStatement("SELECT start,end FROM way;");
       PreparedStatement nodeQuery = conn
           .prepareStatement("SELECT * FROM node WHERE id=? OR id=?");
       ResultSet nodeRs;
@@ -234,7 +232,12 @@ public class MapCommand {
     return dbHelper.getIntersection(way1Name, way2Name);
   }
 
-  public List<Way> waysCommand(double[] coords1, double[] coords2) {
-    return dbHelper.getWays(coords1, coords2);
+  public List<String> waysCommand(double[] coords1, double[] coords2,
+      boolean traversable) {
+    return dbHelper.getWays(coords1, coords2, traversable);
+  }
+
+  public MapsDatabaseHelper getDBHelper() {
+    return dbHelper;
   }
 }

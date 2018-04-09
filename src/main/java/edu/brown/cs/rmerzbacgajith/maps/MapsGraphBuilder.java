@@ -25,6 +25,8 @@ import edu.brown.cs.rmerzbacgajith.tree.Node;
 public class MapsGraphBuilder<N, E>
     implements GraphBuilder<GraphNode<Node>, GraphEdge<Way>> {
 
+  private final double RADIUS = 6371;
+
   private Map<String, Map<GraphNode<Node>, GraphEdge<Way>>> neighCache;
   private MapsDatabaseHelper dbHelper;
 
@@ -101,11 +103,11 @@ public class MapsGraphBuilder<N, E>
       // System.out.println(node.getId());
 
       double[] endCoords = node.getCoords();
-      double weight = this.findDistance(sourceCoords, endCoords);
+      double weight = this.findDistance(sourceCoords, endCoords)
+          + haversineDistance(sourceCoords, endCoords);
 
       // Create edge storing movie
-      GraphEdge<Way> edge = new GraphEdge<Way>(movie.getId(), movie,
-          1.0 / weight);
+      GraphEdge<Way> edge = new GraphEdge<Way>(movie.getId(), movie, weight);
 
       // Create node
       GraphNode<Node> graphNode = new GraphNode<Node>(node.getId(), node);
@@ -145,6 +147,19 @@ public class MapsGraphBuilder<N, E>
       sum += Math.pow(coords1[i] - coords2[i], 2);
     }
     return Math.sqrt(sum);
+  }
+
+  public double haversineDistance(double[] coords1, double[] coords2) {
+    assert coords1.length == coords2.length;
+    double delPhi = Math.toRadians(coords2[0] - coords1[0]);
+    double delLambda = Math.toRadians(coords2[1] - coords1[1]);
+    double a = Math.pow(Math.sin(delPhi / 2.0), 2)
+        + (Math.cos(Math.toRadians(coords1[0]))
+            * Math.cos(Math.toRadians(coords2[0]))
+            * Math.pow(Math.sin(delLambda / 2.0), 2));
+    double c = Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    double d = c * RADIUS;
+    return d;
   }
 
   @Override
