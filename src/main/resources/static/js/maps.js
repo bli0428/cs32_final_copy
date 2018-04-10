@@ -1,6 +1,6 @@
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 600;
-const TILE_SIZE = .001;
+const TILE_SIZE = .004;
 
 // Global reference to the canvas element.
 let canvas;
@@ -67,9 +67,10 @@ const paintMap = () => {
     let currX = Math.floor(startLeft / TILE_SIZE) * TILE_SIZE;
     let currY = Math.floor(startBottom / TILE_SIZE) * TILE_SIZE;
 
-    for (let i = currX; i < startRight; i += TILE_SIZE) {
-      for (let j = currY; j < startTop; j += TILE_SIZE) {
-        if (tiles[i][j] == null) {
+    for (let i = currY; i < startTop; i += TILE_SIZE) {
+      for (let j = currX; j < startRight; j += TILE_SIZE) {
+        if (tiles[i + " " + j] === undefined) {
+          tiles[i + " " + j] = [];
 		      const postParameters = {top: i + TILE_SIZE, left: j,
 			         bottom: i, right: j + TILE_SIZE};
 		      $.post("/results", postParameters, responseJSON => {
@@ -83,7 +84,7 @@ const paintMap = () => {
 				       let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
 				       let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
 
-               tiles[i][j].push({top: top, left: left, bottom: bottom, right: right});
+              tiles[i + " " + j].push({top: top, left: left, bottom: bottom, right: right});
 
 				       ctx.moveTo(top, left);
 				       ctx.lineTo(bottom, right);
@@ -93,7 +94,7 @@ const paintMap = () => {
          });
        } else {
          ctx.beginPath();
-         for (let way of tiles[i][j]) {
+         for (let way of tiles[i + " " + j]) {
               ctx.moveTo(way.top, way.left);
               ctx.lineTo(way.bottom, way.right);
           }
