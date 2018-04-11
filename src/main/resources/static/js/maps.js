@@ -49,6 +49,37 @@ $(document).ready(() => {
       changeBox(xUp - xDown, yUp - yDown);
     });
     
+        canvas.addEventListener("click", function(g) {
+            
+            let xcoord = g.pageX - $('canvas').offset().left;
+            let ycoord = g.pageY - $('canvas').offset().top;
+            
+            console.log(xcoord + " " + ycoord);
+            
+            let lon = posnToCoord(CANVAS_WIDTH, startLeft, startRight, xcoord);
+            let lat = posnToCoord(CANVAS_HEIGHT, startBottom, startTop, ycoord);
+            
+            const postParameters = {lat: lat, lon: lon};
+            
+            $.post("/nearest", postParameters, responseJSON => {
+                
+                const responseObject = JSON.parse(responseJSON);
+                
+                let finalY = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, responseObject.node[0]);
+				let finalX = coordToPosn(CANVAS_WIDTH, startLeft, startRight, responseObject.node[1]);
+                
+                //Wrong because of rotation of canvas.(maybe)
+                console.log(finalX + " " + finalY);
+                
+                ctx.fillStyle = "red";
+                ctx.fillRect(finalX, finalY, 10, 10);
+                
+            });
+            
+            
+            
+    });
+    
     canvas.addEventListener("mousewheel", scrollZoom);
     
     
@@ -151,6 +182,13 @@ function zoom(amount) {
 function coordToPosn(canvasSize, min, max, coord) {
 	mapSize = Math.abs(max - min);
 	return (coord - min) * (canvasSize / mapSize);
+}
+
+function posnToCoord(canvasSize, min, max, coord){
+    
+    mapSize = Math.abs(max - min);
+    return min + (coord*(mapSize/canvasSize));
+    
 }
 
 function changeBox(offsetX, offsetY) {
