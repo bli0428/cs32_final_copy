@@ -117,7 +117,7 @@ public class MapCommand {
       prep = conn.prepareStatement("SELECT start,end FROM way;");
       PreparedStatement nodeQuery = conn
           .prepareStatement("SELECT * FROM node WHERE id=? OR id=?");
-      ResultSet nodeRs;
+      ResultSet nodeRs = null;
       rs = prep.executeQuery();
 
       while (rs.next()) {
@@ -140,6 +140,9 @@ public class MapCommand {
           }
         }
       }
+      
+      nodeQuery.close();
+      nodeRs.close();
       prep.close();
       rs.close();
     } catch (SQLException e) {
@@ -183,7 +186,6 @@ public class MapCommand {
   }
 
   public void route(Node n1, Node n2) {
-    // TODO Auto-generated method stub
 
     Map<GraphNode<Node>, GraphEdge<Way>> finalAnswer = new LinkedHashMap<GraphNode<Node>, GraphEdge<Way>>();
 
