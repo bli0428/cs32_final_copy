@@ -1,6 +1,6 @@
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 600;
-const TILE_SIZE = .1;
+const TILE_SIZE = .075;
 
 // Global reference to the canvas element.
 let canvas;
@@ -111,6 +111,7 @@ const paintMap = () => {
 };
 
 function zoom(amount) {
+  alert(amount);
   startTop += amount;
   startBottom -= amount;
   startRight += amount;
