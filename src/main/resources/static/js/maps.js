@@ -13,6 +13,8 @@ let startLeft = -71.404751;
 let startBottom = 41.823035;
 let startRight = -71.396564;
 
+let totalZoom = 1;
+
 let xDown;
 let yDown;
 
@@ -45,9 +47,62 @@ $(document).ready(() => {
       let xUp = f.pageX;
       let yUp = f.pageY;
       changeBox(xUp - xDown, yUp - yDown);
-      console.log(xDown, yDown, xUp, yUp);
     });
+    
+        canvas.addEventListener("click", function(g) {
+            
+            let xcoord = g.pageX - $('canvas').offset().left;
+            let ycoord = g.pageY - $('canvas').offset().top;
+            
+            console.log(xcoord + " " + ycoord);
+            
+            let lon = posnToCoord(CANVAS_WIDTH, startLeft, startRight, xcoord);
+            let lat = posnToCoord(CANVAS_HEIGHT, startBottom, startTop, ycoord);
+            
+            const postParameters = {lat: lat, lon: lon};
+            
+            $.post("/nearest", postParameters, responseJSON => {
+                
+                const responseObject = JSON.parse(responseJSON);
+                
+                let finalY = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, responseObject.node[0]);
+				let finalX = coordToPosn(CANVAS_WIDTH, startLeft, startRight, responseObject.node[1]);
+                
+                //Wrong because of rotation of canvas.(maybe)
+                console.log(finalX + " " + finalY);
+                
+                ctx.fillStyle = "red";
+                ctx.fillRect(finalX, finalY, 10, 10);
+                
+            });
+            
+            
+            
+    });
+    
+    canvas.addEventListener("mousewheel", scrollZoom);
+    
+    
+    
 });
+
+function scrollZoom(e){
+    
+    let amount = 0.05*e.deltaY/CANVAS_HEIGHT;
+    
+    if(totalZoom + amount > 0.9981){
+    totalZoom += amount;
+    console.log(totalZoom);
+        
+    startTop += amount;
+  startBottom -= amount;
+  startRight += amount;
+  startLeft -= amount;
+  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  paintMap();
+    }
+    
+}
 
 
 function key(lat, lng) {
@@ -78,20 +133,25 @@ const paintMap = () => {
 
 			    // Parse the JSON response into a JavaScript object.
 			    const responseObject = JSON.parse(responseJSON);
-          ctx.beginPath();
+          //ctx.beginPath();
 			    for (let way of responseObject.ways) {
 				       let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
 				       let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
 				       let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
 				       let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
 
+                    
                tiles[k].push(way);
 
+                    ctx.beginPath();
 				       ctx.moveTo(top, left);
 				       ctx.lineTo(bottom, right);
-			     }
-           ctx.closePath();
+                    
+                               ctx.closePath();
            ctx.stroke();
+			     }
+//           ctx.closePath();
+//           ctx.stroke();
          });
        } else {
          ctx.beginPath();
@@ -123,6 +183,13 @@ function zoom(amount) {
 function coordToPosn(canvasSize, min, max, coord) {
 	mapSize = Math.abs(max - min);
 	return (coord - min) * (canvasSize / mapSize);
+}
+
+function posnToCoord(canvasSize, min, max, coord){
+    
+    mapSize = Math.abs(max - min);
+    return min + (coord*(mapSize/canvasSize));
+    
 }
 
 function changeBox(offsetX, offsetY) {

@@ -11,6 +11,7 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.rmerzbacgajith.tree.Point;
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
@@ -69,6 +70,7 @@ public final class GUI {
     // Setup Spark Routes
     Spark.get("/maps", new MapsFrontHandler(), freeMarker);
     Spark.post("/results", new MapsResultsHandler());
+    Spark.post("/nearest", new NearestHandler());
   }
 
   /**
@@ -113,6 +115,31 @@ public final class GUI {
 
   }
 
+
+  /**
+   * Handles user input from the GUI and searches for suggestions.
+   *
+   * @author Reid
+   *
+   */
+  private class NearestHandler implements Route {
+    @Override
+    public String handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      Double lat = Double.parseDouble(qm.value("lat"));
+      Double lon = Double.parseDouble(qm.value("lon"));
+      
+      double[] coords = {lat, lon};
+      
+      Point node = repl.getMapCommand().nearestCommand(coords);
+  
+      Map<String, Object> variables = ImmutableMap.of("node", node.getCoords());
+      return GSON.toJson(variables);
+    }
+
+  }
+  
   /**
    * Display an error page when an exception occurs in the server.
    *
