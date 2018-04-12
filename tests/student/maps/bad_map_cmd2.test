@@ -1,0 +1,5 @@
+INPUT
+map data/maps/maps.sqlite3 asfsadfasdfsd
+OUTPUT
+ERROR:
+END

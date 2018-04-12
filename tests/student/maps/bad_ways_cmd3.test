@@ -1,13 +1,7 @@
 INPUT
 map data/maps/smallMaps.sqlite3
-nearest
-nearest A B
-nearest 41 A
-nearest 41 41 41
+ways abc def ghi jkl
 OUTPUT
 map set to data/maps/smallMaps.sqlite3
-ERROR:
-ERROR:
-ERROR:
 ERROR:
 END

@@ -58,11 +58,6 @@ $(document).ready(() => {
         let xc = CANVAS_WIDTH - ycoord;
         let yc = xcoord;
 
-        //let lon = posnToCoord(CANVAS_WIDTH, startLeft, startRight, xc);
-        //let lat = posnToCoord(CANVAS_HEIGHT, startBottom, startTop, yc);
-
-        // let lon = startLeft + (xc*((startRight - startLeft)/CANVAS_WIDTH));
-        // let lat = startBottom + (yc*((startTop - startBottom)/CANVAS_HEIGHT));
         const lrScale = startRight - startLeft;
         const tbScale = startTop - startBottom;
 
@@ -117,343 +112,244 @@ $(document).ready(() => {
 
     start1.keyup(event => {
 
-        let currInput = start1.val();
+      let currInput = start1.val();
 
     	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
 
     		const responseObject = JSON.parse(responseJSON);
-
-        	ac1.empty();
+        ac1.empty();
     		const len = responseObject.suggestions;
-
-            for(let s of responseObject.suggestions){
-                ac1.append('<li>' + s + '</li>');
-
-            }
-
-            if(ac1.length > 5){
-                ac1.remove();
-                }
-
-            let li = document.getElementById("ac1").getElementsByTagName("li");
-
-            for(let l of li){
+        for(let s of responseObject.suggestions){
+          ac1.append('<li>' + s + '</li>');
+        }
+        if(ac1.length > 5){
+          ac1.remove();
+        }
+        let li = document.getElementById("ac1").getElementsByTagName("li");
+        for(let l of li) {
             l.addEventListener("click", clickSuggestion1);
-            }
+        }
 
 
-function clickSuggestion1(e){
-
-const lastIndex = currInput.lastIndexOf(" ");
-
-currInput = currInput.substring(0, lastIndex);
-
-start1.val(e.target.innerHTML);
-
-ac1.empty();
-}
-
-
-    	});
-
-
+        function clickSuggestion1(e){
+          const lastIndex = currInput.lastIndexOf(" ");
+          currInput = currInput.substring(0, lastIndex);
+          start1.val(e.target.innerHTML);
+          ac1.empty();
+        }
+      });
     });
-
-        start2.keyup(event => {
-
-             let currInput = start2.val();
-
+    start2.keyup(event => {
+      let currInput = start2.val();
     	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
-
     		const responseObject = JSON.parse(responseJSON);
-
-        	ac2.empty();
+        ac2.empty();
     		const len = responseObject.suggestions;
-
-            for(let s of responseObject.suggestions){
-                ac2.append('<li>' + s + '</li>');
-
-            }
-
-            if(ac2.length > 5){
-                ac2.remove();
-                }
-
-            let li = document.getElementById("ac2").getElementsByTagName("li");
-
-            for(let l of li){
-            l.addEventListener("click", clickSuggestion1);
-            }
-
-
-function clickSuggestion1(e){
-
-const lastIndex = currInput.lastIndexOf(" ");
-
-currInput = currInput.substring(0, lastIndex);
-
-start2.val(e.target.innerHTML);
-
-ac2.empty();
-}
-
-
-    	});
-
-
-    });
-
-        end1.keyup(event => {
-
-             let currInput = end1.val();
-
-    	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
-
-    		const responseObject = JSON.parse(responseJSON);
-
-        	ac3.empty();
-    		const len = responseObject.suggestions;
-
-            for(let s of responseObject.suggestions){
-                ac3.append('<li>' + s + '</li>');
-
-            }
-
-            if(ac3.length > 5){
-                ac3.remove();
-                }
-
-            let li = document.getElementById("ac3").getElementsByTagName("li");
-
-            for(let l of li){
-            l.addEventListener("click", clickSuggestion1);
-            }
-
-
-function clickSuggestion1(e){
-
-const lastIndex = currInput.lastIndexOf(" ");
-
-currInput = currInput.substring(0, lastIndex);
-
-end1.val(e.target.innerHTML);
-
-ac3.empty();
-}
-
-
-    	});
-
-
-    });
-
-        end2.keyup(event => {
-
-             let currInput = end2.val();
-
-    	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
-
-    		const responseObject = JSON.parse(responseJSON);
-
-        	ac4.empty();
-    		const len = responseObject.suggestions;
-
-            for(let s of responseObject.suggestions){
-                ac4.append('<li>' + s + '</li>');
-
-            }
-
-            if(ac4.length > 5){
-                ac4.remove();
-                }
-
-            let li = document.getElementById("ac4").getElementsByTagName("li");
-
-            for(let l of li){
-            l.addEventListener("click", clickSuggestion1);
-            }
-
-
-function clickSuggestion1(e){
-
-  const lastIndex = currInput.lastIndexOf(" ");
-  currInput = currInput.substring(0, lastIndex);
-
-end2.val(e.target.innerHTML);
-
-ac4.empty();
-}
-
-
-    	});
-
-
-    });
-
-
-});
-
-function scrollZoom(e){
-
-    let amount = 0.05*e.deltaY/CANVAS_HEIGHT;
-
-    if(totalZoom + amount > 0.9981){
-    totalZoom += amount;
-    console.log(totalZoom);
-
-    startTop += amount;
-  startBottom -= amount;
-  startRight += amount;
-  startLeft -= amount;
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  paintMap();
-    }
-
-}
-
-
-function key(lat, lng) {
-  return lat.toFixed(4)+" "+lng.toFixed(4);
-}
-/*
-	Paints the boggle board.
-*/
-const paintMap = () => {
-
-	// Setting the context's font and lineWidth.
-	// Feel free to play around with this!
-    ctx.lineWidth = 1;
-
-    let currX = Math.floor(startLeft / TILE_SIZE) * TILE_SIZE;
-    let currY = Math.floor(startBottom / TILE_SIZE) * TILE_SIZE;
-
-    for (let i = currY; i < startTop; i += TILE_SIZE) {
-      for (let j = currX; j < startRight; j += TILE_SIZE) {
-        const k = key(i,j);
-        if (tiles[k] === undefined) {
-          tiles[k] = [];
-		      const postParameters = {
-              top: i + TILE_SIZE, left: j,
-			        bottom: i, right: j + TILE_SIZE};
-		      $.post("/results", postParameters, responseJSON => {
-
-			    // Parse the JSON response into a JavaScript object.
-			    const responseObject = JSON.parse(responseJSON);
-          //ctx.beginPath();
-			    for (let way of responseObject.ways) {
-				       let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
-				       let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
-				       let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
-				       let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
-
-
-               tiles[k].push(way);
-
-               ctx.beginPath();
-				       ctx.moveTo(top, left);
-				       ctx.lineTo(bottom, right);
-               ctx.closePath();
-               ctx.stroke();
-			     }
-//           ctx.closePath();
-//           ctx.stroke();
-         });
-       } else {
-         ctx.beginPath();
-         for (let way of tiles[key(i,j)]) {
-           let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
-           let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
-           let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
-           let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
-           ctx.moveTo(top, left);
-           ctx.lineTo(bottom, right);
+        for(let s of responseObject.suggestions){
+            ac2.append('<li>' + s + '</li>');
+        }
+        if(ac2.length > 5){
+            ac2.remove();
           }
-          ctx.closePath();
-          ctx.stroke();
-       }
-       if (currPath != null) {
-         drawRoute(currPath, false);
-       }
-     }
-   }
-};
-
-function route() {
-
-    const start1 = $("#start1").val();
-    const start2 = $("#start2").val();
-    const end1 = $("#end1").val();
-    const end2 = $("#end2").val();
-  const postParameters = {
-      start1: start1, start2: start2,
-      end1: end1, end2: end2};
-  $.post("/route", postParameters, responseJSON => {
-
-      // Parse the JSON response into a JavaScript object.
-      const responseObject = JSON.parse(responseJSON);
-      currPath = responseObject.ways;
-      //ctx.beginPath();
-      drawRoute(responseObject.ways, true);
+          let li = document.getElementById("ac2").getElementsByTagName("li");
+          for(let l of li){
+            l.addEventListener("click", clickSuggestion1);
+          }
+          function clickSuggestion1(e){
+            const lastIndex = currInput.lastIndexOf(" ");
+            currInput = currInput.substring(0, lastIndex);
+            start2.val(e.target.innerHTML);
+            ac2.empty();
+          }
+        });
     });
-}
+    end1.keyup(event => {
+      let currInput = end1.val();
+    	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
+    		const responseObject = JSON.parse(responseJSON);
+        ac3.empty();
+    		const len = responseObject.suggestions;\
+        for(let s of responseObject.suggestions){
+            ac3.append('<li>' + s + '</li>');
+          }
+          if(ac3.length > 5){
+            ac3.remove();
+          }
+          let li = document.getElementById("ac3").getElementsByTagName("li");
+          for(let l of li){
+            l.addEventListener("click", clickSuggestion1);
+          }
+          function clickSuggestion1(e){
+            const lastIndex = currInput.lastIndexOf(" ");
+            currInput = currInput.substring(0, lastIndex);
+            end1.val(e.target.innerHTML);
+            ac3.empty();
+          }
+        });
+      });
+      end2.keyup(event => {
+        let currInput = end2.val();
+        $.post('/mapsac', {'ac': currInput}, function(responseJSON){
+          const responseObject = JSON.parse(responseJSON);
+          ac4.empty();
+          const len = responseObject.suggestions;
+          for(let s of responseObject.suggestions){
+            ac4.append('<li>' + s + '</li>');
+          }
+          if(ac4.length > 5){
+            ac4.remove();
+          }
+          let li = document.getElementById("ac4").getElementsByTagName("li");
+            for(let l of li){
+              l.addEventListener("click", clickSuggestion1);
+            }
 
-function routeWithCoords(start1, start2, end1, end2) {
-  const postParameters = {
-      start1: start1, start2: start2,
-      end1: end1, end2: end2};
-  $.post("/routeCoords", postParameters, responseJSON => {
+            function clickSuggestion1(e){
+              const lastIndex = currInput.lastIndexOf(" ");
+              currInput = currInput.substring(0, lastIndex);
+              end2.val(e.target.innerHTML);
+              ac4.empty();
+            }
+          });
+        });
+      });
 
-      // Parse the JSON response into a JavaScript object.
-      const responseObject = JSON.parse(responseJSON);
-      currPath = responseObject.ways;
-      //ctx.beginPath();
-      drawRoute(responseObject.ways, true);
-    });
-}
+      function scrollZoom(e){
+        let amount = 0.05*e.deltaY/CANVAS_HEIGHT;
+        console.log(totalZoom + amount);
+        if(totalZoom + amount > 0.9981 && totalZoom + amount < 1.0129){
+          totalZoom += amount;
+          startTop += amount;
+          startBottom -= amount;
+          startRight += amount;
+          startLeft -= amount;
+          ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          paintMap();
+        }
+      }
+      function key(lat, lng) {
+        return lat.toFixed(4)+" "+lng.toFixed(4);
+      }
+      /*
+	     Paints the boggle board.
+       */
+       const paintMap = () => {
 
-function drawRoute(ways, repaint) {
-  for (let way of ways) {
-       let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
-       let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
-       let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
-       let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
+	        // Setting the context's font and lineWidth.
+	        // Feel free to play around with this!
+          ctx.lineWidth = 1;
+          let currX = Math.floor(startLeft / TILE_SIZE) * TILE_SIZE;
+          let currY = Math.floor(startBottom / TILE_SIZE) * TILE_SIZE;
+          for (let i = currY; i < startTop; i += TILE_SIZE) {
+            for (let j = currX; j < startRight; j += TILE_SIZE) {
+              const k = key(i,j);
+              if (tiles[k] === undefined) {
+                tiles[k] = [];
+		              const postParameters = { top: i + TILE_SIZE, left: j, bottom: i, right: j + TILE_SIZE};
+		                $.post("/results", postParameters, responseJSON => {
+                      // Parse the JSON response into a JavaScript object.
+                      const responseObject = JSON.parse(responseJSON);
+                      for (let way of responseObject.ways) {
+		                      let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
+				                  let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
+				                  let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
+                          let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
+                          tiles[k].push(way);
 
-       if (repaint) {
-         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-         paintMap();
-       }
+                          ctx.beginPath();
+                          ctx.moveTo(top, left);
+                          ctx.lineTo(bottom, right);
+                          ctx.closePath();
+                          ctx.stroke();
+                        }
+                      });
+                    } else {
+                      ctx.beginPath();
+                      for (let way of tiles[key(i,j)]) {
+                        let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
+                        let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
+                        let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
+                        let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
+                        ctx.moveTo(top, left);
+                        ctx.lineTo(bottom, right);
+                      }
+                      ctx.closePath();
+                      ctx.stroke();
+                    }
+                    if (currPath != null) {
+                      drawRoute(currPath, false);
+                    }
+                  }
+                }
+              };
 
-       ctx.lineWidth = 2;
-       ctx.strokeStyle = "red";
-       ctx.beginPath();
-       ctx.moveTo(top, left);
-       ctx.lineTo(bottom, right);
-       ctx.closePath();
-       ctx.stroke();
-       ctx.lineWidth = 1;
-       ctx.strokeStyle = "black";
-   }
-}
+              function route() {
 
-function zoom(amount) {
-  startTop += amount;
-  startBottom -= amount;
-  startRight += amount;
-  startLeft -= amount;
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  paintMap();
-}
+                const start1 = $("#start1").val();
+                const start2 = $("#start2").val();
+                const end1 = $("#end1").val();
+                const end2 = $("#end2").val();
+                const postParameters = {
+                  start1: start1, start2: start2,
+                  end1: end1, end2: end2};
+                  $.post("/route", postParameters, responseJSON => {
+                    // Parse the JSON response into a JavaScript object.
+                    const responseObject = JSON.parse(responseJSON);
+                    currPath = responseObject.ways;
+                    drawRoute(responseObject.ways, true);
+                  });
+                }
 
-function coordToPosn(canvasSize, min, max, coord) {
-	mapSize = Math.abs(max - min);
-	return (coord - min) * (canvasSize / mapSize);
-}
+                function routeWithCoords(start1, start2, end1, end2) {
+                  const postParameters = {
+                    start1: start1, start2: start2,
+                    end1: end1, end2: end2};
+                    $.post("/routeCoords", postParameters, responseJSON => {
+                      // Parse the JSON response into a JavaScript object.
+                      const responseObject = JSON.parse(responseJSON);
+                      currPath = responseObject.ways;
+                      drawRoute(responseObject.ways, true);
+                    });
+                  }
+                  function drawRoute(ways, repaint) {
+                    for (let way of ways) {
+                      let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
+                      let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
+                      let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
+                      let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
+                      if (repaint) {
+                        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                        paintMap();
+                      }
+                      ctx.lineWidth = 2;
+                      ctx.strokeStyle = "red";
+                      ctx.beginPath();
+                      ctx.moveTo(top, left);
+                      ctx.lineTo(bottom, right);
+                      ctx.closePath();
+                      ctx.stroke();
+                      ctx.lineWidth = 1;
+                      ctx.strokeStyle = "black";
+                    }
+                  }
+
+                  function zoom(amount) {
+                    startTop += amount;
+                    startBottom -= amount;
+                    startRight += amount;
+                    startLeft -= amount;
+                    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                    paintMap();
+                  }
+
+                  function coordToPosn(canvasSize, min, max, coord) {
+	                   mapSize = Math.abs(max - min);
+	                   return (coord - min) * (canvasSize / mapSize);
+                  }
 
 function posnToCoord(canvasSize, min, max, coord){
-
-    mapSize = (max - min);
-    return min + (coord*(mapSize/canvasSize));
-
+  mapSize = (max - min);
+  return min + (coord*(mapSize/canvasSize));
 }
 
 function changeBox(offsetX, offsetY) {
