@@ -35,6 +35,12 @@ public final class GUI {
   private static final Gson GSON = new Gson();
   private static REPL repl;
 
+  /**
+   * Constructor for GUI.
+   *
+   * @param repl
+   *          the REPL that is being used to call commands
+   */
   public GUI(REPL repl) {
     this.repl = repl;
   }
@@ -104,20 +110,20 @@ public final class GUI {
     public String handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
 
-      //Get coords for ways Bounding box
+      // Get coords for ways Bounding box
       double[] coords1 = { Double.parseDouble(qm.value("top")),
           Double.parseDouble(qm.value("left")) };
       double[] coords2 = { Double.parseDouble(qm.value("bottom")),
           Double.parseDouble(qm.value("right")) };
-      
-      //Call ways command
+
+      // Call ways command
       List<String> wayId = repl.getMapCommand().waysCommand(coords1, coords2);
       List<List<double[]>> coords = new ArrayList<>();
       for (String way : wayId) {
         coords.add(repl.getMapCommand().getDBHelper().getWayLocation(way));
       }
 
-      //Send List of coords to JS
+      // Send List of coords to JS
       Map<String, Object> variables = ImmutableMap.of("ways", coords);
       return GSON.toJson(variables);
     }
@@ -134,13 +140,13 @@ public final class GUI {
     public String handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
 
-      //Get coords
+      // Get coords
       Double lat = Double.parseDouble(qm.value("lat"));
       Double lon = Double.parseDouble(qm.value("lon"));
 
       double[] coords = { lat, lon };
 
-      //Call nearest command
+      // Call nearest command
       Point node = repl.getMapCommand().nearestCommand(coords);
 
       Map<String, Object> variables = ImmutableMap.of("node", node.getCoords());
@@ -149,7 +155,8 @@ public final class GUI {
   }
 
   /**
-   * Routes between Intersections for GUI
+   * Routes between Intersections for GUI.
+   *
    * @author gokulajith
    *
    */
@@ -158,7 +165,7 @@ public final class GUI {
     public String handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
 
-      //Get all Streets
+      // Get all Streets
       String start1 = qm.value("start1");
       String start2 = qm.value("start2");
       String end1 = qm.value("end1");
@@ -166,7 +173,7 @@ public final class GUI {
 
       List<List<double[]>> coords = new ArrayList<>();
 
-      //Check for both intersections
+      // Check for both intersections
       Node n1 = repl.getMapCommand().getIntersection(start1, start2);
       if (n1 == null) {
         Handling.error("first intersection not found");
@@ -175,8 +182,8 @@ public final class GUI {
       if (n2 == null) {
         Handling.error("second intersection not found");
       } else {
-        
-        //Route between two nearest nodes
+
+        // Route between two nearest nodes
         List<Way> ways = repl.getMapCommand().route(n1, n2);
         for (Way way : ways) {
           coords.add(
@@ -190,9 +197,7 @@ public final class GUI {
   }
 
   /**
-   * 
-   * Route with coordinates
-   *
+   * Route with coordinates.
    */
   public static class RouteCoordsHandler implements Route {
     @Override
@@ -210,7 +215,7 @@ public final class GUI {
 
       List<List<double[]>> coords = new ArrayList<>();
 
-      //Find nearest node to both coordinates
+      // Find nearest node to both coordinates
       Node n1 = (Node) repl.getMapCommand().nearestCommand(coords1);
       if (n1 == null) {
         Handling.error("first intersection not found");
@@ -219,8 +224,8 @@ public final class GUI {
       if (n2 == null) {
         Handling.error("second intersection not found");
       } else {
-        
-        //Route between the two nearest nodes.
+
+        // Route between the two nearest nodes.
         List<Way> ways = repl.getMapCommand().route(n1, n2);
         for (Way way : ways) {
           coords.add(
@@ -232,9 +237,10 @@ public final class GUI {
       return GSON.toJson(variables);
     }
   }
-  
+
   /**
    * Handler for autocorrecting street names.
+   *
    * @author gokulajith
    *
    */
@@ -245,13 +251,14 @@ public final class GUI {
 
       String ac = qm.value("ac");
       List<String> finalAnswer = new ArrayList<String>();
-      
-      //Use suggest command as before for suggestions.
+
+      // Use suggest command as before for suggestions.
       if (ac != null && ac.length() > 0) {
         finalAnswer = repl.getMapCommand().suggest(ac);
       }
 
-      Map<String, Object> variables = ImmutableMap.of("suggestions", finalAnswer);
+      Map<String, Object> variables = ImmutableMap.of("suggestions",
+          finalAnswer);
       return GSON.toJson(variables);
     }
   }
