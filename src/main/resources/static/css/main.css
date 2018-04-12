@@ -3,6 +3,11 @@ body {
   margin: 0vw;
   font-family: "Comic Sans MS", cursive, sans-serif;
 }
+
+ul {
+  list-style-type: none;
+}
+
 h1 {
   padding: 5px;
 }

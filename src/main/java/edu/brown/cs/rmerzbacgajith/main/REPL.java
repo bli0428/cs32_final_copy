@@ -39,7 +39,7 @@ public class REPL {
    * @param line
    *          The command provided by the user
    */
-  private void processCommand(String line) {
+  public void processCommand(String line) {
     // Split on whitespace and punctuation
     String[] parsed = line.split("\\s+");
     if (parsed[0].equals("map")) {
@@ -70,7 +70,7 @@ public class REPL {
     } else if (parsed[0].equals("suggest")) {
       if (parsed.length > 1) {
         String words = line.substring(line.indexOf(" ") + 1);
-        List<String> suggestions = mc.suggest(words);
+        mc.suggest(words);
       } else {
         Handling.improperCommandUse("suggest <words>");
       }
@@ -81,10 +81,12 @@ public class REPL {
         Node n1 = mc.getIntersection(parsed[1], parsed[3]);
         if (n1 == null) {
           Handling.error("first intersection not found");
+          return;
         }
         Node n2 = mc.getIntersection(parsed[5], parsed[7]);
         if (n2 == null) {
           Handling.error("second intersection not found");
+          return;
         } else {
           mc.route(n1, n2);
         }

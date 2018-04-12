@@ -76,6 +76,7 @@ public final class GUI {
     Spark.post("/nearest", new NearestHandler());
     Spark.post("/route", new RouteHandler());
     Spark.post("/routeCoords", new RouteCoordsHandler());
+    Spark.post("/mapsac", new ACHandler());
   }
 
   /**
@@ -208,6 +209,28 @@ public final class GUI {
       }
 
       Map<String, Object> variables = ImmutableMap.of("ways", coords);
+      return GSON.toJson(variables);
+    }
+  }
+  
+  public static class ACHandler implements Route {
+    @Override
+    public String handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+      
+      String loadDB = qm.value("command");
+      if (loadDB != null) {
+        repl.processCommand(loadDB);
+      }
+
+      String ac = qm.value("ac");
+      List<String> finalAnswer = new ArrayList<String>();
+      
+      if (ac != null && ac.length() > 0) {
+        finalAnswer = repl.getMapCommand().suggest(ac);
+      }
+
+      Map<String, Object> variables = ImmutableMap.of("suggestions", finalAnswer);
       return GSON.toJson(variables);
     }
   }

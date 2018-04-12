@@ -39,7 +39,7 @@ $(document).ready(() => {
     ctx.translate(CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
     ctx.rotate(-90 * Math.PI / 180);
     ctx.translate(-CANVAS_WIDTH/2, -CANVAS_HEIGHT/2);
-    paintMap();
+    //paintMap();
 
     canvas.addEventListener("mousedown", function(e) {
         xDown = e.pageX;
@@ -89,6 +89,207 @@ $(document).ready(() => {
       }
     });
     canvas.addEventListener("mousewheel", scrollZoom);
+    
+    const start1 = $("#start1");
+    const start2 = $("#start2");
+    const end1 = $("#end1");
+    const end2 = $("#end2");
+    const ac1 = $("#ac1");
+    const ac2 = $("#ac2");
+    const ac3 = $("#ac3");
+    const ac4 = $("#ac4");
+    
+    start1.keyup(event => {
+        
+        let currInput = start1.val();
+
+    	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
+    		
+    		const responseObject = JSON.parse(responseJSON);
+    		
+        	ac1.empty();
+    		const len = responseObject.suggestions;
+    		
+            for(let s of responseObject.suggestions){
+                ac1.append('<li>' + s + '</li>');
+               
+            }
+            
+            if(ac1.length > 5){
+                ac1.remove();
+                }
+            
+            let li = document.getElementById("ac1").getElementsByTagName("li");
+            
+            for(let l of li){
+            l.addEventListener("click", clickSuggestion1);
+            }
+
+
+function clickSuggestion1(e){
+
+const lastIndex = currInput.lastIndexOf(" ");
+
+currInput = currInput.substring(0, lastIndex);
+
+start1.val(e.target.innerHTML);
+
+ac1.empty();
+}
+    		
+    		
+    	});
+
+    	
+    });
+    
+        start2.keyup(event => {
+            
+             let currInput = start2.val();
+
+    	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
+    		
+    		const responseObject = JSON.parse(responseJSON);
+    		
+        	ac2.empty();
+    		const len = responseObject.suggestions;
+    		
+            for(let s of responseObject.suggestions){
+                ac2.append('<li>' + s + '</li>');
+               
+            }
+            
+            if(ac2.length > 5){
+                ac2.remove();
+                }
+            
+            let li = document.getElementById("ac2").getElementsByTagName("li");
+            
+            for(let l of li){
+            l.addEventListener("click", clickSuggestion1);
+            }
+
+
+function clickSuggestion1(e){
+
+const lastIndex = currInput.lastIndexOf(" ");
+
+currInput = currInput.substring(0, lastIndex);
+
+start2.val(e.target.innerHTML);
+
+ac2.empty();
+}
+    		
+    		
+    	});
+
+    	
+    });
+    
+        end1.keyup(event => {
+            
+             let currInput = end1.val();
+
+    	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
+    		
+    		const responseObject = JSON.parse(responseJSON);
+    		
+        	ac3.empty();
+    		const len = responseObject.suggestions;
+    		
+            for(let s of responseObject.suggestions){
+                ac3.append('<li>' + s + '</li>');
+               
+            }
+            
+            if(ac3.length > 5){
+                ac3.remove();
+                }
+            
+            let li = document.getElementById("ac3").getElementsByTagName("li");
+            
+            for(let l of li){
+            l.addEventListener("click", clickSuggestion1);
+            }
+
+
+function clickSuggestion1(e){
+
+const lastIndex = currInput.lastIndexOf(" ");
+
+currInput = currInput.substring(0, lastIndex);
+
+end1.val(e.target.innerHTML);
+
+ac3.empty();
+}
+    		
+    		
+    	});
+
+    	
+    });
+    
+        end2.keyup(event => {
+            
+             let currInput = end2.val();
+
+    	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
+    		
+    		const responseObject = JSON.parse(responseJSON);
+    		
+        	ac4.empty();
+    		const len = responseObject.suggestions;
+    		
+            for(let s of responseObject.suggestions){
+                ac4.append('<li>' + s + '</li>');
+               
+            }
+            
+            if(ac4.length > 5){
+                ac4.remove();
+                }
+            
+            let li = document.getElementById("ac4").getElementsByTagName("li");
+            
+            for(let l of li){
+            l.addEventListener("click", clickSuggestion1);
+            }
+
+
+function clickSuggestion1(e){
+
+const lastIndex = currInput.lastIndexOf(" ");
+
+currInput = currInput.substring(0, lastIndex);
+
+end2.val(e.target.innerHTML);
+
+ac4.empty();
+}
+    		
+    		
+    	});
+
+    	
+    });
+    
+    
+    const db = $("#db");
+
+    db.click(function(){
+		
+    	const command = "map data/maps/maps.sqlite3";
+    		
+    	$.post('/mapsac', {'command': command}, function(responseJSON){
+            
+            paintMap();
+    	});
+    	
+    });
+    
+    
 });
 
 function scrollZoom(e){
@@ -174,10 +375,11 @@ const paintMap = () => {
 };
 
 function route() {
-  const start1 = $("#start1").val();
-  const start2 = $("#start2").val();
-  const end1 = $("#end1").val();
-  const end2 = $("#end2").val();
+    
+    const start1 = $("#start1").val();
+    const start2 = $("#start2").val();
+    const end1 = $("#end1").val();
+    const end2 = $("#end2").val();
   const postParameters = {
       start1: start1, start2: start2,
       end1: end1, end2: end2};
