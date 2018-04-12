@@ -1,0 +1,11 @@
+INPUT
+map data/maps/smallMaps.sqlite3
+suggest Ch
+suggest So
+suggest Yu
+OUTPUT
+map set to data/maps/smallMaps.sqlite3
+Chihiro Ave
+Sootball Ln
+Yubaba St
+END

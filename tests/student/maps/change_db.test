@@ -1,0 +1,13 @@
+INPUT
+map data/maps/maps.sqlite3
+map data/maps/smallMaps.sqlite3
+ways 41.8205 -72 41.8202 -71
+OUTPUT
+map set to data/maps/maps.sqlite3
+map set to data/maps/smallMaps.sqlite3
+/w/0
+/w/1
+/w/3
+/w/5
+/w/6
+END

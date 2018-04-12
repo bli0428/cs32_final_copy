@@ -47,9 +47,9 @@ public final class Main {
     OptionSet options = parser.parse(args);
 
     repl = new REPL();
-    gui = new GUI(repl);
+    //gui = new GUI(repl);
 
-    gui.runSparkServer((int) options.valueOf("port")); // TODO: DELETE THIS
+    //gui.runSparkServer((int) options.valueOf("port")); // TODO: DELETE THIS
     if (options.has("gui")) {
       gui.runSparkServer((int) options.valueOf("port"));
     }

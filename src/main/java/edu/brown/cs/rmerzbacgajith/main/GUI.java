@@ -104,17 +104,20 @@ public final class GUI {
     public String handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
 
+      //Get coords for ways Bounding box
       double[] coords1 = { Double.parseDouble(qm.value("top")),
           Double.parseDouble(qm.value("left")) };
       double[] coords2 = { Double.parseDouble(qm.value("bottom")),
           Double.parseDouble(qm.value("right")) };
-      List<String> wayId = repl.getMapCommand().waysCommand(coords1, coords2,
-          false);
+      
+      //Call ways command
+      List<String> wayId = repl.getMapCommand().waysCommand(coords1, coords2);
       List<List<double[]>> coords = new ArrayList<>();
       for (String way : wayId) {
         coords.add(repl.getMapCommand().getDBHelper().getWayLocation(way));
       }
 
+      //Send List of coords to JS
       Map<String, Object> variables = ImmutableMap.of("ways", coords);
       return GSON.toJson(variables);
     }
@@ -122,9 +125,8 @@ public final class GUI {
   }
 
   /**
-   * Handles user input from the GUI and searches for suggestions.
+   * Handles user input from the GUI and searches for nearest Node.
    *
-   * @author Reid
    *
    */
   private class NearestHandler implements Route {
@@ -132,11 +134,13 @@ public final class GUI {
     public String handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
 
+      //Get coords
       Double lat = Double.parseDouble(qm.value("lat"));
       Double lon = Double.parseDouble(qm.value("lon"));
 
       double[] coords = { lat, lon };
 
+      //Call nearest command
       Point node = repl.getMapCommand().nearestCommand(coords);
 
       Map<String, Object> variables = ImmutableMap.of("node", node.getCoords());
@@ -144,12 +148,17 @@ public final class GUI {
     }
   }
 
+  /**
+   * Routes between Intersections for GUI
+   * @author gokulajith
+   *
+   */
   public static class RouteHandler implements Route {
     @Override
     public String handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
 
-      // neighbors command with coordinates
+      //Get all Streets
       String start1 = qm.value("start1");
       String start2 = qm.value("start2");
       String end1 = qm.value("end1");
@@ -157,6 +166,7 @@ public final class GUI {
 
       List<List<double[]>> coords = new ArrayList<>();
 
+      //Check for both intersections
       Node n1 = repl.getMapCommand().getIntersection(start1, start2);
       if (n1 == null) {
         Handling.error("first intersection not found");
@@ -165,6 +175,8 @@ public final class GUI {
       if (n2 == null) {
         Handling.error("second intersection not found");
       } else {
+        
+        //Route between two nearest nodes
         List<Way> ways = repl.getMapCommand().route(n1, n2);
         for (Way way : ways) {
           coords.add(
@@ -177,6 +189,11 @@ public final class GUI {
     }
   }
 
+  /**
+   * 
+   * Route with coordinates
+   *
+   */
   public static class RouteCoordsHandler implements Route {
     @Override
     public String handle(Request req, Response res) {
@@ -193,6 +210,7 @@ public final class GUI {
 
       List<List<double[]>> coords = new ArrayList<>();
 
+      //Find nearest node to both coordinates
       Node n1 = (Node) repl.getMapCommand().nearestCommand(coords1);
       if (n1 == null) {
         Handling.error("first intersection not found");
@@ -201,6 +219,8 @@ public final class GUI {
       if (n2 == null) {
         Handling.error("second intersection not found");
       } else {
+        
+        //Route between the two nearest nodes.
         List<Way> ways = repl.getMapCommand().route(n1, n2);
         for (Way way : ways) {
           coords.add(
@@ -213,19 +233,20 @@ public final class GUI {
     }
   }
   
+  /**
+   * Handler for autocorrecting street names.
+   * @author gokulajith
+   *
+   */
   public static class ACHandler implements Route {
     @Override
     public String handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
-      
-      String loadDB = qm.value("command");
-      if (loadDB != null) {
-        repl.processCommand(loadDB);
-      }
 
       String ac = qm.value("ac");
       List<String> finalAnswer = new ArrayList<String>();
       
+      //Use suggest command as before for suggestions.
       if (ac != null && ac.length() > 0) {
         finalAnswer = repl.getMapCommand().suggest(ac);
       }

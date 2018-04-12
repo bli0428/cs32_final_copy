@@ -13,7 +13,7 @@ import edu.brown.cs.rmerzbacgajith.handling.Handling;
 import edu.brown.cs.rmerzbacgajith.tree.Node;
 
 /**
- * Class that handles all the queries and caching for Bacon.
+ * Class that handles all the queries and caching for Maps.
  *
  * @author gokulajith
  *
@@ -30,8 +30,6 @@ public class MapsDatabaseHelper {
    *
    * @param conn
    *          Connection
-   * @param actorNameToIdCache
-   *          Cache between actorNames and ids.
    */
   public MapsDatabaseHelper(Connection conn) {
 
@@ -88,14 +86,15 @@ public class MapsDatabaseHelper {
   }
 
   /**
-   * Find all the ways an actor has been in.
+   * Find all the Traversable ways that starts at a node.
    *
-   * @param actorId
-   *          id of actor being searched
-   * @return Set of all the ways the actor has been in.
+   * @param nodeId
+   *          id of node being searched
+   * @return Set of all the traversable ways that start with input node.
    */
   public List<Way> getWaysFromNode(String nodeId) {
 
+    //Check cache
     if (wayCache.containsKey(nodeId)) {
       return wayCache.get(nodeId);
     }
@@ -104,10 +103,10 @@ public class MapsDatabaseHelper {
     ResultSet rs;
     List<Way> ways = new ArrayList<Way>();
 
-    // Find the id and name of a way given actor id
+    // Find the id and name of a traversable way given node id
     try {
       prep = conn.prepareStatement(
-          "SELECT id, name FROM way WHERE start = ? AND type != \"\" AND type != \"undefined\";");
+          "SELECT id, name FROM way WHERE start = ? AND type != \"\" AND type != \"unclassified\";");
       prep.setString(1, nodeId);
       rs = prep.executeQuery();
 
@@ -131,11 +130,11 @@ public class MapsDatabaseHelper {
   }
 
   /**
-   * Find all the actors in a way.
+   * Find endNode of a way.
    *
    * @param wayId
    *          id of the way
-   * @return Set of actors in the way
+   * @return End Node of the Way
    */
   public Node getEndNodeFromWay(String wayId) {
 
@@ -148,7 +147,7 @@ public class MapsDatabaseHelper {
     ResultSet rs;
     Node endNode = null;
 
-    // Find all actor ids and names with given wayid.
+    // Find end node and its lat, lon with given wayid.
     try {
       prep = conn.prepareStatement(
           "SELECT way.end, node.latitude, node.longitude FROM way, node WHERE node.id = way.end AND way.id = ?;");
@@ -162,7 +161,8 @@ public class MapsDatabaseHelper {
         Double lon = rs.getDouble(3);
 
         double[] coords = { lat, lon };
-        // Create new actor with id and name and add to list.
+        
+        // Create new Node with id and coords.
         endNode = new Node(id, coords);
       }
       prep.close();
@@ -171,7 +171,7 @@ public class MapsDatabaseHelper {
       Handling.error("Database does not contain proper tables.");
     }
 
-    // cache and return the list.
+    // cache and return the endNode.
 
     if (endNode != null) {
       nodeCache.put(wayId, endNode);
@@ -180,33 +180,49 @@ public class MapsDatabaseHelper {
     return endNode;
   }
 
+  /**
+   * Return an intersection node at the two Ways if one exists.
+   * @param way1Name Way 1 name
+   * @param way2Name Way 2 name
+   * @return Node at intersection of both ways.
+   */
   public Node getIntersection(String way1Name, String way2Name) {
     PreparedStatement prep;
     ResultSet rs;
     ResultSet innerRs;
     ResultSet nodeRs;
     try {
+      
+      //Query first Way
       prep = conn.prepareStatement(
-          "SELECT start, end FROM way WHERE name = ? AND type != \"\" AND type != \"undefined\";");
+          "SELECT start, end FROM way WHERE name = ? AND type != \"\" AND type != \"unclassified\";");
       prep.setString(1, way1Name);
       rs = prep.executeQuery();
       while (rs.next()) {
         String currStart1 = rs.getString(1);
         String currEnd1 = rs.getString(2);
+        
+        //Query Second way
         prep = conn.prepareStatement(
-            "SELECT start, end FROM way WHERE name = ? AND type != \"\" AND type != \"undefined\";");
+            "SELECT start, end FROM way WHERE name = ? AND type != \"\" AND type != \"unclassified\";");
         prep.setString(1, way2Name);
         innerRs = prep.executeQuery();
         while (innerRs.next()) {
           String currStart2 = innerRs.getString(1);
           String currEnd2 = innerRs.getString(2);
           String comparison = "";
+          
+          //Check that there is an intersection, and set the comparison to be that node.
           if (currStart1.equals(currEnd2) || currStart1.equals(currEnd2)) {
             comparison = currStart1;
           } else if (currEnd1.equals(currStart2) || currEnd1.equals(currEnd2)) {
             comparison = currEnd1;
           }
+          
+          //If a node is found
           if (comparison != "") {
+            
+            //Query for node id and coords
             prep = conn.prepareStatement(
                 "SELECT id, latitude, longitude FROM node WHERE id = ?;");
             prep.setString(1, comparison);
@@ -216,6 +232,7 @@ public class MapsDatabaseHelper {
               Double lat = nodeRs.getDouble(2);
               Double lon = nodeRs.getDouble(3);
 
+              //Create node and return
               double[] coords = { lat, lon };
               Node n = new Node(id, coords);
 
@@ -230,26 +247,25 @@ public class MapsDatabaseHelper {
     return null;
   }
 
-  public List<String> getWays(double[] coords1, double[] coords2,
-      boolean traversable) {
+  /**
+   * Query that handles way command by query for nodes based on the input coords.
+   * @param coords1 Northwest point of box
+   * @param coords2 Southeast point of box
+   * @return List of wayIds that are inside the box.
+   */
+  public List<String> getWays(double[] coords1, double[] coords2) {
     PreparedStatement prep;
     ResultSet rs;
     List<String> ids = new ArrayList<>();
     try {
-      if (traversable) {
-        prep = conn.prepareStatement(
-            "SELECT way.id FROM way, node AS n1, node AS n2 WHERE way.type != \"\" AND way.type != \"undefined\" AND n1.id = "
-                + "way.start AND n2.id = way.end "
-                + "AND ((n1.latitude > ? AND n1.latitude < ? AND n1.longitude > ? "
-                + "AND n1.longitude < ?) OR (n2.latitude > ? AND n2.latitude < ? "
-                + "AND n2.longitude > ? AND n2.longitude < ?)) ORDER BY way.id;");
-      } else {
+
+      //Query for all nodes that are within the box by setting conditionals for the latitude and longitude.
         prep = conn.prepareStatement(
             "SELECT way.id FROM way, node AS n1, node AS n2 WHERE n1.id = way.start AND n2.id = way.end "
                 + "AND ((n1.latitude > ? AND n1.latitude < ? AND n1.longitude > ? "
                 + "AND n1.longitude < ?) OR (n2.latitude > ? AND n2.latitude < ? "
                 + "AND n2.longitude > ? AND n2.longitude < ?)) ORDER BY way.id;");
-      }
+      
       prep.setDouble(1, coords2[0]);
       prep.setDouble(2, coords1[0]);
       prep.setDouble(3, coords1[1]);
@@ -262,6 +278,8 @@ public class MapsDatabaseHelper {
       rs = prep.executeQuery();
       while (rs.next()) {
         String id = rs.getString(1);
+        
+        //Print wayId
         System.out.println(id);
         ids.add(id);
       }
@@ -272,10 +290,17 @@ public class MapsDatabaseHelper {
     return null;
   }
 
+  /**
+   * Gets the location of a way based on its start and end nodes.
+   * @param wayId Way that location must be found of
+   * @return List of doubles[] where first index is startNode coords and second index is endNode coords.
+   */
   public List<double[]> getWayLocation(String wayId) {
     PreparedStatement prep;
     ResultSet rs;
     try {
+      
+      //Find coords of the start node of the Way
       double[] coords1 = new double[2];
       prep = conn.prepareStatement(
           "SELECT latitude, longitude FROM node, way WHERE way.id = ? AND node.id = way.start;");
@@ -286,6 +311,8 @@ public class MapsDatabaseHelper {
         coords1[0] = rs.getDouble(1);
         coords1[1] = rs.getDouble(2);
       }
+      
+    //Find coords of the end node of the Way
       double[] coords2 = new double[2];
       prep = conn.prepareStatement(
           "SELECT latitude, longitude FROM node, way WHERE way.id = ? AND node.id = way.end;");
@@ -296,6 +323,8 @@ public class MapsDatabaseHelper {
         coords2[0] = rs.getDouble(1);
         coords2[1] = rs.getDouble(2);
       }
+      
+      //Add both coords to the list and return.
       List<double[]> coords = new ArrayList<>();
       coords.add(coords1);
       coords.add(coords2);

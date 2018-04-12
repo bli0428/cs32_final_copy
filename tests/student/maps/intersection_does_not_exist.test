@@ -1,0 +1,9 @@
+INPUT
+map data/maps/maps.sqlite3
+route "Thayer Street" "Broadway" "Thayer Street" "Waterman Street"
+route "Thayer Street" "Waterman Street" "Thayer Street" "Broadway"
+OUTPUT
+map set to data/maps/maps.sqlite3
+ERROR:
+ERROR:
+END

@@ -10,28 +10,21 @@ import edu.brown.cs.rmerzbacgajith.tree.TreeBuilder;
 import edu.brown.cs.rmerzbacgajith.tree.TreeNode;
 
 /**
- * A class that handles the "neighbors" command and prints the list of results.
+ * A class that handles the "nearest" command.
  *
- * @author rmerzbac
  */
 public class Nearest {
-  // TODO: REMOVE LIST STUFF
   protected Nearest() {
   }
 
   /**
-   * Handles the command "neighbors [num neighbors] [coordinates]". Finds the
-   * numNeighbors closest stars to the coordinates.
+   * Finds the closest node to the coordinates.
    *
-   * @param numNeighbors
-   *          the number of neighbors to find
    * @param coords
    *          the desired coordinates
    * @param tree
    *          the current K-D tree
-   * @param numNodes
-   *          the number of stars in the tree
-   * @return the list of results, or null on error
+   * @return the nearest Node to coordinates.
    */
   public static Point handleNeighborsCommandWithCoords(double[] coords,
       KDTree<Point> tree) {
@@ -43,15 +36,13 @@ public class Nearest {
   }
 
   /**
-   * Gets the list of closest neighbors.
+   * Gets the closest neighbor.
    *
    * @param coords
    *          the desired coordinates
-   * @param countFirstPoint
-   *          a boolean, stating whether or not the first item should be counted
    * @param tree
    *          the current K-D tree
-   * @return the list of results
+   * @return Closest Point to the coords.
    */
   public static Point getNeighbors(double[] coords, KDTree<Point> tree) {
 
@@ -62,8 +53,7 @@ public class Nearest {
   }
 
   /**
-   * Finds the closest star to the coordinates, excluding any stars that have
-   * already been found.
+   * Finds the closest node to the coordinates.
    *
    * @param coords
    *          the desired coordinates
@@ -75,9 +65,7 @@ public class Nearest {
    *          the current dimension that is being compared
    * @param dimensions
    *          the number of dimensions
-   * @param results
-   *          the current list of results
-   * @return the closest node that has not already been found
+   * @return the closest node.
    */
   public static TreeNode<Point> findClosestPoint(double[] coords,
       TreeNode<Point> currNode, TreeNode<Point> currBest, int currDim,

@@ -12,15 +12,15 @@ import edu.brown.cs.rmerzbacgajith.graph.GraphNode;
 import edu.brown.cs.rmerzbacgajith.tree.Node;
 
 /**
- * Bacon specific GraphBuilder that implements generic GraphBuilder in order to
+ * Maps specific GraphBuilder that implements generic GraphBuilder in order to
  * create and map GraphNodes with their neighboring edges and nodes.
  *
  * @author gokulajith
  *
  * @param <Node>
- *          Node that goes in graph with a value storing an Actor
+ *          Node that goes in graph with a value storing an node from db
  * @param <Edge>
- *          Edge that goes in graph with a value storing a Movie
+ *          Edge that goes in graph with a value storing a Way
  */
 public class MapsGraphBuilder<N, E>
     implements GraphBuilder<GraphNode<Node>, GraphEdge<Way>> {
@@ -31,11 +31,10 @@ public class MapsGraphBuilder<N, E>
   private MapsDatabaseHelper dbHelper;
 
   /**
-   * Constructor simply stores BaconDatabaseHelper and instantiates
-   * neighborCache.
+   * Constructor simply stores MapsDatabaseHelper.
    *
    * @param dbHelper
-   *          BaconDatabaseHelper that takes care of all db queries and caching.
+   *          MapsDatabaseHelper that takes care of all db queries and caching.
    */
   public MapsGraphBuilder(MapsDatabaseHelper dbHelper) {
 
@@ -57,11 +56,11 @@ public class MapsGraphBuilder<N, E>
       neighbors = neighCache.get(sourceNode.getId());
     } else {
 
-      // Get actor
-      Node sourceActor = sourceNode.getValue();
+      // Get Node from db
+      Node sourceMapnode = sourceNode.getValue();
 
       // Call helper to find the neighboring nodes and edges
-      neighbors = this.djikstraHelper(sourceActor);
+      neighbors = this.djikstraHelper(sourceMapnode);
 
       // Cache it for next time.
       neighCache.put(sourceNode.getId(), neighbors);
@@ -70,16 +69,12 @@ public class MapsGraphBuilder<N, E>
   }
 
   /**
-   * Djikstra helper to find neighbors of a node. Finds all movies the actor has
-   * been in, finds all actors in those that fit the letter matching criteria,
-   * and stores that actor in a neighboring node that is connected with an edge
-   * that contains the shared movie between the two actors.
+   * Djikstra helper to find neighbors of a node. Finds all traversable ways the sourceNode is a startNode of,
+   * and then Creates a GraphNode with the endNode of that way and maps it to the way itself as a neighbor to the sourceNode.
    *
-   * @param actorId
-   *          id of the actor neighbors are being found of
-   * @param lastNameFirstLetter
-   *          The first letter of the lastName of the "bacon giver".
-   * @return A map that maps every neighboring node to an edge connecting the
+   * @param sourceNode
+   *          node that the neighbors are being found of
+   * @return A map that maps every neighboring node of the sourceNode to an edge connecting the
    *         two nodes.
    */
   private Map<GraphNode<Node>, GraphEdge<Way>> djikstraHelper(Node sourceNode) {
@@ -90,29 +85,27 @@ public class MapsGraphBuilder<N, E>
     String nodeId = sourceNode.getId();
     double[] sourceCoords = sourceNode.getCoords();
 
-    // Use dbhelper to get all movies actor has been in
-    List<Way> movies = dbHelper.getWaysFromNode(nodeId);
+    // Use dbhelper to get all traversable ways that the sourceNode is the startNode of
+    List<Way> ways = dbHelper.getWaysFromNode(nodeId);
 
-    for (Way movie : movies) {
+    //Loop through all the ways
+    for (Way way : ways) {
 
-      // Use dbhelper to get all actors in the movie
-      Node node = dbHelper.getEndNodeFromWay(movie.getId());
+      // Use dbhelper to get the endNode of the way
+      Node node = dbHelper.getEndNodeFromWay(way.getId());
 
-      // Caclulate weight as 1/(#actors in movie)
-
-      // System.out.println(node.getId());
-
+      //Set the weight to be the straight line distance + Haversine distance for A* heuristic.
       double[] endCoords = node.getCoords();
       double weight = this.findDistance(sourceCoords, endCoords)
           + haversineDistance(sourceCoords, endCoords);
 
-      // Create edge storing movie
-      GraphEdge<Way> edge = new GraphEdge<Way>(movie.getId(), movie, weight);
+      // Create edge storing Way
+      GraphEdge<Way> edge = new GraphEdge<Way>(way.getId(), way, weight);
 
-      // Create node
+      // Create GraphNode storing neighbor node.
       GraphNode<Node> graphNode = new GraphNode<Node>(node.getId(), node);
 
-      // Make sure the movie with least weight is always being kept in the
+      // Make sure the Edge with least weight is always being kept in the
       // Map
       if (nodeToEdgeMap.containsKey(graphNode)) {
         GraphEdge<Way> checkMovie = nodeToEdgeMap.get(graphNode);
@@ -149,6 +142,15 @@ public class MapsGraphBuilder<N, E>
     return Math.sqrt(sum);
   }
 
+  /**
+   * Finds the haversine distance between two sets of coordinates.
+   *
+   * @param coords1
+   *          the first coordinates
+   * @param coords2
+   *          the second coordinates
+   * @return the distance
+   */
   public double haversineDistance(double[] coords1, double[] coords2) {
     assert coords1.length == coords2.length;
     double delPhi = Math.toRadians(coords2[0] - coords1[0]);

@@ -18,13 +18,13 @@ public class TreeBuilder<T extends Point> {
   /**
    * Constructs a new TreeBuilder.
    *
-   * @param starList
-   *          the list of stars to convert into a tree
+   * @param objectList
+   *          the list of objects to convert into a tree
    * @param dimensions
    *          the number of dimensions
    */
-  public TreeBuilder(List<T> starList, int dimensions) {
-    tree = newTree(starList, dimensions);
+  public TreeBuilder(List<T> objectList, int dimensions) {
+    tree = newTree(objectList, dimensions);
   }
 
   /**
@@ -39,16 +39,16 @@ public class TreeBuilder<T extends Point> {
   /**
    * Constructs a new tree.
    *
-   * @param starList
-   *          the list of stars to convert into a tree
+   * @param objectList
+   *          the list of objects to convert into a tree
    * @param dims
    *          the number of dimensions
    * @return the new tree
    */
-  public KDTree<T> newTree(List<T> starList, int dims) {
+  public KDTree<T> newTree(List<T> objectList, int dims) {
     dimensions = dims;
     tree = new KDTree<>();
-    tree.setRoot(buildTree(tree.getRoot(), null, starList, 0));
+    tree.setRoot(buildTree(tree.getRoot(), null, objectList, 0));
     return tree;
   }
 
@@ -77,17 +77,17 @@ public class TreeBuilder<T extends Point> {
    *          the current node
    * @param parent
    *          the parent node
-   * @param starList
-   *          the list of stars to be converted into a tree
+   * @param objectList
+   *          the list of objects to be converted into a tree
    * @param currDimension
    *          the current dimension that is being compared
    * @return a branch of the tree
    */
   public TreeNode<T> buildTree(TreeNode<T> n, TreeNode<T> parent,
-      List<T> starList, int currDimension) {
+      List<T> objectList, int currDimension) {
     n = new TreeNode<T>();
     n.setParent(parent);
-    int size = starList.size();
+    int size = objectList.size();
     if (size == 0) {
       n = null;
       return n;
@@ -96,11 +96,11 @@ public class TreeBuilder<T extends Point> {
     // find middle
     int middle = size / 2;
     // sort the list
-    starList.sort(Node.compareStars(currDimension));
-    T median = starList.get(middle);
+    objectList.sort(Node.compareStars(currDimension));
+    T median = objectList.get(middle);
     // split into two lists
-    List<T> lower = starList.subList(0, middle);
-    List<T> upper = starList.subList(middle + 1, size);
+    List<T> lower = objectList.subList(0, middle);
+    List<T> upper = objectList.subList(middle + 1, size);
 
     int nextDimension = nextDim(currDimension, dimensions);
 

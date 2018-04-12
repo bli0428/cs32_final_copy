@@ -1,0 +1,6 @@
+INPUT
+map data/maps/smallMaps.sqlite3
+ways 41.82 -71 41.8199 -70.99
+OUTPUT
+map set to data/maps/smallMaps.sqlite3
+END
