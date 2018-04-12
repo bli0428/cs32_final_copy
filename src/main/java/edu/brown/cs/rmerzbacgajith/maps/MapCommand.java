@@ -33,6 +33,136 @@ import edu.brown.cs.rmerzbacgajith.tree.TreeBuilder;
  * @author gokulajith
  *
  */
+// public class MapCommand {
+// private static final int DIMENSIONS = 2;
+//
+// private static Connection conn = null;
+// private AutocorrectCommand acCommandHelper = new AutocorrectCommand();
+// private TreeBuilder<Point> builder;
+// private MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>> graphBuilder;
+// private Graph<GraphNode<Node>, GraphEdge<Way>> graph = null;
+// private MapsDatabaseHelper dbHelper;
+//
+// /**
+// * Method that deals with the mdb command to connect to a database, as well as
+// * creating a Trie with all actorNames on connection to know exactly what
+// * names are in the database, as well as for autocorrecting.
+// *
+// * @param dbname
+// * filepath to database.
+// */
+// public void mdbCommand(String dbname) {
+//
+// // Close conn if previous connection exists.
+// if (conn != null) {
+// try {
+// conn.close();
+// } catch (SQLException e) {
+// Handling.error("Issue when closing connection to database.");
+// return;
+// }
+// }
+//
+// File file = new File(dbname);
+//
+// if (!file.exists()) {
+// Handling.error("Database could not be found or connected to.");
+// return;
+// }
+//
+// try {
+// Class.forName("org.sqlite.JDBC");
+// } catch (ClassNotFoundException e) {
+// System.out.println("ERROR: Database could not be found or connected to.");
+// return;
+// }
+//
+// // Connect to db
+// String urlToDB = new StringBuilder("jdbc:sqlite:" + dbname).toString();
+//
+// try {
+// conn = DriverManager.getConnection(urlToDB);
+// Statement stat = conn.createStatement();
+// stat.executeUpdate("PRAGMA foreign_keys = ON;");
+// } catch (SQLException ex) {
+// System.out.println("ERROR: Database could not be found or connected to.");
+// return;
+// }
+//
+// // Create Trie for autocorrect.
+// Trie trie = new Trie();
+// HashSet<String> ids = new HashSet<>();
+// List<Point> nodeList = new ArrayList<>();
+//
+// // Query every actor in db
+// PreparedStatement prep;
+// ResultSet rs;
+// try {
+// prep = conn.prepareStatement("SELECT name FROM way;");
+// rs = prep.executeQuery();
+//
+// while (rs.next()) {
+// String name = rs.getString(1);
+//
+// // Put all actors name and id mapping in cache and
+// // insert the names into trie.
+// // (Since you have to insert every name into the Trie, it is better to
+// // also save every name and id so this query never
+// // needs to happen again.)
+// if (name.length() > 0) {
+// trie.insert(name);
+// }
+// }
+//
+// prep = conn.prepareStatement(
+// "SELECT start,end FROM way WHERE type != \"\" AND type != \"undefined\";");
+// PreparedStatement nodeQuery = conn
+// .prepareStatement("SELECT * FROM node WHERE id=? OR id=?");
+// ResultSet nodeRs = null;
+// rs = prep.executeQuery();
+//
+// while (rs.next()) {
+// String startId = rs.getString(1);
+// String endId = rs.getString(2);
+//
+// nodeQuery.setString(1, startId);
+// nodeQuery.setString(2, endId);
+// nodeRs = nodeQuery.executeQuery();
+//
+// while (nodeRs.next()) {
+// String id = nodeRs.getString(1);
+// double lat = nodeRs.getDouble(2);
+// double lon = nodeRs.getDouble(3);
+// double[] coords = { lat, lon };
+// Node n = new Node(id, coords);
+// if (!ids.contains(id)) {
+// nodeList.add(n);
+// ids.add(id);
+// }
+// }
+// }
+//
+// nodeQuery.close();
+// nodeRs.close();
+// prep.close();
+// rs.close();
+// } catch (SQLException e) {
+// System.out.println("ERROR: Database does not contain proper tables.");
+// return;
+// }
+//
+// // Set trie to AutocorrectCommand Helper for autocorrect
+// acCommandHelper.setTrie(trie);
+// builder = new TreeBuilder<Point>(nodeList, DIMENSIONS);
+// dbHelper = new MapsDatabaseHelper(conn);
+//
+// graphBuilder = new MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>>(
+// dbHelper);
+//
+// System.out.println(new StringBuilder("map set to " + dbname).toString());
+// return;
+// }
+
 public class MapCommand {
   private static final int DIMENSIONS = 2;
 
@@ -98,50 +228,41 @@ public class MapCommand {
     PreparedStatement prep;
     ResultSet rs;
     try {
-      prep = conn.prepareStatement("SELECT name FROM way;");
-      rs = prep.executeQuery();
 
-      while (rs.next()) {
-        String name = rs.getString(1);
-
-        // Put all actors name and id mapping in cache and
-        // insert the names into trie.
-        // (Since you have to insert every name into the Trie, it is better to
-        // also save every name and id so this query never
-        // needs to happen again.)
-        if (name.length() > 0) {
-          trie.insert(name);
-        }
-      }
-
-      prep = conn.prepareStatement(
-          "SELECT start,end FROM way WHERE type != \"\" AND type != \"undefined\";");
+      prep = conn.prepareStatement("SELECT name, start, end, type FROM way;");
       PreparedStatement nodeQuery = conn
           .prepareStatement("SELECT * FROM node WHERE id=? OR id=?");
       ResultSet nodeRs = null;
       rs = prep.executeQuery();
 
       while (rs.next()) {
-        String startId = rs.getString(1);
-        String endId = rs.getString(2);
+        String name = rs.getString(1);
+        String startId = rs.getString(2);
+        String endId = rs.getString(3);
+        String type = rs.getString(4);
 
-        nodeQuery.setString(1, startId);
-        nodeQuery.setString(2, endId);
-        nodeRs = nodeQuery.executeQuery();
+        if (name.length() > 0) {
+          trie.insert(name);
+        }
 
-        while (nodeRs.next()) {
-          String id = nodeRs.getString(1);
-          double lat = nodeRs.getDouble(2);
-          double lon = nodeRs.getDouble(3);
-          double[] coords = { lat, lon };
-          Node n = new Node(id, coords);
-          if (!ids.contains(id)) {
-            nodeList.add(n);
-            ids.add(id);
+        if (!type.equals("") && !type.equals("undefined")) {
+          nodeQuery.setString(1, startId);
+          nodeQuery.setString(2, endId);
+          nodeRs = nodeQuery.executeQuery();
+
+          while (nodeRs.next()) {
+            String id = nodeRs.getString(1);
+            double lat = nodeRs.getDouble(2);
+            double lon = nodeRs.getDouble(3);
+            double[] coords = { lat, lon };
+            Node n = new Node(id, coords);
+            if (!ids.contains(id)) {
+              nodeList.add(n);
+              ids.add(id);
+            }
           }
         }
       }
-
       nodeQuery.close();
       nodeRs.close();
       prep.close();

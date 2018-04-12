@@ -26,6 +26,7 @@
   </div>
   
   <button onclick="route()">Submit</button>
+  <button onclick="clearRoute()">Clear</button>
 </p>
 </center>
 

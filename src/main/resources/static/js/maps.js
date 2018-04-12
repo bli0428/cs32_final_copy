@@ -436,7 +436,6 @@ function drawRoute(ways, repaint) {
 }
 
 function zoom(amount) {
-  alert(amount);
   startTop += amount;
   startBottom -= amount;
   startRight += amount;
@@ -466,6 +465,13 @@ function changeBox(offsetX, offsetY) {
   startBottom += upDownOffset;
   startRight += leftRightOffset;
   startLeft += leftRightOffset;
+  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  paintMap();
+}
+
+function clearRoute() {
+  currPoint = null;
+  currPath = null;
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   paintMap();
 }
