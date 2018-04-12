@@ -11,7 +11,7 @@ let ctx;
 let startTop = 41.828402;
 let startLeft = -71.404751;
 let startBottom = 41.823035;
-let startRight = -71.396564;
+let startRight = -71.399384;
 
 let totalZoom = 1;
 
