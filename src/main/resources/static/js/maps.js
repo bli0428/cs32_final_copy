@@ -23,6 +23,7 @@ let scrollLock = false;
 let tiles = [];
 
 let currPoint = null;
+let currPath = null;
 
 /*
 	When the document is ready, this runs.
@@ -39,7 +40,7 @@ $(document).ready(() => {
     ctx.translate(CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
     ctx.rotate(-90 * Math.PI / 180);
     ctx.translate(-CANVAS_WIDTH/2, -CANVAS_HEIGHT/2);
-    //paintMap();
+    paintMap();
 
     canvas.addEventListener("mousedown", function(e) {
         xDown = e.pageX;
@@ -54,10 +55,20 @@ $(document).ready(() => {
         let xcoord = f.pageX - $('canvas').offset().left;
         let ycoord = f.pageY - $('canvas').offset().top;
 
-        console.log(xcoord, ycoord);
+        let xc = CANVAS_WIDTH - ycoord;
+        let yc = xcoord;
 
-        let lon = posnToCoord(CANVAS_WIDTH, startLeft, startRight, CANVAS_WIDTH - ycoord);
-        let lat = posnToCoord(CANVAS_HEIGHT, startBottom, startTop, xcoord);
+        //let lon = posnToCoord(CANVAS_WIDTH, startLeft, startRight, xc);
+        //let lat = posnToCoord(CANVAS_HEIGHT, startBottom, startTop, yc);
+
+        // let lon = startLeft + (xc*((startRight - startLeft)/CANVAS_WIDTH));
+        // let lat = startBottom + (yc*((startTop - startBottom)/CANVAS_HEIGHT));
+        const lrScale = startRight - startLeft;
+        const tbScale = startTop - startBottom;
+
+        let lon = startLeft + (((startBottom + (yc*((startTop - startBottom)/CANVAS_HEIGHT))) - startBottom) * (lrScale / tbScale));
+        let lat = startTop - ((startRight - (startLeft + (xc*((startRight - startLeft)/CANVAS_WIDTH)))) * (tbScale / lrScale));
+
 
         console.log(lat, lon);
 
@@ -67,8 +78,13 @@ $(document).ready(() => {
 
             const responseObject = JSON.parse(responseJSON);
 
-            let finalY = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, responseObject.node[0]);
-            let finalX = coordToPosn(CANVAS_WIDTH, startLeft, startRight, responseObject.node[1]);
+            let finalX = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, responseObject.node[0]);
+            let finalY = coordToPosn(CANVAS_WIDTH, startLeft, startRight, responseObject.node[1]);
+
+            // let finalX = tempY;
+            // let finalY = tempX;
+
+            console.log(responseObject.node[0], responseObject.node[1]);
 
             if (currPoint === null) {
               currPoint = [responseObject.node[0], responseObject.node[1]];
@@ -81,7 +97,7 @@ $(document).ready(() => {
             console.log(finalX + " " + finalY);
 
             ctx.fillStyle = "red";
-            ctx.fillRect(finalX, finalY, 10, 10);
+            ctx.fillRect(finalX - 5, finalY - 5, 10, 10);
 
         });
       } else {
@@ -89,7 +105,7 @@ $(document).ready(() => {
       }
     });
     canvas.addEventListener("mousewheel", scrollZoom);
-    
+
     const start1 = $("#start1");
     const start2 = $("#start2");
     const end1 = $("#end1");
@@ -98,29 +114,29 @@ $(document).ready(() => {
     const ac2 = $("#ac2");
     const ac3 = $("#ac3");
     const ac4 = $("#ac4");
-    
+
     start1.keyup(event => {
-        
+
         let currInput = start1.val();
 
     	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
-    		
+
     		const responseObject = JSON.parse(responseJSON);
-    		
+
         	ac1.empty();
     		const len = responseObject.suggestions;
-    		
+
             for(let s of responseObject.suggestions){
                 ac1.append('<li>' + s + '</li>');
-               
+
             }
-            
+
             if(ac1.length > 5){
                 ac1.remove();
                 }
-            
+
             let li = document.getElementById("ac1").getElementsByTagName("li");
-            
+
             for(let l of li){
             l.addEventListener("click", clickSuggestion1);
             }
@@ -136,35 +152,35 @@ start1.val(e.target.innerHTML);
 
 ac1.empty();
 }
-    		
-    		
+
+
     	});
 
-    	
+
     });
-    
+
         start2.keyup(event => {
-            
+
              let currInput = start2.val();
 
     	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
-    		
+
     		const responseObject = JSON.parse(responseJSON);
-    		
+
         	ac2.empty();
     		const len = responseObject.suggestions;
-    		
+
             for(let s of responseObject.suggestions){
                 ac2.append('<li>' + s + '</li>');
-               
+
             }
-            
+
             if(ac2.length > 5){
                 ac2.remove();
                 }
-            
+
             let li = document.getElementById("ac2").getElementsByTagName("li");
-            
+
             for(let l of li){
             l.addEventListener("click", clickSuggestion1);
             }
@@ -180,35 +196,35 @@ start2.val(e.target.innerHTML);
 
 ac2.empty();
 }
-    		
-    		
+
+
     	});
 
-    	
+
     });
-    
+
         end1.keyup(event => {
-            
+
              let currInput = end1.val();
 
     	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
-    		
+
     		const responseObject = JSON.parse(responseJSON);
-    		
+
         	ac3.empty();
     		const len = responseObject.suggestions;
-    		
+
             for(let s of responseObject.suggestions){
                 ac3.append('<li>' + s + '</li>');
-               
+
             }
-            
+
             if(ac3.length > 5){
                 ac3.remove();
                 }
-            
+
             let li = document.getElementById("ac3").getElementsByTagName("li");
-            
+
             for(let l of li){
             l.addEventListener("click", clickSuggestion1);
             }
@@ -224,35 +240,35 @@ end1.val(e.target.innerHTML);
 
 ac3.empty();
 }
-    		
-    		
+
+
     	});
 
-    	
+
     });
-    
+
         end2.keyup(event => {
-            
+
              let currInput = end2.val();
 
     	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
-    		
+
     		const responseObject = JSON.parse(responseJSON);
-    		
+
         	ac4.empty();
     		const len = responseObject.suggestions;
-    		
+
             for(let s of responseObject.suggestions){
                 ac4.append('<li>' + s + '</li>');
-               
+
             }
-            
+
             if(ac4.length > 5){
                 ac4.remove();
                 }
-            
+
             let li = document.getElementById("ac4").getElementsByTagName("li");
-            
+
             for(let l of li){
             l.addEventListener("click", clickSuggestion1);
             }
@@ -260,36 +276,21 @@ ac3.empty();
 
 function clickSuggestion1(e){
 
-const lastIndex = currInput.lastIndexOf(" ");
-
-currInput = currInput.substring(0, lastIndex);
+  const lastIndex = currInput.lastIndexOf(" ");
+  currInput = currInput.substring(0, lastIndex);
 
 end2.val(e.target.innerHTML);
 
 ac4.empty();
 }
-    		
-    		
+
+
     	});
 
-    	
-    });
-    
-    
-    const db = $("#db");
 
-    db.click(function(){
-		
-    	const command = "map data/maps/maps.sqlite3";
-    		
-    	$.post('/mapsac', {'command': command}, function(responseJSON){
-            
-            paintMap();
-    	});
-    	
     });
-    
-    
+
+
 });
 
 function scrollZoom(e){
@@ -370,12 +371,15 @@ const paintMap = () => {
           ctx.closePath();
           ctx.stroke();
        }
+       if (currPath != null) {
+         drawRoute(currPath, false);
+       }
      }
    }
 };
 
 function route() {
-    
+
     const start1 = $("#start1").val();
     const start2 = $("#start2").val();
     const end1 = $("#end1").val();
@@ -387,22 +391,9 @@ function route() {
 
       // Parse the JSON response into a JavaScript object.
       const responseObject = JSON.parse(responseJSON);
+      currPath = responseObject.ways;
       //ctx.beginPath();
-      for (let way of responseObject.ways) {
-           let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
-           let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
-           let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
-           let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
-
-           ctx.lineWidth = 2;
-           ctx.strokeStyle = "red";
-           ctx.beginPath();
-           ctx.moveTo(top, left);
-           ctx.lineTo(bottom, right);
-           ctx.closePath();
-           ctx.stroke();
-           ctx.strokeStyle = "black";
-       }
+      drawRoute(responseObject.ways, true);
     });
 }
 
@@ -414,23 +405,34 @@ function routeWithCoords(start1, start2, end1, end2) {
 
       // Parse the JSON response into a JavaScript object.
       const responseObject = JSON.parse(responseJSON);
+      currPath = responseObject.ways;
       //ctx.beginPath();
-      for (let way of responseObject.ways) {
-           let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
-           let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
-           let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
-           let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
-
-           ctx.lineWidth = 2;
-           ctx.strokeStyle = "red";
-           ctx.beginPath();
-           ctx.moveTo(top, left);
-           ctx.lineTo(bottom, right);
-           ctx.closePath();
-           ctx.stroke();
-           ctx.strokeStyle = "black";
-       }
+      drawRoute(responseObject.ways, true);
     });
+}
+
+function drawRoute(ways, repaint) {
+  for (let way of ways) {
+       let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
+       let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
+       let bottom = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[1][0]);
+       let right = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[1][1]);
+
+       if (repaint) {
+         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+         paintMap();
+       }
+
+       ctx.lineWidth = 2;
+       ctx.strokeStyle = "red";
+       ctx.beginPath();
+       ctx.moveTo(top, left);
+       ctx.lineTo(bottom, right);
+       ctx.closePath();
+       ctx.stroke();
+       ctx.lineWidth = 1;
+       ctx.strokeStyle = "black";
+   }
 }
 
 function zoom(amount) {
@@ -450,7 +452,7 @@ function coordToPosn(canvasSize, min, max, coord) {
 
 function posnToCoord(canvasSize, min, max, coord){
 
-    mapSize = Math.abs(max - min);
+    mapSize = (max - min);
     return min + (coord*(mapSize/canvasSize));
 
 }

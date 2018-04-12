@@ -5,11 +5,6 @@
 <center>
 <p>
 
-<button id="db"> Load Maps Database</button> &nbsp;
-
-	<br /> 
-		<br /> 
-
   Enter intersection Here:
   
 	<br />   
@@ -38,11 +33,14 @@
 <br />
 <center><canvas id="map"></canvas></center>
 </div>
+<center>
 <button onclick="zoom(.001)">-</button>
 <button onclick="zoom(-.001)">+</button>
 <button onclick="changeBox(50, 0)"><</button>
 <button onclick="changeBox(0, 50)">^</button>
 <button onclick="changeBox(-50, 0)">></button>
 <button onclick="changeBox(0, -50)">v</button>
+</center>
+<br>
 </#assign>
 <#include "main.ftl">

@@ -10,8 +10,8 @@ import joptsimple.OptionSet;
  */
 public final class Main {
 
-  private static final int DEFAULT_PORT = 4567;
-  //private static final int DEFAULT_PORT = 3005;
+  // private static final int DEFAULT_PORT = 4567;
+  private static final int DEFAULT_PORT = 3005;
   private static REPL repl;
   private static GUI gui;
 
