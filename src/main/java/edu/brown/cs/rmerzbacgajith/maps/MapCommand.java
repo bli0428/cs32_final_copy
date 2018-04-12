@@ -298,4 +298,12 @@ public class MapCommand {
   public MapsDatabaseHelper getDBHelper() {
     return dbHelper;
   }
+  
+  /**
+   * Getter for the AutocorrectCommand used for autocorrecting.
+   * @return AutocorrectCommand used in MapCommand.
+   */
+  public AutocorrectCommand getAC() {
+    return acCommandHelper;
+  }
 }
