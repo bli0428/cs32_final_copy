@@ -32,7 +32,7 @@ import edu.brown.cs.rmerzbacgajith.tree.TreeBuilder;
  *
  */
 public class MapCommand {
-  
+
   private static final int DIMENSIONS = 2;
   private static Connection conn = null;
   private AutocorrectCommand acCommandHelper = new AutocorrectCommand();
@@ -43,10 +43,11 @@ public class MapCommand {
 
   /**
    * Method that deals with the map command to connect to a database, as well as
-   * creating a Trie with all way Names on connection to know exactly what
-   * names are in the database, as well as for autocorrecting. This also populates a KDTree with
-   * all the traversable nodes for the nearest command, as well as a MapsGraphBuilder and MapsDatabaseHelper for 
-   * route commands and any queries that need to be made to the database.
+   * creating a Trie with all way Names on connection to know exactly what names
+   * are in the database, as well as for autocorrecting. This also populates a
+   * KDTree with all the traversable nodes for the nearest command, as well as a
+   * MapsGraphBuilder and MapsDatabaseHelper for route commands and any queries
+   * that need to be made to the database.
    *
    * @param dbname
    *          filepath to database.
@@ -91,8 +92,8 @@ public class MapCommand {
 
     // Create Trie for autocorrect.
     Trie trie = new Trie();
-    
-    //Structures to hold query results
+
+    // Structures to hold query results
     HashSet<String> ids = new HashSet<>();
     List<Point> nodeList = new ArrayList<>();
 
@@ -112,28 +113,28 @@ public class MapCommand {
         String endId = rs.getString(3);
         String type = rs.getString(4);
 
-        //If Way has a name, add it to the Trie.
+        // If Way has a name, add it to the Trie.
         if (name.length() > 0) {
           trie.insert(name);
         }
 
-        //If the way is traversable
+        // If the way is traversable
         if (!type.equals("") && !type.equals("unclassified")) {
           nodeQuery.setString(1, startId);
           nodeQuery.setString(2, endId);
           nodeRs = nodeQuery.executeQuery();
 
-          //Find the start and end nodes of the way
+          // Find the start and end nodes of the way
           while (nodeRs.next()) {
             String id = nodeRs.getString(1);
             double lat = nodeRs.getDouble(2);
             double lon = nodeRs.getDouble(3);
-            
-            //Store the lats and lons and create a Node Object
+
+            // Store the lats and lons and create a Node Object
             double[] coords = { lat, lon };
             Node n = new Node(id, coords);
-            
-            //Add it to the structures.
+
+            // Add it to the structures.
             if (!ids.contains(id)) {
               nodeList.add(n);
               ids.add(id);
@@ -152,14 +153,15 @@ public class MapCommand {
 
     // Set trie to AutocorrectCommand Helper for autocorrecting Way names.
     acCommandHelper.setTrie(trie);
-    
-    //Build KDTree of Traversable nodes using TreeBuilder.
+
+    // Build KDTree of Traversable nodes using TreeBuilder.
     builder = new TreeBuilder<Point>(nodeList, DIMENSIONS);
-    
-    //Create dbHelper for queries that will be needed.
+
+    // Create dbHelper for queries that will be needed.
     dbHelper = new MapsDatabaseHelper(conn);
 
-    //Create graphBuilder that helps create the graph that will be used for route command.
+    // Create graphBuilder that helps create the graph that will be used for
+    // route command.
     graphBuilder = new MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>>(
         dbHelper);
 
@@ -169,30 +171,35 @@ public class MapCommand {
 
   /**
    * Method that handles nearest command.
-   * @param coords Latitude and Longitude specified by user.
+   *
+   * @param coords
+   *          Latitude and Longitude specified by user.
    * @return Traverable node that is nearest to the coords.
    */
   public Point nearestCommand(double[] coords) {
-    
-    if(conn == null) {
+
+    if (conn == null) {
       Handling.error("No connection to database.");
     }
-    
-    //Get KDTree from TreeBuilder
+
+    // Get KDTree from TreeBuilder
     KDTree<Point> tree = builder.getTree();
-    
-    //Use Static Nearest Class to find the nearest Node and return (note that Node extends Point).
+
+    // Use Static Nearest Class to find the nearest Node and return (note that
+    // Node extends Point).
     Point nearest = Nearest.handleNeighborsCommandWithCoords(coords, tree);
     return nearest;
   }
 
   /**
    * Method that handles suggest command using autocorrect.
-   * @param ac String to be autocorrected
+   *
+   * @param ac
+   *          String to be autocorrected
    * @return List of suggestions as to what String should be.
    */
   public List<String> suggest(String ac) {
-    
+
     // Turn prefix on if not on.
     if (!acCommandHelper.getPrefixStatus().equals("on")) {
       String[] prefixOn = new String[2];
@@ -211,18 +218,22 @@ public class MapCommand {
 
   /**
    * Method that handles route command between 2 nodes.
-   * @param n1 start node
-   * @param n2 destination node
-   * @return List of Ways that can be taken to go between the two nodes as fast as possible.
+   *
+   * @param n1
+   *          start node
+   * @param n2
+   *          destination node
+   * @return List of Ways that can be taken to go between the two nodes as fast
+   *         as possible.
    */
   public List<Way> route(Node n1, Node n2) {
 
     Map<GraphNode<Node>, GraphEdge<Way>> finalAnswer = new LinkedHashMap<GraphNode<Node>, GraphEdge<Way>>();
 
-    //Create new graph using GraphBuilder
+    // Create new graph using GraphBuilder
     graph = new Graph<GraphNode<Node>, GraphEdge<Way>>(graphBuilder);
 
-    //Create 2 GraphNodes storing the start and dest nodes.
+    // Create 2 GraphNodes storing the start and dest nodes.
     GraphNode<Node> node1 = new GraphNode<Node>(n1.getId(), n1);
     GraphNode<Node> node2 = new GraphNode<Node>(n2.getId(), n2);
 
@@ -232,7 +243,7 @@ public class MapCommand {
 
     List<Way> finalWays = new ArrayList<Way>();
 
-    //If no path is found
+    // If no path is found
     if (finalAnswer.size() == 0) {
       System.out.println(
           new StringBuilder(n1.getId() + " -/- " + n2.getId()).toString());
@@ -247,7 +258,7 @@ public class MapCommand {
 
         GraphNode<Node> next = it.next();
 
-        //Add Way to the final Ways arraylist.
+        // Add Way to the final Ways arraylist.
         Way currWay = finalAnswer.get(curr).getValue();
         finalWays.add(currWay);
 
@@ -271,10 +282,15 @@ public class MapCommand {
   }
 
   /**
-   * Use dbHelper to see if there is an intersection at the corner of the two input Ways.
-   * @param way1Name Name of Way 1
-   * @param way2Name Name of Way 2
-   * @return Node that is at the intersection between them, or null if there is no intersection. 
+   * Use dbHelper to see if there is an intersection at the corner of the two
+   * input Ways.
+   *
+   * @param way1Name
+   *          Name of Way 1
+   * @param way2Name
+   *          Name of Way 2
+   * @return Node that is at the intersection between them, or null if there is
+   *         no intersection.
    */
   public Node getIntersection(String way1Name, String way2Name) {
     return dbHelper.getIntersection(way1Name, way2Name);
@@ -282,8 +298,11 @@ public class MapCommand {
 
   /**
    * Use coords to find all the ways in the bounding box created by them.
-   * @param coords1 Northwest corner coords
-   * @param coords2 Southeast corner coords
+   *
+   * @param coords1
+   *          Northwest corner coords
+   * @param coords2
+   *          Southeast corner coords
    * @return List of all wayIDs that are inside the box.
    *
    */
@@ -292,7 +311,8 @@ public class MapCommand {
   }
 
   /**
-   * Getter for the dbHelper
+   * Getter for the dbHelper.
+   *
    * @return dbHelper used in MapCommand.
    */
   public MapsDatabaseHelper getDBHelper() {

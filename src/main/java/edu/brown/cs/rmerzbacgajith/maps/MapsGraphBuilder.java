@@ -17,15 +17,15 @@ import edu.brown.cs.rmerzbacgajith.tree.Node;
  *
  * @author gokulajith
  *
- * @param <Node>
+ * @param <N>
  *          Node that goes in graph with a value storing an node from db
- * @param <Edge>
+ * @param <E>
  *          Edge that goes in graph with a value storing a Way
  */
 public class MapsGraphBuilder<N, E>
     implements GraphBuilder<GraphNode<Node>, GraphEdge<Way>> {
 
-  private final double RADIUS = 6371;
+  private static final double RADIUS = 6371;
 
   private Map<String, Map<GraphNode<Node>, GraphEdge<Way>>> neighCache;
   private MapsDatabaseHelper dbHelper;
@@ -69,13 +69,14 @@ public class MapsGraphBuilder<N, E>
   }
 
   /**
-   * Djikstra helper to find neighbors of a node. Finds all traversable ways the sourceNode is a startNode of,
-   * and then Creates a GraphNode with the endNode of that way and maps it to the way itself as a neighbor to the sourceNode.
+   * Djikstra helper to find neighbors of a node. Finds all traversable ways the
+   * sourceNode is a startNode of, and then Creates a GraphNode with the endNode
+   * of that way and maps it to the way itself as a neighbor to the sourceNode.
    *
    * @param sourceNode
    *          node that the neighbors are being found of
-   * @return A map that maps every neighboring node of the sourceNode to an edge connecting the
-   *         two nodes.
+   * @return A map that maps every neighboring node of the sourceNode to an edge
+   *         connecting the two nodes.
    */
   private Map<GraphNode<Node>, GraphEdge<Way>> djikstraHelper(Node sourceNode) {
 
@@ -85,16 +86,18 @@ public class MapsGraphBuilder<N, E>
     String nodeId = sourceNode.getId();
     double[] sourceCoords = sourceNode.getCoords();
 
-    // Use dbhelper to get all traversable ways that the sourceNode is the startNode of
+    // Use dbhelper to get all traversable ways that the sourceNode is the
+    // startNode of
     List<Way> ways = dbHelper.getWaysFromNode(nodeId);
 
-    //Loop through all the ways
+    // Loop through all the ways
     for (Way way : ways) {
 
       // Use dbhelper to get the endNode of the way
       Node node = dbHelper.getEndNodeFromWay(way.getId());
 
-      //Set the weight to be the straight line distance + Haversine distance for A* heuristic.
+      // Set the weight to be the straight line distance + Haversine distance
+      // for A* heuristic.
       double[] endCoords = node.getCoords();
       double weight = this.findDistance(sourceCoords, endCoords)
           + haversineDistance(sourceCoords, endCoords);
