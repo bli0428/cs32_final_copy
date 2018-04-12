@@ -114,7 +114,8 @@ public class MapCommand {
         }
       }
 
-      prep = conn.prepareStatement("SELECT start,end FROM way WHERE type != \"\" AND type != \"undefined\";");
+      prep = conn.prepareStatement(
+          "SELECT start,end FROM way WHERE type != \"\" AND type != \"undefined\";");
       PreparedStatement nodeQuery = conn
           .prepareStatement("SELECT * FROM node WHERE id=? OR id=?");
       ResultSet nodeRs = null;
@@ -140,7 +141,7 @@ public class MapCommand {
           }
         }
       }
-      
+
       nodeQuery.close();
       nodeRs.close();
       prep.close();
@@ -185,7 +186,7 @@ public class MapCommand {
     return suggestions;
   }
 
-  public void route(Node n1, Node n2) {
+  public List<Way> route(Node n1, Node n2) {
 
     Map<GraphNode<Node>, GraphEdge<Way>> finalAnswer = new LinkedHashMap<GraphNode<Node>, GraphEdge<Way>>();
 
@@ -197,6 +198,8 @@ public class MapCommand {
     // The finalPath is found as a result of calling the djisktras method
     // between the 2 nodes.
     finalAnswer = graph.djikstras(node1, node2);
+
+    List<Way> finalWays = new ArrayList<Way>();
 
     if (finalAnswer.size() == 0) {
       System.out.println(
@@ -212,10 +215,11 @@ public class MapCommand {
 
         GraphNode<Node> next = it.next();
 
-        Way movie = finalAnswer.get(curr).getValue();
+        Way currWay = finalAnswer.get(curr).getValue();
+        finalWays.add(currWay);
 
         System.out.println(new StringBuilder(curr.getValue().getId() + " -> "
-            + next.getValue().getId() + " : " + movie.getId()).toString());
+            + next.getValue().getId() + " : " + currWay.getId()).toString());
 
         curr = next;
 
@@ -226,7 +230,11 @@ public class MapCommand {
           new StringBuilder(curr.getValue().getId() + " -> " + n2.getId()
               + " : " + finalAnswer.get(curr).getValue().getId()).toString());
 
+      finalWays.add(finalAnswer.get(curr).getValue());
+
     }
+
+    return finalWays;
 
   }
 

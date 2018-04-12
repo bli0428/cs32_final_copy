@@ -11,6 +11,9 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.rmerzbacgajith.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.maps.Way;
+import edu.brown.cs.rmerzbacgajith.tree.Node;
 import edu.brown.cs.rmerzbacgajith.tree.Point;
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;
@@ -71,6 +74,8 @@ public final class GUI {
     Spark.get("/maps", new MapsFrontHandler(), freeMarker);
     Spark.post("/results", new MapsResultsHandler());
     Spark.post("/nearest", new NearestHandler());
+    Spark.post("/route", new RouteHandler());
+    Spark.post("/routeCoords", new RouteCoordsHandler());
   }
 
   /**
@@ -115,7 +120,6 @@ public final class GUI {
 
   }
 
-
   /**
    * Handles user input from the GUI and searches for suggestions.
    *
@@ -129,17 +133,85 @@ public final class GUI {
 
       Double lat = Double.parseDouble(qm.value("lat"));
       Double lon = Double.parseDouble(qm.value("lon"));
-      
-      double[] coords = {lat, lon};
-      
+
+      double[] coords = { lat, lon };
+
       Point node = repl.getMapCommand().nearestCommand(coords);
-  
+
       Map<String, Object> variables = ImmutableMap.of("node", node.getCoords());
       return GSON.toJson(variables);
     }
-
   }
-  
+
+  public static class RouteHandler implements Route {
+    @Override
+    public String handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      // neighbors command with coordinates
+      String start1 = qm.value("start1");
+      String start2 = qm.value("start2");
+      String end1 = qm.value("end1");
+      String end2 = qm.value("end2");
+
+      List<List<double[]>> coords = new ArrayList<>();
+
+      Node n1 = repl.getMapCommand().getIntersection(start1, start2);
+      if (n1 == null) {
+        Handling.error("first intersection not found");
+      }
+      Node n2 = repl.getMapCommand().getIntersection(end1, end2);
+      if (n2 == null) {
+        Handling.error("second intersection not found");
+      } else {
+        List<Way> ways = repl.getMapCommand().route(n1, n2);
+        for (Way way : ways) {
+          coords.add(
+              repl.getMapCommand().getDBHelper().getWayLocation(way.getId()));
+        }
+      }
+
+      Map<String, Object> variables = ImmutableMap.of("ways", coords);
+      return GSON.toJson(variables);
+    }
+  }
+
+  public static class RouteCoordsHandler implements Route {
+    @Override
+    public String handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      // neighbors command with coordinates
+      Double start1 = Double.parseDouble(qm.value("start1"));
+      Double start2 = Double.parseDouble(qm.value("start2"));
+      Double end1 = Double.parseDouble(qm.value("end1"));
+      Double end2 = Double.parseDouble(qm.value("end2"));
+
+      double[] coords1 = { start1, start2 };
+      double[] coords2 = { end1, end2 };
+
+      List<List<double[]>> coords = new ArrayList<>();
+
+      Node n1 = (Node) repl.getMapCommand().nearestCommand(coords1);
+      if (n1 == null) {
+        Handling.error("first intersection not found");
+      }
+      Node n2 = (Node) repl.getMapCommand().nearestCommand(coords2);
+      if (n2 == null) {
+        Handling.error("second intersection not found");
+      } else {
+        List<Way> ways = repl.getMapCommand().route(n1, n2);
+        for (Way way : ways) {
+          coords.add(
+              repl.getMapCommand().getDBHelper().getWayLocation(way.getId()));
+        }
+      }
+
+      Map<String, Object> variables = ImmutableMap.of("ways", coords);
+      return GSON.toJson(variables);
+    }
+  }
+
   /**
    * Display an error page when an exception occurs in the server.
    *
@@ -157,6 +229,7 @@ public final class GUI {
       }
       res.body(stacktrace.toString());
     }
+
   }
 
   /**
