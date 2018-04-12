@@ -58,11 +58,6 @@ $(document).ready(() => {
         let xc = CANVAS_WIDTH - ycoord;
         let yc = xcoord;
 
-        //let lon = posnToCoord(CANVAS_WIDTH, startLeft, startRight, xc);
-        //let lat = posnToCoord(CANVAS_HEIGHT, startBottom, startTop, yc);
-
-        // let lon = startLeft + (xc*((startRight - startLeft)/CANVAS_WIDTH));
-        // let lat = startBottom + (yc*((startTop - startBottom)/CANVAS_HEIGHT));
         const lrScale = startRight - startLeft;
         const tbScale = startTop - startBottom;
 
@@ -296,10 +291,11 @@ ac4.empty();
 function scrollZoom(e){
 
     let amount = 0.05*e.deltaY/CANVAS_HEIGHT;
+    
+    console.log(totalZoom + amount);
 
-    if(totalZoom + amount > 0.9981){
+    if(totalZoom + amount > 0.9981 && totalZoom + amount < 1.0129){
     totalZoom += amount;
-    console.log(totalZoom);
 
     startTop += amount;
   startBottom -= amount;
@@ -339,7 +335,6 @@ const paintMap = () => {
 
 			    // Parse the JSON response into a JavaScript object.
 			    const responseObject = JSON.parse(responseJSON);
-          //ctx.beginPath();
 			    for (let way of responseObject.ways) {
 				       let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
 				       let left = coordToPosn(CANVAS_WIDTH, startLeft, startRight, way[0][1]);
@@ -355,8 +350,6 @@ const paintMap = () => {
                ctx.closePath();
                ctx.stroke();
 			     }
-//           ctx.closePath();
-//           ctx.stroke();
          });
        } else {
          ctx.beginPath();
@@ -392,7 +385,6 @@ function route() {
       // Parse the JSON response into a JavaScript object.
       const responseObject = JSON.parse(responseJSON);
       currPath = responseObject.ways;
-      //ctx.beginPath();
       drawRoute(responseObject.ways, true);
     });
 }
@@ -406,7 +398,6 @@ function routeWithCoords(start1, start2, end1, end2) {
       // Parse the JSON response into a JavaScript object.
       const responseObject = JSON.parse(responseJSON);
       currPath = responseObject.ways;
-      //ctx.beginPath();
       drawRoute(responseObject.ways, true);
     });
 }
