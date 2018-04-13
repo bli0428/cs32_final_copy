@@ -83,4 +83,4 @@ Before using the GUI, data must be input via the command-line using the
 command "map <db path>"
 
 ### BROWSER
-Chrome.
+Chrome
