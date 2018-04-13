@@ -1,7 +1,6 @@
 INPUT
 map data/maps/smallMaps.sqlite3
-route "Sootball Ln" "Yubaba St" "Sootball Ln" "Yubaba St"
+ways 41.8 -71.3 42 -72
 OUTPUT
 map set to data/maps/smallMaps.sqlite3
-/n/4 -/- /n/4
 END
