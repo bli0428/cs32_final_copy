@@ -25,9 +25,7 @@ let tiles = [];
 let currPoint = null;
 let currPath = null;
 
-/*
-	When the document is ready, this runs.
-*/
+
 $(document).ready(() => {
     // Setting up the canvas.
     canvas = $('#map')[0];
@@ -76,9 +74,6 @@ $(document).ready(() => {
             let finalX = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, responseObject.node[0]);
             let finalY = coordToPosn(CANVAS_WIDTH, startLeft, startRight, responseObject.node[1]);
 
-            // let finalX = tempY;
-            // let finalY = tempX;
-
             console.log(responseObject.node[0], responseObject.node[1]);
 
             if (currPoint === null) {
@@ -88,7 +83,6 @@ $(document).ready(() => {
               currPoint = null;
             }
 
-            //Wrong because of rotation of canvas.(maybe)
             console.log(finalX + " " + finalY);
 
             ctx.fillStyle = "red";
@@ -168,7 +162,7 @@ $(document).ready(() => {
     	$.post('/mapsac', {'ac': currInput}, function(responseJSON){
     		const responseObject = JSON.parse(responseJSON);
         ac3.empty();
-    		const len = responseObject.suggestions;\
+    		const len = responseObject.suggestions;
         for(let s of responseObject.suggestions){
             ac3.append('<li>' + s + '</li>');
           }
@@ -231,12 +225,10 @@ $(document).ready(() => {
         return lat.toFixed(4)+" "+lng.toFixed(4);
       }
       /*
-	     Paints the boggle board.
+	     Paints the Map.
        */
        const paintMap = () => {
 
-	        // Setting the context's font and lineWidth.
-	        // Feel free to play around with this!
           ctx.lineWidth = 1;
           let currX = Math.floor(startLeft / TILE_SIZE) * TILE_SIZE;
           let currY = Math.floor(startBottom / TILE_SIZE) * TILE_SIZE;
@@ -247,7 +239,7 @@ $(document).ready(() => {
                 tiles[k] = [];
 		              const postParameters = { top: i + TILE_SIZE, left: j, bottom: i, right: j + TILE_SIZE};
 		                $.post("/results", postParameters, responseJSON => {
-                      // Parse the JSON response into a JavaScript object.
+
                       const responseObject = JSON.parse(responseJSON);
                       for (let way of responseObject.ways) {
 		                      let top = coordToPosn(CANVAS_HEIGHT, startBottom, startTop, way[0][0]);
@@ -293,7 +285,7 @@ $(document).ready(() => {
                   start1: start1, start2: start2,
                   end1: end1, end2: end2};
                   $.post("/route", postParameters, responseJSON => {
-                    // Parse the JSON response into a JavaScript object.
+
                     const responseObject = JSON.parse(responseJSON);
                     currPath = responseObject.ways;
                     drawRoute(responseObject.ways, true);
