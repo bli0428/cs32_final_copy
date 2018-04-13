@@ -9,6 +9,17 @@ Reid: Stars (and Handling)
 ### BUGS
 No known bugs.
 
+### STYLE ERROR EXPLANATIONS
+1. Static array initializer require a format that throws the style error "{ is followed by whitespace". We attempted to fix this spacing
+in Eclipse, but the autoformatter recorrects it every time. This is the huge majority of style errors.
+2. REPL.java line 136 gives a magic number style error, but this number is required so as to parse the input string 
+based on the Street Names. It makes sense to hard code this magic number in because the input string will always
+be formatted in the same way, and so there is no reason to use an iterative solution.
+3. MapCommand.java Line 231 gives a line has too many characters error, but the constructor itself is longer
+than 80 characters and so this is unavoidable.
+4. MapsDatabaseHelper.java Line 288 & 289 give magic number errors, but these are required to setDoubles for our SQL query.
+There is no cleaner iterative solution than to do this.
+
 ### DESIGN DETAILS(Please note that everything goes into more detail in the inline comments!)
 We used the KDTree from Stars to determine the nearest point to a coordinate, since the command needed
 for this project was essentially equivalent to "nearest 1 [x] [y]". Thus, the KDTree was populated with
@@ -50,6 +61,8 @@ All of our system tests can be run using the command "python3 cs32-test
 All of our unit tests will be automatically run when "mvn package" is
 entered from the command line. 
 
+In order to run both unit and system tests, we assume the smallMaps and maps db will be in the directory data/maps/<db>.sqlite3
+
 ### HOW TO RUN
 The program can be built by running mvn package from the command-line
 (note this may take some time because of unit tests).
@@ -68,10 +81,6 @@ From within the program, the following commands may be used:
 
 Before using the GUI, data must be input via the command-line using the
 command "map <db path>"
-
-IMPORTANT: the command "loadwords" is used to add all of the names in the database into
-AutoCorrect. If this command is not entered, the words will not be added and the GUI
-inputs will not have autocorrect.
 
 ### BROWSER
 Chrome.
