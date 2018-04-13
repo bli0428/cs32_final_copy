@@ -59,4 +59,4 @@ AutoCorrect. If this command is not entered, the words will not be added and the
 inputs will not have autocorrect.
 
 ### BROWSER
-Chrome.
+Chrome
