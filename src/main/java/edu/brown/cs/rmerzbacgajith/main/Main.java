@@ -6,12 +6,11 @@ import joptsimple.OptionSet;
 /**
  * The Main class of our project. This is where execution begins.
  *
- * @author rmerzbac, jj
+ * @author gajith, rmerzbac, jj
  */
 public final class Main {
 
-  // private static final int DEFAULT_PORT = 4567;
-  private static final int DEFAULT_PORT = 3005;
+  private static final int DEFAULT_PORT = 4567;
   private static REPL repl;
   private static GUI gui;
 
@@ -47,9 +46,7 @@ public final class Main {
     OptionSet options = parser.parse(args);
 
     repl = new REPL();
-    // gui = new GUI(repl);
-
-    // gui.runSparkServer((int) options.valueOf("port"));
+    
     if (options.has("gui")) {
       gui = new GUI(repl);
       gui.runSparkServer((int) options.valueOf("port"));

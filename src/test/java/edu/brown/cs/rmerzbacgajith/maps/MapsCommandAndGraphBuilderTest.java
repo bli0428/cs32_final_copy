@@ -78,7 +78,43 @@ public class MapsCommandAndGraphBuilderTest {
     assertEquals(ac1.get(1), "Brown School Road");
     assertEquals(ac1.get(2), "Brown Stadium");
     
-
+  }
+  
+  /**
+   * Test route command to ensure the correct route of ways is being found.
+   */
+  @Test
+  public void testRoute() {
+    
+    MapCommand bc = new MapCommand();
+    bc.mapCommand("data/maps/maps.sqlite3");
+    
+    assertNotNull(bc.getDBHelper());
+    
+    //NOTE that there is no need to test for bad input as this is checked before route command.
+    
+    //Test no path command
+    Node n1 = bc.getIntersection("Thayer Street", "Waterman Street");
+    Node n2 = bc.getIntersection("Thayer Street", "Waterman Street");
+    List<Way> path = bc.route(n1, n2);
+    assertEquals(path.size(), 0);
+    
+    //Test normal route accuracy
+    Node start = bc.getIntersection("Thayer Street", "Waterman Street");
+    Node end = bc.getIntersection("Thayer Street", "Charlesfield Street");
+    List<Way> finalPath = bc.route(start, end);
+    assertEquals(finalPath.size(), 10);
+    assertEquals(finalPath.get(0).getId(), "/w/4182.7140.90091982.0.1");
+    assertEquals(finalPath.get(1).getId(), "/w/4182.7140.90091982.1.1");
+    assertEquals(finalPath.get(2).getId(), "/w/4182.7140.90091982.2.1");
+    assertEquals(finalPath.get(3).getId(), "/w/4182.7140.90091982.3.1");
+    assertEquals(finalPath.get(4).getId(), "/w/4182.7140.90091982.4.1");
+    assertEquals(finalPath.get(5).getId(), "/w/4182.7140.90091982.5.1");
+    assertEquals(finalPath.get(6).getId(), "/w/4182.7140.153984675.0.1");
+    assertEquals(finalPath.get(7).getId(), "/w/4182.7140.153984675.1.1");
+    assertEquals(finalPath.get(8).getId(), "/w/4182.7140.153984675.2.1");
+    assertEquals(finalPath.get(9).getId(), "/w/4182.7140.153984675.3.1");
+    
   }
  
 }
