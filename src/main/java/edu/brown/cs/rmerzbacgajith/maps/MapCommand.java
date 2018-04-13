@@ -318,12 +318,22 @@ public class MapCommand {
   public MapsDatabaseHelper getDBHelper() {
     return dbHelper;
   }
-  
+
   /**
    * Getter for the AutocorrectCommand used for autocorrecting.
+   *
    * @return AutocorrectCommand used in MapCommand.
    */
   public AutocorrectCommand getAC() {
     return acCommandHelper;
+  }
+
+  /**
+   * Getter for the builder.
+   *
+   * @return builder used in MapCommand.
+   */
+  public TreeBuilder<Point> getBuilder() {
+    return builder;
   }
 }
