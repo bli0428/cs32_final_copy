@@ -12,8 +12,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.rmerzbacgajith.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.maps.Node;
 import edu.brown.cs.rmerzbacgajith.maps.Way;
-import edu.brown.cs.rmerzbacgajith.tree.Node;
 import edu.brown.cs.rmerzbacgajith.tree.Point;
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;

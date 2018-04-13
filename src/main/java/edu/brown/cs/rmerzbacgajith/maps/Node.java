@@ -1,6 +1,8 @@
-package edu.brown.cs.rmerzbacgajith.tree;
+package edu.brown.cs.rmerzbacgajith.maps;
 
 import java.util.Objects;
+
+import edu.brown.cs.rmerzbacgajith.tree.Point;
 
 /**
  * A class representing a node, which adds ID and name fields to the existing
@@ -41,14 +43,6 @@ public class Node extends Point {
    */
   public void setID(String pID) {
     id = pID;
-  }
-
-  /**
-   * Prints a visual representation of the node.
-   */
-  @Override
-  public String toString() {
-    return "[" + id + ", " + printCoords() + "]";
   }
 
   @Override

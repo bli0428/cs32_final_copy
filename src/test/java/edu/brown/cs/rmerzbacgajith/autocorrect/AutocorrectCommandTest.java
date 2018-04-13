@@ -1,7 +1,6 @@
 package edu.brown.cs.rmerzbacgajith.autocorrect;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -27,7 +26,6 @@ public class AutocorrectCommandTest {
   @Test
   public void testSetSettingsMethod() {
 
-    REPL repl = new REPL();
     AutocorrectCommand ac = new AutocorrectCommand();
 
     // Check initial statuses are all off
@@ -79,43 +77,32 @@ public class AutocorrectCommandTest {
   @Test
   public void testacCommand() {
 
-    Repl repl = new Repl();
-    AutocorrectCommand ac = repl.getAC();
-
-    String filename = "data/autocorrect/great_expectations.txt";
-    ac.corpusCommand(filename);
-
-    repl.run("prefix on");
-    repl.run("whitespace on");
+    REPL repl = new REPL();
+    
+    repl.processCommand("map data/maps/maps.sqlite3");
+    
+    AutocorrectCommand ac = repl.getMapCommand().getAC();
+    String[] prefixOn = {"prefix", "on"};
+    
+    ac.setSettings(prefixOn);
 
     // check ac command with only one word.
-    List<String> oneWord = ac.acCommandParser("the");
+    String[] word = {"Tha"};
+    List<String> oneWord = ac.acCommand(word);
     assertEquals(oneWord.size(), 5);
-    assertEquals(oneWord.get(0), "the");
-    assertEquals(oneWord.get(1), "there");
-    assertEquals(oneWord.get(2), "t he");
-    assertEquals(oneWord.get(3), "then");
-    assertEquals(oneWord.get(4), "they");
+    assertEquals(oneWord.get(0), "Thames Street");
+    assertEquals(oneWord.get(1), "Thames St");
+    assertEquals(oneWord.get(2), "Thayer Street");
+    assertEquals(oneWord.get(3), "Thatcher Street");
+    assertEquals(oneWord.get(4), "Thayer Road");
 
-    // check ac command with multiple words.
-    List<String> mulWord = ac.acCommandParser("this is");
-    assertEquals(mulWord.size(), 5);
-    assertEquals(mulWord.get(0), "is");
-    assertEquals(mulWord.get(1), "i s");
-    assertEquals(mulWord.get(2), "isn");
-    assertEquals(mulWord.get(3), "island");
-    assertEquals(mulWord.get(4), "issue");
+  // check ac command with multiple words.
+      String newWord[] = {"Thayer S"};
+      List<String> mulWord = ac.acCommand(newWord);
+      assertEquals(mulWord.size(), 2);
+      assertEquals(mulWord.get(0), "Thayer Street");
+      assertEquals(mulWord.get(1), "Thayer St");
 
-    // check smart ranking
-    repl.run("smart on");
-    repl.run("led 2");
-    List<String> smart = ac.acCommandParser("boa");
-    assertEquals(smart.size(), 5);
-    assertEquals(smart.get(0), "boy");
-    assertEquals(smart.get(1), "boat");
-    assertEquals(smart.get(2), "boar");
-    assertEquals(smart.get(3), "box");
-    assertEquals(smart.get(4), "bow");
 
   }
 

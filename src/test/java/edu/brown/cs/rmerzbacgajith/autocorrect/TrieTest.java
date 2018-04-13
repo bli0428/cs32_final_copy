@@ -1,9 +1,11 @@
-package edu.brown.cs.gajith.autocorrect;
+package edu.brown.cs.rmerzbacgajith.autocorrect;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
@@ -12,8 +14,6 @@ import org.junit.Test;
 
 import com.google.common.collect.Multimap;
 
-import edu.brown.cs.gajith.commonstructures.Trie;
-import edu.brown.cs.gajith.filereaders.TextReader;
 
 /**
  * Test all public methods in Trie. NOTE: All of the private methods, including
@@ -46,7 +46,7 @@ public class TrieTest {
     String input = "This is a sentence that will be added to the Trie. "
         + "This is another sentence that will be added to the Trie. "
         + "I think the Trie is really cool.";
-
+    
     List<String> words = new TextReader(new Scanner(input)).getWords();
     trie.construct(words);
 

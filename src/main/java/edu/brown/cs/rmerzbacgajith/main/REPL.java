@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 import edu.brown.cs.rmerzbacgajith.handling.Handling;
 import edu.brown.cs.rmerzbacgajith.maps.MapCommand;
-import edu.brown.cs.rmerzbacgajith.tree.Node;
+import edu.brown.cs.rmerzbacgajith.maps.Node;
 
 /**
  * REPL class for maps that handles and parses the user input and calls the
@@ -46,7 +46,7 @@ public class REPL {
    * @param line
    *          The command provided by the user
    */
-  private void processCommand(String line) {
+  public void processCommand(String line) {
 
     // Split on whitespace and punctuation
     String[] parsed = line.split("\\s+");

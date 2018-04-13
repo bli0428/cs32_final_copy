@@ -1,6 +1,7 @@
 package edu.brown.cs.rmerzbacgajith.tree;
 
 import edu.brown.cs.rmerzbacgajith.handling.Handling;
+import edu.brown.cs.rmerzbacgajith.maps.Node;
 
 /**
  * A class representing the K-D tree.

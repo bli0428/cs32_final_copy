@@ -1,13 +1,9 @@
-package edu.brown.cs.rmerzbacgajith.maps;
+package edu.brown.cs.rmerzbacgajith.tree;
 
 import java.util.ArrayList;
 
 import edu.brown.cs.rmerzbacgajith.handling.Handling;
-import edu.brown.cs.rmerzbacgajith.tree.KDTree;
-import edu.brown.cs.rmerzbacgajith.tree.Node;
-import edu.brown.cs.rmerzbacgajith.tree.Point;
-import edu.brown.cs.rmerzbacgajith.tree.TreeBuilder;
-import edu.brown.cs.rmerzbacgajith.tree.TreeNode;
+import edu.brown.cs.rmerzbacgajith.maps.Node;
 
 /**
  * A class that handles the "nearest" command.

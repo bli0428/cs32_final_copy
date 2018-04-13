@@ -1,4 +1,4 @@
-package edu.brown.cs.gajith.graph;
+package edu.brown.cs.rmerzbacgajith.graph;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,10 +8,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import edu.brown.cs.gajith.bacon.Actor;
-import edu.brown.cs.gajith.bacon.BaconCommand;
-import edu.brown.cs.gajith.bacon.BaconGraphBuilder;
-import edu.brown.cs.gajith.bacon.Movie;
+import edu.brown.cs.rmerzbacgajith.maps.MapCommand;
+import edu.brown.cs.rmerzbacgajith.maps.MapsGraphBuilder;
+import edu.brown.cs.rmerzbacgajith.maps.Node;
+import edu.brown.cs.rmerzbacgajith.maps.Way;
 
 /**
  * Test Graph and Djikstra.
@@ -27,60 +27,56 @@ public class GraphTest {
   @Test
   public void testDjikstra() {
 
-    BaconCommand bc = new BaconCommand();
+    MapCommand bc = new MapCommand();
 
     // correct command where connection is created
-    bc.mdbCommand("data/bacon/bacon.sqlite3");
+    bc.mapCommand("data/maps/maps.sqlite3");
 
     // Create graph builder
-    BaconGraphBuilder<GraphNode<Actor>, GraphEdge<Movie>> gb;
-    gb = new BaconGraphBuilder<GraphNode<Actor>, GraphEdge<Movie>>(
-        bc.getdbHelper());
+    MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>> gb;
+    gb = new MapsGraphBuilder<GraphNode<Node>, GraphEdge<Way>>(
+        bc.getDBHelper());
 
     // Create graph
-    Graph<GraphNode<Actor>, GraphEdge<Movie>> graph;
-    graph = new Graph<GraphNode<Actor>, GraphEdge<Movie>>(gb);
+    Graph<GraphNode<Node>, GraphEdge<Way>> graph;
+    graph = new Graph<GraphNode<Node>, GraphEdge<Way>>(gb);
 
-    // say actor 1 is Abigail Mason
-    String id = bc.getdbHelper().getActorID("Abigail Mason");
+    // Say input is route Thayer Street, Waterman Street, Thayer Street, Angell Street
+    
+    //Create start node and GraphNode
+    Node start = bc.getIntersection("Thayer Street", "Waterman Street");
+    GraphNode<Node> startNode = new GraphNode<Node>(start.getId(), start);
 
-    // Create actor and store in node
-    Actor actor = new Actor(id, "Abigail Mason");
-    GraphNode<Actor> startNode = new GraphNode<Actor>(id, actor);
-
-    // Say final actor is Laurel Bryce
-    String id2 = bc.getdbHelper().getActorID("Laurel Bryce");
-
-    // Create actor and store in node
-    Actor actor2 = new Actor(id2, "Laurel Bryce");
-    GraphNode<Actor> endNode = new GraphNode<Actor>(id2, actor2);
+    //Create final node and GraphNode
+    Node end = bc.getIntersection("Thayer Street", "Angell Street");
+    GraphNode<Node> endNode = new GraphNode<Node>(end.getId(), end);
 
     // Just run djikstra to find final path
-    Map<GraphNode<Actor>, GraphEdge<Movie>> shortestPath = graph
+    Map<GraphNode<Node>, GraphEdge<Way>> shortestPath = graph
         .djikstras(startNode, endNode);
 
-    // Ensure actors are correct
-    List<GraphNode<Actor>> actors = new ArrayList<GraphNode<Actor>>(
+    // Ensure nodes are correct
+    List<GraphNode<Node>> nodes = new ArrayList<GraphNode<Node>>(
         shortestPath.keySet());
 
-    assertEquals(actors.get(0).getValue().getName(), "Abigail Mason");
-    assertEquals(actors.get(1).getValue().getName(), "Martin Landau");
-    assertEquals(actors.get(2).getValue().getName(), "Lisa Marie");
-    assertEquals(actors.get(3).getValue().getName(), "Mike Starr");
-    assertEquals(actors.get(4).getValue().getName(), "Scarlett Johansson");
-    assertEquals(actors.get(5).getValue().getName(), "Justin Long");
-
-    // Ensure movies are correct
-    List<GraphEdge<Movie>> movies = new ArrayList<GraphEdge<Movie>>(
+    assertEquals(nodes.get(0).getValue().getId(), "/n/4182.7140.1955940297");
+    assertEquals(nodes.get(1).getValue().getId(), "/n/4182.7139.1957915164");
+    assertEquals(nodes.get(2).getValue().getId(), "/n/4182.7139.1957915187");
+    assertEquals(nodes.get(3).getValue().getId(), "/n/4182.7139.201365753");
+    assertEquals(nodes.get(4).getValue().getId(), "/n/4182.7139.201365755");
+    assertEquals(nodes.get(5).getValue().getId(), "/n/4182.7139.201280067");
+    
+    // Ensure ways are correct
+    List<GraphEdge<Way>> ways = new ArrayList<GraphEdge<Way>>(
         shortestPath.values());
-    assertEquals(movies.get(0).getValue().getName(),
-        "You'll Never Amount to Anything");
-    assertEquals(movies.get(1).getValue().getName(), "Sleepy Hollow");
-    assertEquals(movies.get(2).getValue().getName(), "Ed Wood");
-    assertEquals(movies.get(3).getValue().getName(), "The Black Dahlia");
-    assertEquals(movies.get(4).getValue().getName(),
-        "He's Just Not That Into You");
-    assertEquals(movies.get(5).getValue().getName(), "After.Life");
+    assertEquals(ways.get(0).getValue().getId(),
+        "/w/4182.7140.19402129.26.1");
+    assertEquals(ways.get(1).getValue().getId(), "/w/4182.7139.19402129.27.1");
+    assertEquals(ways.get(2).getValue().getId(), "/w/4182.7139.19402129.28.1");
+    assertEquals(ways.get(3).getValue().getId(),
+        "/w/4182.7139.132173987.14.1");
+    assertEquals(ways.get(4).getValue().getId(), "/w/4182.7139.132173987.15.1");
+    assertEquals(ways.get(5).getValue().getId(), "/w/4182.7139.19362221.4.1");
 
   }
 }

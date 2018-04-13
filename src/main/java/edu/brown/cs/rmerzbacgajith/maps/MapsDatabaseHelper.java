@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import edu.brown.cs.rmerzbacgajith.handling.Handling;
-import edu.brown.cs.rmerzbacgajith.tree.Node;
 
 /**
  * Class that handles all the queries and caching for Maps.

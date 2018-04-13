@@ -21,7 +21,7 @@ import edu.brown.cs.rmerzbacgajith.graph.GraphEdge;
 import edu.brown.cs.rmerzbacgajith.graph.GraphNode;
 import edu.brown.cs.rmerzbacgajith.handling.Handling;
 import edu.brown.cs.rmerzbacgajith.tree.KDTree;
-import edu.brown.cs.rmerzbacgajith.tree.Node;
+import edu.brown.cs.rmerzbacgajith.tree.Nearest;
 import edu.brown.cs.rmerzbacgajith.tree.Point;
 import edu.brown.cs.rmerzbacgajith.tree.TreeBuilder;
 

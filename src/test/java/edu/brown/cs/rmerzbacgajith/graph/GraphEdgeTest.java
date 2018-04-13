@@ -1,4 +1,4 @@
-package edu.brown.cs.gajith.graph;
+package edu.brown.cs.rmerzbacgajith.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;

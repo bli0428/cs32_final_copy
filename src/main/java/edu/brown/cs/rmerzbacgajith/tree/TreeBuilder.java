@@ -2,6 +2,8 @@ package edu.brown.cs.rmerzbacgajith.tree;
 
 import java.util.List;
 
+import edu.brown.cs.rmerzbacgajith.maps.Node;
+
 /**
  * A class that builds the K-D tree.
  *

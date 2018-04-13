@@ -1,4 +1,4 @@
-package edu.brown.cs.gajith.autocorrect;
+package edu.brown.cs.rmerzbacgajith.autocorrect;
 
 import static org.junit.Assert.assertEquals;
 

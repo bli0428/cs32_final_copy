@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableMap;
 import edu.brown.cs.rmerzbacgajith.graph.GraphBuilder;
 import edu.brown.cs.rmerzbacgajith.graph.GraphEdge;
 import edu.brown.cs.rmerzbacgajith.graph.GraphNode;
-import edu.brown.cs.rmerzbacgajith.tree.Node;
 
 /**
  * Maps specific GraphBuilder that implements generic GraphBuilder in order to
@@ -136,7 +135,7 @@ public class MapsGraphBuilder<N, E>
    *          the second coordinates
    * @return the distance
    */
-  public double findDistance(double[] coords1, double[] coords2) {
+  private double findDistance(double[] coords1, double[] coords2) {
     assert coords1.length == coords2.length;
     double sum = 0;
     for (int i = 0; i < coords1.length; i++) {
@@ -154,7 +153,7 @@ public class MapsGraphBuilder<N, E>
    *          the second coordinates
    * @return the distance
    */
-  public double haversineDistance(double[] coords1, double[] coords2) {
+  private double haversineDistance(double[] coords1, double[] coords2) {
     assert coords1.length == coords2.length;
     double delPhi = Math.toRadians(coords2[0] - coords1[0]);
     double delLambda = Math.toRadians(coords2[1] - coords1[1]);
