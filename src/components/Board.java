@@ -19,7 +19,7 @@ public class Board {
 
   private Map<Position, Piece> places;
 
-  private static final Map<Position, Piece> DEFAULT_START = //
+  private final Map<Position, Piece> DEFAULT_START = //
       new HashMap<Position, Piece>(); // TODO: Initialize this map with the
                                       // default starting values for the board
 
@@ -62,9 +62,14 @@ public class Board {
    *          the end position
    * @throws InvalidMoveException
    *           if the start position or end position are invalid.
+   * @return a reference to the piece that was at dest, or null if there was
+   *         nothing there
    */
-  public void processMove(Position start, Position dest)
+  public Piece processMove(Position start, Position dest)
       throws InvalidMoveException {
+
+    Piece out = null;
+
     // If there's no piece at start or the piece at start can't move to end,
     // throw an exception
     if (!places.containsKey(start)) {
@@ -78,6 +83,7 @@ public class Board {
     // If there's a piece at the destination, it will get taken. Send it to a
     // bank.
     if (places.containsKey(dest)) {
+      out = places.get(dest);
       places.get(dest).move(new BankPosition());
       places.remove(dest);
     }
@@ -87,6 +93,7 @@ public class Board {
     p.move(dest);
     places.put(dest, p);
     places.remove(start);
+    return out;
   }
 
   /**
