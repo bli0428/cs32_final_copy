@@ -22,10 +22,12 @@ public interface Piece {
   /**
    * Calculates all valid moves for this piece.
    *
+   * @param board
+   *          The board to find valid moves for this piece
    * @return a set containing the end positions for all of this piece's valid
    *         moves.
    */
-  Set<Position> getValidMoves();
+  Set<Position> getValidMoves(Board board);
 
   /**
    * Returns a String corresponding to this piece's type (K = King, q = Queen, r

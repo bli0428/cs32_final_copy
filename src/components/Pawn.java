@@ -62,7 +62,7 @@ public class Pawn implements Piece {
   }
 
   @Override
-  public Set<Position> getValidMoves() {
+  public Set<Position> getValidMoves(Board board) {
     // TODO: En-pessant, promotion
 
     Map<Position, Piece> m = board.places();

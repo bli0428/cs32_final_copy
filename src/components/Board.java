@@ -162,7 +162,8 @@ public class Board {
   }
 
   /**
-   * Build the set of all positions threatened by pieces of a particular color.
+   * Build the set of all positions threatened by pieces of a particular color
+   * for a particular board.
    *
    * @param color
    *          0 for white, 1 for black
