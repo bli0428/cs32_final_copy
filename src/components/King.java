@@ -45,6 +45,7 @@ public class King implements Piece {
 
   @Override
   public Set<Position> getValidMoves() {
+    // TODO: Castling
     Set<Position> out = new HashSet<Position>();
     Set<Position> threats = board.threatened(Math.abs(color - 1));
     for (int i = position.col() - 1; i <= position.col() + 1; i++) {
@@ -53,8 +54,13 @@ public class King implements Piece {
         if (!(i == position.col() && j == position.row())) {
           try {
             Position m = new Position(i, j);
+            // Can't move to a threatened space or a space occupied by one of
+            // our own pieces
             if (!threats.contains(m)) {
-              out.add(m);
+              if (!board.places().containsKey(m)
+                  || board.places().get(m).color() != color) {
+                out.add(m);
+              }
             }
           } catch (PositionException pe) {
 
@@ -62,7 +68,7 @@ public class King implements Piece {
         }
       }
     }
-    return null;
+    return out;
   }
 
   @Override
@@ -77,7 +83,7 @@ public class King implements Piece {
 
   @Override
   public void move(Position dest) {
-    // TODO: Auto-generated method stub
+    position = dest;
   }
 
   @Override
@@ -87,8 +93,23 @@ public class King implements Piece {
 
   @Override
   public Set<Position> threatens() {
-    // TODO: Auto-generated method stub
-    return null;
+    Set<Position> out = new HashSet<Position>();
+    for (int i = position.col() - 1; i <= position.col() + 1; i++) {
+      for (int j = position.row() - 1; j <= position.row() + 1; j++) {
+        // Can't move to the current space
+        if (!(i == position.col() && j == position.row())) {
+          try {
+            Position m = new Position(i, j);
+            // Can't move to a threatened space or a space occupied by one of
+            // our own pieces
+            out.add(m);
+          } catch (PositionException pe) {
+
+          }
+        }
+      }
+    }
+    return out;
   }
 
 }

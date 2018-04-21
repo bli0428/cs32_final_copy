@@ -1,8 +1,10 @@
 package components;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import positions.Position;
+import positions.PositionException;
 
 /**
  * Class that represents a knight.
@@ -43,8 +45,32 @@ public class Knight implements Piece {
 
   @Override
   public Set<Position> getValidMoves() {
-    // TODO: Auto-generated method stub
-    return null;
+    Set<Position> out = new HashSet<Position>();
+    for (int i = position.col() - 2; i <= position.col() + 2; i++) {
+      for (int j = position.row() - 2; j <= position.row() + 2; j++) {
+        try {
+          if (Math.abs(position.col() - i) == 2
+              && Math.abs(position.row() - j) == 1) {
+            Position m = new Position(i, j);
+            if (!board.places().containsKey(m)
+                || board.places().get(m).color() != color) {
+              out.add(m);
+            }
+          }
+          if (Math.abs(position.col() - i) == 1
+              && Math.abs(position.row() - j) == 2) {
+            Position m = new Position(i, j);
+            if (!board.places().containsKey(m)
+                || board.places().get(m).color() != color) {
+              out.add(m);
+            }
+          }
+        } catch (PositionException pe) {
+
+        }
+      }
+    }
+    return out;
   }
 
   @Override
@@ -59,7 +85,7 @@ public class Knight implements Piece {
 
   @Override
   public void move(Position dest) {
-    // TODO: Auto-generated method stub
+    position = dest;
   }
 
   @Override
@@ -69,8 +95,26 @@ public class Knight implements Piece {
 
   @Override
   public Set<Position> threatens() {
-    // TODO: Auto-generated method stub
-    return null;
+    Set<Position> out = new HashSet<Position>();
+    for (int i = position.col() - 2; i <= position.col() + 2; i++) {
+      for (int j = position.row() - 2; j <= position.row() + 2; j++) {
+        try {
+          if (Math.abs(position.col() - i) == 2
+              && Math.abs(position.row() - j) == 1) {
+            Position m = new Position(i, j);
+            out.add(m);
+          }
+          if (Math.abs(position.col() - i) == 1
+              && Math.abs(position.row() - j) == 2) {
+            Position m = new Position(i, j);
+            out.add(m);
+          }
+        } catch (PositionException pe) {
+
+        }
+      }
+    }
+    return out;
   }
 
 }

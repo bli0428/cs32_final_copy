@@ -37,6 +37,25 @@ public class Pawn implements Piece {
     this.hasMoved = false;
   }
 
+  /**
+   * Public constructor to be called at placement from a bank.
+   *
+   * @param start
+   *          the starting position for this Pawn
+   * @param color
+   *          the color of this pawn (0 = white 1 = black)
+   * @param board
+   *          the board this Pawn is on (for calculating moves)
+   * @param hasMoved
+   *          can this pawn move forward twice?
+   */
+  public Pawn(Position start, int color, Board board, Boolean hasMoved) {
+    this.pos = start;
+    this.color = color;
+    this.board = board;
+    this.hasMoved = hasMoved;
+  }
+
   @Override
   public Position position() {
     return pos;
