@@ -2,6 +2,7 @@ package components;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +43,17 @@ public class Board {
   }
 
   /**
+   * A copy constructor that creates a new instance of Board with that is a
+   * shallow copy of the old board.
+   *
+   * @param oldBoard
+   *          The board to be copied.
+   */
+  public Board(Board oldBoard) {
+    this.places = new HashMap<Position, Piece>(oldBoard.places());
+  }
+
+  /**
    * Processes a move from start to dest.
    *
    * @param start
@@ -78,6 +90,44 @@ public class Board {
   }
 
   /**
+   * Returns the valid moves of this board for a given color.
+   *
+   * @param color
+   *          The color of the current player.
+   * @return The valid moves represented as a Map.
+   */
+  public Map<Position, Set<Position>> getValidMoves(int color) {
+    Map<Position, Set<Position>> results = new HashMap<>();
+
+    // Creates all valid moves for this board.
+    for (Position key : places.keySet()) {
+      results.put(key, places.get(key).getValidMoves());
+    }
+
+    // Filters all valid moves for moves that would leave King in check.
+    for (Position key : results.keySet()) {
+
+      Position start = key;
+      Set<Position> validMoves = results.get(key);
+
+      for (Iterator<Position> i = validMoves.iterator(); i.hasNext();) {
+        Board tempBoard = new Board(this);
+        Position end = i.next();
+        try {
+          tempBoard.processMove(start, end);
+        } catch (InvalidMoveException e) {
+          e.printStackTrace();
+        }
+        if (tempBoard.check(color)) {
+          i.remove();
+        }
+      }
+
+    }
+    return results;
+  }
+
+  /**
    * Getter for places.
    *
    * @return an ImmutableMap copy of places.
@@ -101,6 +151,27 @@ public class Board {
         out.addAll(places.get(p).threatens());
       }
     }
+    return out;
+  }
+
+  /**
+   * Build the set of all positions threatened by pieces of a particular color.
+   *
+   * @param color
+   *          0 for white, 1 for black
+   * @param board
+   *          The board to check on.
+   * @return the set of threatened spaces
+   */
+  public Set<Position> threatened(int color, Board board) {
+    Set<Position> out = new HashSet<Position>();
+    Map<Position, Piece> boardPlaces = board.places();
+    for (Position p : boardPlaces.keySet()) {
+      if (boardPlaces.get(p).color() == color) {
+        out.addAll(boardPlaces.get(p).threatens());
+      }
+    }
+
     return out;
   }
 

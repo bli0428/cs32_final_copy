@@ -57,7 +57,7 @@ public class King implements Piece {
               out.add(m);
             }
           } catch (PositionException pe) {
-
+            pe.printStackTrace();
           }
         }
       }

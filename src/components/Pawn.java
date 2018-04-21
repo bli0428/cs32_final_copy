@@ -131,6 +131,10 @@ public class Pawn implements Piece {
 
     }
 
+    for (Position move : out) {
+
+    }
+
     return out;
   }
 
