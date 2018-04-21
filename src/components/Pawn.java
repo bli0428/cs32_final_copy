@@ -62,8 +62,8 @@ public class Pawn implements Piece {
           out.add(p);
         }
       } catch (PositionException pe) {
-
-      }
+      } // On PositionException, the new Position is off the board and should
+        // not be added
 
       // Check the other threatened side
       try {
@@ -72,7 +72,6 @@ public class Pawn implements Piece {
           out.add(p);
         }
       } catch (PositionException pe) {
-
       }
 
       // Check the forward move
@@ -87,12 +86,10 @@ public class Pawn implements Piece {
                 out.add(p2);
               }
             } catch (PositionException e) {
-
             }
           }
         }
       } catch (PositionException e) {
-
       }
     } else {
 
@@ -103,7 +100,6 @@ public class Pawn implements Piece {
           out.add(p);
         }
       } catch (PositionException pe) {
-
       }
 
       // Check the other threatened side
@@ -113,7 +109,6 @@ public class Pawn implements Piece {
           out.add(p);
         }
       } catch (PositionException pe) {
-
       }
 
       // Check the forward move
@@ -128,12 +123,10 @@ public class Pawn implements Piece {
                 out.add(p2);
               }
             } catch (PositionException e) {
-
             }
           }
         }
       } catch (PositionException e) {
-
       }
 
     }

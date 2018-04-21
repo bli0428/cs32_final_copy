@@ -1,8 +1,10 @@
 package components;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import positions.Position;
+import positions.PositionException;
 
 /**
  * Class that represents a king.
@@ -43,7 +45,23 @@ public class King implements Piece {
 
   @Override
   public Set<Position> getValidMoves() {
-    // TODO: Auto-generated method stub
+    Set<Position> out = new HashSet<Position>();
+    Set<Position> threats = board.threatened(Math.abs(color - 1));
+    for (int i = position.col() - 1; i <= position.col() + 1; i++) {
+      for (int j = position.row() - 1; j <= position.row() + 1; j++) {
+        // Can't move to the current space
+        if (!(i == position.col() && j == position.row())) {
+          try {
+            Position m = new Position(i, j);
+            if (!threats.contains(m)) {
+              out.add(m);
+            }
+          } catch (PositionException pe) {
+
+          }
+        }
+      }
+    }
     return null;
   }
 

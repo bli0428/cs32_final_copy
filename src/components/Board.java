@@ -95,8 +95,13 @@ public class Board {
    * @return the set of threatened spaces
    */
   public Set<Position> threatened(int color) {
-    // TODO: implement
-    return new HashSet<Position>();
+    Set<Position> out = new HashSet<Position>();
+    for (Position p : places.keySet()) {
+      if (places.get(p).color() == color) {
+        out.addAll(places.get(p).threatens());
+      }
+    }
+    return out;
   }
 
   /**
