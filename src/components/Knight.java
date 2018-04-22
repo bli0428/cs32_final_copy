@@ -16,7 +16,6 @@ public class Knight implements Piece {
 
   private Position position;
   private int color;
-  private Board board;
 
   /**
    * Public constructor to be called at board construction.
@@ -25,15 +24,11 @@ public class Knight implements Piece {
    *          the starting position for this Knight
    * @param color
    *          the color of this Knight (0 = white 1 = black)
-   * @param board
-   *          the board this Knight is on (for calculating moves)
-   *
    * @param position
    * @param color
    * @param board
    */
-  public Knight(Position start, int color, Board board) {
-    this.board = board;
+  public Knight(Position start, int color) {
     this.color = color;
     this.position = start;
   }
@@ -44,7 +39,7 @@ public class Knight implements Piece {
   }
 
   @Override
-  public Set<Position> getValidMoves() {
+  public Set<Position> getValidMoves(Board board) {
     Set<Position> out = new HashSet<Position>();
     for (int i = position.col() - 2; i <= position.col() + 2; i++) {
       for (int j = position.row() - 2; j <= position.row() + 2; j++) {
@@ -94,7 +89,7 @@ public class Knight implements Piece {
   }
 
   @Override
-  public Set<Position> threatens() {
+  public Set<Position> threatens(Board board) {
     Set<Position> out = new HashSet<Position>();
     for (int i = position.col() - 2; i <= position.col() + 2; i++) {
       for (int j = position.row() - 2; j <= position.row() + 2; j++) {

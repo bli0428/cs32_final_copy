@@ -16,7 +16,6 @@ public class Bishop implements Piece {
 
   private Position position;
   private int color;
-  private Board board;
 
   /**
    * Public constructor to be called at board construction.
@@ -25,15 +24,10 @@ public class Bishop implements Piece {
    *          the starting position for this Bishop
    * @param color
    *          the color of this Bishop (0 = white 1 = black)
-   * @param board
-   *          the board this Bishop is on (for calculating moves)
-   *
    * @param position
    * @param color
-   * @param board
    */
-  public Bishop(Position start, int color, Board board) {
-    this.board = board;
+  public Bishop(Position start, int color) {
     this.color = color;
     this.position = start;
   }
@@ -44,7 +38,7 @@ public class Bishop implements Piece {
   }
 
   @Override
-  public Set<Position> getValidMoves() {
+  public Set<Position> getValidMoves(Board board) {
     Set<Position> out = new HashSet<Position>();
 
     for (int i = position.col() + 1, j = position.row()
@@ -139,7 +133,7 @@ public class Bishop implements Piece {
   }
 
   @Override
-  public Set<Position> threatens() {
+  public Set<Position> threatens(Board board) {
     Set<Position> out = new HashSet<Position>();
 
     for (int i = position.col() + 1, j = position.row()

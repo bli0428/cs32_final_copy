@@ -16,7 +16,6 @@ public class King implements Piece {
 
   private Position position;
   private int color;
-  private Board board;
 
   /**
    * Public constructor to be called at board construction.
@@ -25,15 +24,12 @@ public class King implements Piece {
    *          the starting position for this King
    * @param color
    *          the color of this King (0 = white 1 = black)
-   * @param board
-   *          the board this King is on (for calculating moves)
    *
    * @param position
    * @param color
    * @param board
    */
-  public King(Position start, int color, Board board) {
-    this.board = board;
+  public King(Position start, int color) {
     this.color = color;
     this.position = start;
   }
@@ -44,7 +40,7 @@ public class King implements Piece {
   }
 
   @Override
-  public Set<Position> getValidMoves() {
+  public Set<Position> getValidMoves(Board board) {
     // TODO: Castling
     Set<Position> out = new HashSet<Position>();
     Set<Position> threats = board.threatened(Math.abs(color - 1));
@@ -92,7 +88,7 @@ public class King implements Piece {
   }
 
   @Override
-  public Set<Position> threatens() {
+  public Set<Position> threatens(Board board) {
     Set<Position> out = new HashSet<Position>();
     for (int i = position.col() - 1; i <= position.col() + 1; i++) {
       for (int j = position.row() - 1; j <= position.row() + 1; j++) {

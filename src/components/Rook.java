@@ -16,7 +16,6 @@ public class Rook implements Piece {
 
   private Position position;
   private int color;
-  private Board board;
 
   /**
    * Public constructor to be called at board construction.
@@ -25,15 +24,8 @@ public class Rook implements Piece {
    *          the starting position for this Rook
    * @param color
    *          the color of this Rook (0 = white 1 = black)
-   * @param board
-   *          the board this Rook is on (for calculating moves)
-   *
-   * @param position
-   * @param color
-   * @param board
    */
-  public Rook(Position start, int color, Board board) {
-    this.board = board;
+  public Rook(Position start, int color) {
     this.color = color;
     this.position = start;
   }
@@ -44,7 +36,7 @@ public class Rook implements Piece {
   }
 
   @Override
-  public Set<Position> getValidMoves() {
+  public Set<Position> getValidMoves(Board board) {
     Set<Position> out = new HashSet<Position>();
     for (int i = position.col() + 1; i <= Position.BOARD_SIZE; i++) {
       try {
@@ -134,7 +126,7 @@ public class Rook implements Piece {
   }
 
   @Override
-  public Set<Position> threatens() {
+  public Set<Position> threatens(Board board) {
     Set<Position> out = new HashSet<Position>();
     for (int i = position.col() + 1; i <= Position.BOARD_SIZE; i++) {
       try {
