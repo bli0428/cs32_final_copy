@@ -4,6 +4,7 @@ import java.util.Set;
 
 import components.Board;
 import components.Piece;
+import positions.Position;
 
 /**
  * Interface that represents a Player of chess or bughouse.
@@ -40,8 +41,11 @@ public interface Player {
    * Gets a promotion preference from the player.
    *
    * @return a piece to promote a pawn to
+   *
+   * @param p
+   *          the position where the promotion occurs
    */
-  Piece promote();
+  Piece promote(Position p);
 
   /**
    * Adds a piece to the bank.

@@ -14,7 +14,6 @@ import components.Knight;
 import components.Piece;
 import components.Queen;
 import components.Rook;
-import positions.BankPosition;
 import positions.Position;
 import positions.PositionException;
 
@@ -54,6 +53,22 @@ public class ReplPlayer implements Player {
   public Move move() {
     Map<Position, Set<Position>> validMoves = board.getValidMoves(color);
 
+    // System.out.println(board.check(color));
+
+    if (board.check(color)) {
+      System.out.println("Check!");
+    }
+
+    // for (Position p : board.places().keySet()) {
+    // System.out.println(
+    // WB[board.places().get(p).color()] + board.places().get(p).type() + " "
+    // + board.places().get(p).position().col() + ","
+    // + board.places().get(p).position().row());
+    // for (Position t : board.places().get(p).threatens(board)) {
+    // System.out.println(t.col() + "," + t.row());
+    // }
+    // // }
+    //
     // for (Position p : validMoves.keySet()) {
     // for (Position q : validMoves.get(p)) {
     // System.out.println(board.places().get(p).type() + " "
@@ -82,33 +97,7 @@ public class ReplPlayer implements Player {
       e.printStackTrace();
     }
     if (s.matches("board") || s.matches("Board")) {
-      // Map<Position, Piece> b = board.places();
-      // for (Position p : b.keySet()) {
-      // System.out.println(p.col() + "," + p.row() + " " + WB[b.get(p).color()]
-      // + " " + b.get(p).type());
-      // }
-
-      for (int i = 1; i <= 8; i++) {
-        StringBuilder sb = new StringBuilder();
-        for (int j = 1; j <= 8; j++) {
-          Position p;
-          try {
-            p = new Position(j, i);
-            if (board.places().containsKey(p)) {
-              sb.append(WB[board.places().get(p).color()]);
-              sb.append(board.places().get(p).type());
-            } else {
-              sb.append("__");
-            }
-            sb.append(" ");
-          } catch (PositionException e) {
-            // TODO Auto-generated catch block
-            // Should never be reached
-            e.printStackTrace();
-          }
-        }
-        System.out.println(sb.toString());
-      }
+      board.print();
       return move();
     } else if (s.matches("bank") || s.matches("Bank")) {
       for (Piece p : bank) {
@@ -152,7 +141,7 @@ public class ReplPlayer implements Player {
   }
 
   @Override
-  public Piece promote() {
+  public Piece promote(Position p) {
     System.out.println("Enter the type of piece you'd like to promote to:"
         + " k for knight, b for bishop, r for rook, q for queen:");
     System.out.println();
@@ -168,18 +157,19 @@ public class ReplPlayer implements Player {
     switch (s) {
     case "k":
     case "K":
-      return new Knight(new BankPosition(), color);
+      return new Knight(p, color);
     case "b":
     case "B":
-      return new Bishop(new BankPosition(), color);
+      return new Bishop(p, color);
     case "q":
     case "Q":
-      return new Queen(new BankPosition(), color);
+      return new Queen(p, color);
     case "r":
     case "R":
-      return new Rook(new BankPosition(), color);
+      return new Rook(p, color);
     default:
-      return promote();
+      System.out.println("Didn't recognize that token");
+      return promote(p);
     }
   }
 

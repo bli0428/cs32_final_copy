@@ -189,7 +189,7 @@ public class Pawn implements Piece {
     if (color == 0) {
       // Check one threatened side
       try {
-        Position p = new Position(pos.row() + 1, pos.col() + 1);
+        Position p = new Position(pos.col() + 1, pos.row() + 1);
         out.add(p);
       } catch (PositionException pe) {
 
@@ -197,7 +197,7 @@ public class Pawn implements Piece {
 
       // Check the other threatened side
       try {
-        Position p = new Position(pos.row() + 1, pos.col() - 1);
+        Position p = new Position(pos.col() - 1, pos.row() + 1);
         out.add(p);
       } catch (PositionException pe) {
 
@@ -205,7 +205,7 @@ public class Pawn implements Piece {
     } else {
       // Check one threatened side
       try {
-        Position p = new Position(pos.row() - 1, pos.col() + 1);
+        Position p = new Position(pos.col() - 1, pos.row() - 1);
         out.add(p);
       } catch (PositionException pe) {
 
@@ -213,7 +213,7 @@ public class Pawn implements Piece {
 
       // Check the other threatened side
       try {
-        Position p = new Position(pos.row() - 1, pos.col() - 1);
+        Position p = new Position(pos.col() + 1, pos.row() - 1);
         out.add(p);
       } catch (PositionException pe) {
 

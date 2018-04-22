@@ -30,7 +30,7 @@ public class ChessGame {
   public ChessGame(Player p1, Player p2) throws PositionException {
     this.p1 = p1;
     this.p2 = p2;
-    this.board = new Board();
+    this.board = new Board(p1, p2);
     p2.setBoard(board);
     p1.setBoard(board);
     p1.setColor(0);
@@ -54,6 +54,7 @@ public class ChessGame {
       }
       if (board.stalemate(turn)) {
         System.out.println("Game over, it's a draw!");
+        break;
       }
       Move m;
       if (turn == 0) {
@@ -62,7 +63,7 @@ public class ChessGame {
         m = p2.move();
       }
       try {
-        board.processMove(m.start(), m.end());
+        board.processMove(m.start(), m.end(), false);
         turn = Math.abs(turn - 1);
         System.out.println("Moved from " + m.start().col() + ","
             + m.start().row() + " to " + m.end().col() + "," + m.end().row());
