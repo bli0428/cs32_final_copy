@@ -1,5 +1,6 @@
 package main;
 
+import games.ABCutoffAI;
 import games.ChessGame;
 import games.Player;
 import games.ReplPlayer;
@@ -28,7 +29,7 @@ public final class Main {
     // types, chess vs bughouse, etc.
 
     Player p1 = new ReplPlayer();
-    Player p2 = new ReplPlayer();
+    Player p2 = new ABCutoffAI();
 
     try {
       ChessGame game = new ChessGame(p1, p2);

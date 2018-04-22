@@ -46,6 +46,12 @@ public class Move {
     this.value = value;
   }
 
+  @Override
+  public String toString() {
+    return String.format("start: %s, end: %s", start.numString(),
+        end.numString());
+  }
+
   /**
    * Getter for start.
    *

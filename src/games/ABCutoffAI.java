@@ -53,12 +53,25 @@ public class ABCutoffAI implements Player {
 
     for (Position start : validMoves.keySet()) {
       for (Position end : validMoves.get(start)) {
+        Move tempMove = new Move(start, end);
+
+        // System.out.println(String.format("Looking at Move: %s, type %s",
+        // tempMove.toString(), board.places().get(start).type()));
         Board newBoard = new Board(board);
+
+        try {
+          newBoard.processMove(start, end, promote(end));
+        } catch (InvalidMoveException e) {
+
+          e.printStackTrace();
+        }
         double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
             color);
         if (temp > v) {
-          bestMove = new Move(start, end);
+          bestMove = tempMove;
           v = temp;
+          // System.out.println(String.format("new best move: %s with value %f",
+          // bestMove.toString(), v));
         }
         if (v >= b) {
           new Move(start, end);
@@ -101,19 +114,20 @@ public class ABCutoffAI implements Player {
       for (Position end : validMoves.get(start)) {
         Board newBoard = new Board(tempBoard);
         try {
-          newBoard.processMove(start, end, false);
+          newBoard.processMove(start, end, new Queen(end, currColor));
         } catch (InvalidMoveException e) {
           e.printStackTrace();
         }
         v = Math.max(v, alphaBetaCutoffMin(newBoard, ply - 1, a, b, heur,
             Math.abs(currColor - 1)));
         if (v >= b) {
+          // System.out.println("returning from cutoffmax early" + v);
           return v;
         }
         a = Math.max(a, v);
       }
     }
-
+    // System.out.println("returning from cutoffmax" + v);
     return v;
   }
 
@@ -138,6 +152,9 @@ public class ABCutoffAI implements Player {
 
     // checks that the max depth has been reached.
     if (ply == 0) {
+      // System.out.println("returning from cutoffmin" + v);
+      // System.out.println(color);
+      // System.out.println(heur.evalBoard(tempBoard));
       return heur.evalBoard(tempBoard).get(color);
     }
 
@@ -146,20 +163,23 @@ public class ABCutoffAI implements Player {
     for (Position start : validMoves.keySet()) {
       for (Position end : validMoves.get(start)) {
         Board newBoard = new Board(tempBoard);
+
         try {
-          newBoard.processMove(start, end, false);
+          newBoard.processMove(start, end, new Queen(end, currColor));
         } catch (InvalidMoveException e) {
           e.printStackTrace();
         }
+
         v = Math.min(v, alphaBetaCutoffMax(newBoard, ply - 1, a, b, heur,
             Math.abs(currColor - 1)));
         if (v <= a) {
+          // System.out.println("returning from cutoffmin early" + v);
           return v;
         }
         b = Math.min(b, v);
       }
     }
-
+    // System.out.println("returning from cutoffmin" + v);
     return v;
 
   }
@@ -171,7 +191,7 @@ public class ABCutoffAI implements Player {
 
   @Override
   public Move move() {
-    return alphaBetaCutoff(3, new MaterialHeuristic());
+    return alphaBetaCutoff(1, new MaterialHeuristic());
   }
 
   @Override
