@@ -43,7 +43,7 @@ public class Board {
   }
 
   /**
-   * A copy constructor that creates a new instance of Board with that is a
+   * A copy constructor that creates a new instance of Board that is a
    * shallow copy of the old board.
    *
    * @param oldBoard
