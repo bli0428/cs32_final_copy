@@ -2,6 +2,7 @@ package components;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -106,14 +107,17 @@ public class Board {
   }
 
   /**
-   * A copy constructor that creates a new instance of Board with that is a
-   * shallow copy of the old board.
+   * A copy constructor that creates a new instance of Board that is a shallow
+   * copy of the old board.
    *
    * @param oldBoard
    *          The board to be copied.
    */
   public Board(Board oldBoard) {
-    this.places = new HashMap<Position, Piece>(oldBoard.places());
+    this.places = new HashMap<Position, Piece>();
+    for (Position key : oldBoard.places().keySet()) {
+      this.places.put(key, oldBoard.places().get(key).copyOf());
+    }
   }
 
   /**
@@ -146,8 +150,13 @@ public class Board {
     // If there's a piece at the destination, it will get taken. Send it to a
     // bank.
     if (places.containsKey(dest)) {
-      out = places.get(dest);
-      places.get(dest).move(new BankPosition());
+      Piece endPiece = places.get(dest);
+      if (endPiece.type().equals("pp")) {
+        out = new Pawn(new BankPosition(), endPiece.color(), true);
+      } else {
+        out = places.get(dest);
+        endPiece.move(new BankPosition());
+      }
       places.remove(dest);
     }
 
@@ -177,25 +186,25 @@ public class Board {
     }
 
     // Filters all valid moves for moves that would leave King in check.
-    // for (Position key : results.keySet()) {
-    //
-    // Position start = key;
-    // Set<Position> validMoves = results.get(key);
-    //
-    // for (Iterator<Position> i = validMoves.iterator(); i.hasNext();) {
-    // Board tempBoard = new Board(this);
-    // Position end = i.next();
-    // try {
-    // tempBoard.processMove(start, end);
-    // } catch (InvalidMoveException e) {
-    // // e.printStackTrace();
-    // }
-    // if (tempBoard.check(color)) {
-    // i.remove();
-    // }
-    // }
-    //
-    // }
+    for (Position key : results.keySet()) {
+
+      Position start = key;
+      Set<Position> validMoves = results.get(key);
+
+      for (Iterator<Position> i = validMoves.iterator(); i.hasNext();) {
+        Board tempBoard = new Board(this);
+        Position end = i.next();
+        try {
+          tempBoard.processMove(start, end);
+        } catch (InvalidMoveException e) {
+          // e.printStackTrace();
+        }
+        if (tempBoard.check(color)) {
+          i.remove();
+        }
+      }
+
+    }
     return results;
   }
 

@@ -20,6 +20,13 @@ public interface Piece {
   Position position();
 
   /**
+   * Creates a shallow copy of the given piece.
+   *
+   * @return The copied piece.
+   */
+  Piece copyOf();
+
+  /**
    * Calculates all valid moves for this piece.
    *
    * @param board

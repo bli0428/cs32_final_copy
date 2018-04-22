@@ -33,6 +33,11 @@ public class Queen implements Piece {
   }
 
   @Override
+  public Piece copyOf() {
+    return new Queen(position, color);
+  }
+
+  @Override
   public Position position() {
     return position;
   }

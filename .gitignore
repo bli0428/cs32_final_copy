@@ -52,4 +52,7 @@ local.properties
 ########
 
 .DS_Store
-/bin/
+
+/bin1/
+bin/
+
