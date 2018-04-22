@@ -69,31 +69,33 @@ public class Pawn implements Piece {
 
       // Check one threatened side
       try {
-        Position p = new Position(pos.row() + 1, pos.col() + 1);
-        if (m.get(p).color() == 1) {
+        Position p = new Position(pos.col() + 1, pos.row() + 1);
+        if (m.containsKey(p) && m.get(p).color() == 1) {
           out.add(p);
         }
       } catch (PositionException pe) {
+        // System.out.println("Here");
       } // On PositionException, the new Position is off the board and should
         // not be added
 
       // Check the other threatened side
       try {
-        Position p = new Position(pos.row() + 1, pos.col() - 1);
-        if (m.get(p).color() == 1) {
+        Position p = new Position(pos.col() - 1, pos.row() + 1);
+        if (m.containsKey(p) && m.get(p).color() == 1) {
           out.add(p);
         }
       } catch (PositionException pe) {
+        // System.out.println("Here");
       }
 
       // Check the forward move
       try {
-        Position p = new Position(pos.row() + 1, pos.col());
+        Position p = new Position(pos.col(), pos.row() + 1);
         if (!m.containsKey(p)) {
           out.add(p);
           if (!hasMoved) {
             try {
-              Position p2 = new Position(pos.row() + 2, pos.col());
+              Position p2 = new Position(pos.col(), pos.row() + 2);
               if (!m.containsKey(p2)) {
                 out.add(p2);
               }
@@ -102,43 +104,48 @@ public class Pawn implements Piece {
           }
         }
       } catch (PositionException e) {
+        // System.out.println("Here");
       }
     } else {
 
       // Check one threatened side
       try {
-        Position p = new Position(pos.row() - 1, pos.col() + 1);
-        if (m.get(p).color() == 0) {
+        Position p = new Position(pos.col() - 1, pos.row() - 1);
+        if (m.containsKey(p) && m.get(p).color() == 0) {
           out.add(p);
         }
       } catch (PositionException pe) {
+        // System.out.println("Here");
       }
 
       // Check the other threatened side
       try {
-        Position p = new Position(pos.row() - 1, pos.col() - 1);
-        if (m.get(p).color() == 0) {
+        Position p = new Position(pos.col() + 1, pos.row() - 1);
+        if (m.containsKey(p) && m.get(p).color() == 0) {
           out.add(p);
         }
       } catch (PositionException pe) {
+        // System.out.println("Here");
       }
 
       // Check the forward move
       try {
-        Position p = new Position(pos.row() - 1, pos.col());
+        Position p = new Position(pos.col(), pos.row() - 1);
         if (!m.containsKey(p)) {
           out.add(p);
           if (!hasMoved) {
             try {
-              Position p2 = new Position(pos.row() - 2, pos.col());
+              Position p2 = new Position(pos.col(), pos.row() - 1);
               if (!m.containsKey(p2)) {
                 out.add(p2);
               }
             } catch (PositionException e) {
+              // System.out.println("Here");
             }
           }
         }
       } catch (PositionException e) {
+        // System.out.println("Here");
       }
 
     }

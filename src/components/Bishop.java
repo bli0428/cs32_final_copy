@@ -24,8 +24,6 @@ public class Bishop implements Piece {
    *          the starting position for this Bishop
    * @param color
    *          the color of this Bishop (0 = white 1 = black)
-   * @param position
-   * @param color
    */
   public Bishop(Position start, int color) {
     this.color = color;

@@ -61,7 +61,7 @@ public class Knight implements Piece {
             }
           }
         } catch (PositionException pe) {
-
+          // System.out.println("Here");
         }
       }
     }

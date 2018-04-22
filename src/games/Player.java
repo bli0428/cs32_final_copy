@@ -2,8 +2,15 @@ package games;
 
 import java.util.Set;
 
+import components.Board;
 import components.Piece;
 
+/**
+ * Interface that represents a Player of chess or bughouse.
+ *
+ * @author charliecutting
+ *
+ */
 public interface Player {
 
   /**
@@ -19,6 +26,36 @@ public interface Player {
    * @return a Move object that stores the start and end positions of this
    *         player's move
    */
-  public Move move();
+  Move move();
 
+  /**
+   * Sets this player's Board to board.
+   *
+   * @param board
+   *          the board this player is on
+   */
+  void setBoard(Board board);
+
+  /**
+   * Gets a promotion preference from the player.
+   *
+   * @return a piece to promote a pawn to
+   */
+  Piece promote();
+
+  /**
+   * Adds a piece to the bank.
+   *
+   * @param p
+   *          the piece to add
+   */
+  void acceptPiece(Piece p);
+
+  /**
+   * Setter for color.
+   *
+   * @param color
+   *          the color to set this player to.
+   */
+  void setColor(int color);
 }

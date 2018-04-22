@@ -2,7 +2,6 @@ package components;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,10 +18,6 @@ import positions.PositionException;
 public class Board {
 
   private Map<Position, Piece> places;
-
-  private final Map<Position, Piece> DEFAULT_START = //
-      new HashMap<Position, Piece>(); // TODO: Initialize this map with the
-                                      // default starting values for the board
 
   /**
    * Constructor that takes a map of starting positions (allows arbitrary game
@@ -43,7 +38,7 @@ public class Board {
    *           if there's an internal issue with Position
    */
   public Board() throws PositionException {
-    this.places = new HashMap<Position, Piece>();// DEFAULT_START;
+    this.places = new HashMap<Position, Piece>();
     Position a1 = new Position(1, 1);
     Position b1 = new Position(2, 1);
     Position c1 = new Position(3, 1);
@@ -176,29 +171,31 @@ public class Board {
 
     // Creates all valid moves for this board.
     for (Position key : places.keySet()) {
-      results.put(key, places.get(key).getValidMoves(this));
+      if (places.get(key).color() == color) {
+        results.put(key, places.get(key).getValidMoves(this));
+      }
     }
 
     // Filters all valid moves for moves that would leave King in check.
-    for (Position key : results.keySet()) {
-
-      Position start = key;
-      Set<Position> validMoves = results.get(key);
-
-      for (Iterator<Position> i = validMoves.iterator(); i.hasNext();) {
-        Board tempBoard = new Board(this);
-        Position end = i.next();
-        try {
-          tempBoard.processMove(start, end);
-        } catch (InvalidMoveException e) {
-          e.printStackTrace();
-        }
-        if (tempBoard.check(color)) {
-          i.remove();
-        }
-      }
-
-    }
+    // for (Position key : results.keySet()) {
+    //
+    // Position start = key;
+    // Set<Position> validMoves = results.get(key);
+    //
+    // for (Iterator<Position> i = validMoves.iterator(); i.hasNext();) {
+    // Board tempBoard = new Board(this);
+    // Position end = i.next();
+    // try {
+    // tempBoard.processMove(start, end);
+    // } catch (InvalidMoveException e) {
+    // // e.printStackTrace();
+    // }
+    // if (tempBoard.check(color)) {
+    // i.remove();
+    // }
+    // }
+    //
+    // }
     return results;
   }
 
@@ -208,8 +205,7 @@ public class Board {
    * @return an ImmutableMap copy of places.
    */
   public Map<Position, Piece> places() {
-    return places; // TODO: Figure out why my Guava import
-                   // isn't working and make this an ImmutableMap
+    return places;
   }
 
   /**
@@ -267,5 +263,27 @@ public class Board {
       }
     }
     return false;
+  }
+
+  /**
+   * Is the king of the given color in checkmate.
+   *
+   * @param color
+   *          0 for white, 1 for black
+   * @return true if the king is in checkmate, false otherwise
+   */
+  public boolean checkmate(int color) {
+    return check(color) && getValidMoves(color).isEmpty();
+  }
+
+  /**
+   * Is the game at a stalemate.
+   *
+   * @param color
+   *          0 for white's turn, 1 for black's turn
+   * @return true if the game is at a stalemate, false otherwise
+   */
+  public boolean stalemate(int color) {
+    return !check(color) && getValidMoves(color).isEmpty();
   }
 }

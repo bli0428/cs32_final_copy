@@ -28,14 +28,20 @@ public class Position {
    *           if this constructor is called with invalid coordinates
    */
   public Position(int col, int row) throws PositionException {
-    try {
-      this.col = col;
-      this.row = row;
-      assert col >= 1 && col <= BOARD_SIZE;
-      assert row >= 1 && row <= BOARD_SIZE;
-    } catch (AssertionError err) {
+    // try {
+    this.col = col;
+    this.row = row;
+    if (!(col >= 1 && col <= BOARD_SIZE)) {
       throw new PositionException(this);
     }
+    if (!(row >= 1 && row <= BOARD_SIZE)) {
+      throw new PositionException(this);
+    }
+    // assert col >= 1 && col <= BOARD_SIZE;
+    // assert row >= 1 && row <= BOARD_SIZE;
+    // } catch (AssertionError err) {
+    // throw new PositionException(this);
+    // }
   }
 
   /**

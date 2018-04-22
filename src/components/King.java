@@ -24,10 +24,6 @@ public class King implements Piece {
    *          the starting position for this King
    * @param color
    *          the color of this King (0 = white 1 = black)
-   *
-   * @param position
-   * @param color
-   * @param board
    */
   public King(Position start, int color) {
     this.color = color;
@@ -59,7 +55,7 @@ public class King implements Piece {
               }
             }
           } catch (PositionException pe) {
-            pe.printStackTrace();
+
           }
         }
       }
