@@ -20,10 +20,6 @@ public class Board {
 
   private Map<Position, Piece> places;
 
-  private final Map<Position, Piece> DEFAULT_START = //
-      new HashMap<Position, Piece>(); // TODO: Initialize this map with the
-                                      // default starting values for the board
-
   /**
    * Constructor that takes a map of starting positions (allows arbitrary game
    * initialization).
@@ -111,14 +107,17 @@ public class Board {
   }
 
   /**
-   * A copy constructor that creates a new instance of Board that is a
-   * shallow copy of the old board.
+   * A copy constructor that creates a new instance of Board that is a shallow
+   * copy of the old board.
    *
    * @param oldBoard
    *          The board to be copied.
    */
   public Board(Board oldBoard) {
-    this.places = new HashMap<Position, Piece>(oldBoard.places());
+    this.places = new HashMap<Position, Piece>();
+    for (Position key : oldBoard.places().keySet()) {
+      this.places.put(key, oldBoard.places().get(key).copyOf());
+    }
   }
 
   /**
@@ -151,8 +150,13 @@ public class Board {
     // If there's a piece at the destination, it will get taken. Send it to a
     // bank.
     if (places.containsKey(dest)) {
-      out = places.get(dest);
-      places.get(dest).move(new BankPosition());
+      Piece endPiece = places.get(dest);
+      if (endPiece.type().equals("pp")) {
+        out = new Pawn(new BankPosition(), endPiece.color(), true);
+      } else {
+        out = places.get(dest);
+        endPiece.move(new BankPosition());
+      }
       places.remove(dest);
     }
 

@@ -31,6 +31,11 @@ public class Rook implements Piece {
   }
 
   @Override
+  public Piece copyOf() {
+    return new Rook(position, color);
+  }
+
+  @Override
   public Position position() {
     return position;
   }

@@ -33,6 +33,11 @@ public class Bishop implements Piece {
   }
 
   @Override
+  public Piece copyOf() {
+    return new Bishop(position, color);
+  }
+
+  @Override
   public Position position() {
     return position;
   }

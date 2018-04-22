@@ -35,6 +35,11 @@ public class King implements Piece {
   }
 
   @Override
+  public Piece copyOf() {
+    return new King(position, color);
+  }
+
+  @Override
   public Position position() {
     return position;
   }

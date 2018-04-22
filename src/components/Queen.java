@@ -26,13 +26,15 @@ public class Queen implements Piece {
    *          the starting position for this Queen
    * @param color
    *          the color of this Queen (0 = white 1 = black)
-   * @param position
-   * @param color
-   * @param board
    */
   public Queen(Position start, int color) {
     this.color = color;
     this.position = start;
+  }
+
+  @Override
+  public Piece copyOf() {
+    return new Queen(position, color);
   }
 
   @Override

@@ -33,6 +33,11 @@ public class Pawn implements Piece {
     this.hasMoved = false;
   }
 
+  @Override
+  public Piece copyOf() {
+    return new Pawn(pos, color, hasMoved);
+  }
+
   /**
    * Public constructor to be called at placement from a bank.
    *
