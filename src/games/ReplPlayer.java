@@ -28,7 +28,6 @@ public class ReplPlayer implements Player {
   private Set<Piece> bank;
   private Board board;
   private int color;
-
   private static final String[] WB = { "W", "B" };
   private static final String[] WHITE_BLACK = { "White", "Black" };
 

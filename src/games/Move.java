@@ -11,6 +11,7 @@ import positions.Position;
 public class Move {
   private Position start;
   private Position end;
+  private double value;
 
   /**
    * Public constructor.
@@ -23,6 +24,26 @@ public class Move {
   public Move(Position start, Position end) {
     this.start = start;
     this.end = end;
+  }
+
+  public Move(Position start, Position end, double value) {
+    this.start = start;
+    this.end = end;
+    this.value = value;
+  }
+
+  public Move(double value) {
+    this.start = null;
+    this.end = null;
+    this.value = value;
+  }
+
+  public double value() {
+    return value;
+  }
+
+  public void setValue(double value) {
+    this.value = value;
   }
 
   /**

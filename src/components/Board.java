@@ -19,7 +19,7 @@ import positions.PositionException;
  */
 public class Board {
 
-  private static final String[] WB = { "W", "B" };
+  private static final String[] WB = {"W", "B"};
 
   private Map<Position, Piece> places;
 
@@ -138,6 +138,57 @@ public class Board {
   }
 
   /**
+   * Processes a move from start to dest, taking in a promoted Piece.
+   * 
+   * @param start
+   * @param dest
+   * @param prmtPiece
+   *          A piece in the form of something like Knight or Queen. Not the
+   *          actual PromotedPawn class.
+   * @return
+   * @throws InvalidMoveException
+   */
+  public Piece processMove(Position start, Position dest, Piece prmtPiece)
+      throws InvalidMoveException {
+    Piece out = null;
+
+    // If there's no piece at start or the piece at start can't move to end,
+    // throw an exception
+    if (!places.containsKey(start)) {
+      throw new InvalidMoveException(dest);
+    }
+    Piece p = places.get(start);
+    if (!p.getValidMoves(this).contains(dest)) {
+      throw new InvalidMoveException(dest);
+    }
+
+    // Promotions
+    if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
+      p = new PromotedPawn(prmtPiece);
+    }
+
+    // If there's a piece at the destination, it will get taken. Send it to a
+    // bank.
+    if (places.containsKey(dest)) {
+      Piece endPiece = places.get(dest);
+      if (endPiece.type().equals("pp")) {
+        out = new Pawn(new BankPosition(), endPiece.color(), true);
+      } else {
+        out = places.get(dest);
+        endPiece.move(new BankPosition());
+      }
+      places.remove(dest);
+    }
+
+    // Process the move by updating the piece's internal position and the
+    // positions map.
+    p.move(dest);
+    places.put(dest, p);
+    places.remove(start);
+    return out;
+  }
+
+  /**
    * Processes a move from start to dest.
    *
    * @param start
@@ -230,6 +281,7 @@ public class Board {
       }
 
     }
+
     return results;
   }
 
