@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import games.Player;
 import positions.BankPosition;
 import positions.Position;
 import positions.PositionException;
@@ -18,7 +19,11 @@ import positions.PositionException;
  */
 public class Board {
 
+  private static final String[] WB = { "W", "B" };
+
   private Map<Position, Piece> places;
+
+  private Player[] players;
 
   /**
    * Constructor that takes a map of starting positions (allows arbitrary game
@@ -27,8 +32,12 @@ public class Board {
    * @param startingPlaces
    *          a map of starting positions
    */
-  public Board(Map<Position, Piece> startingPlaces) {
+  public Board(Map<Position, Piece> startingPlaces, Player white,
+      Player black) {
     this.places = startingPlaces;
+    players = new Player[2];
+    players[0] = white;
+    players[1] = black;
   }
 
   /**
@@ -38,8 +47,9 @@ public class Board {
    * @throws PositionException
    *           if there's an internal issue with Position
    */
-  public Board() throws PositionException {
+  public Board(Player white, Player black) throws PositionException {
     this.places = new HashMap<Position, Piece>();
+    players = new Player[2];
     Position a1 = new Position(1, 1);
     Position b1 = new Position(2, 1);
     Position c1 = new Position(3, 1);
@@ -104,6 +114,9 @@ public class Board {
     places.put(f7, new Pawn(f7, 1));
     places.put(g7, new Pawn(g7, 1));
     places.put(h7, new Pawn(h7, 1));
+
+    players[0] = white;
+    players[1] = black;
   }
 
   /**
@@ -118,6 +131,10 @@ public class Board {
     for (Position key : oldBoard.places().keySet()) {
       this.places.put(key, oldBoard.places().get(key).copyOf());
     }
+
+    players = new Player[2];
+    players[0] = oldBoard.players[0];
+    players[1] = oldBoard.players[1];
   }
 
   /**
@@ -127,12 +144,14 @@ public class Board {
    *          the start position
    * @param dest
    *          the end position
+   * @param usrQuery
+   *          is this move a temporary process
    * @throws InvalidMoveException
    *           if the start position or end position are invalid.
    * @return a reference to the piece that was at dest, or null if there was
    *         nothing there
    */
-  public Piece processMove(Position start, Position dest)
+  public Piece processMove(Position start, Position dest, boolean usrQuery)
       throws InvalidMoveException {
 
     Piece out = null;
@@ -145,6 +164,12 @@ public class Board {
     Piece p = places.get(start);
     if (!p.getValidMoves(this).contains(dest)) {
       throw new InvalidMoveException(dest);
+    }
+
+    // Promotions
+    if (!usrQuery && p.type().equals("p")
+        && (dest.row() == 8 || dest.row() == 1)) {
+      places.put(start, players[p.color()].promote(start));
     }
 
     // If there's a piece at the destination, it will get taken. Send it to a
@@ -195,7 +220,7 @@ public class Board {
         Board tempBoard = new Board(this);
         Position end = i.next();
         try {
-          tempBoard.processMove(start, end);
+          tempBoard.processMove(start, end, true);
         } catch (InvalidMoveException e) {
           // e.printStackTrace();
         }
@@ -269,6 +294,7 @@ public class Board {
     for (Position p : threats) {
       Piece k = places.get(p);
       if (k != null && k.type().equals("K") && k.color() == color) {
+        // System.out.println(p.col() + "," + p.row());
         return true;
       }
     }
@@ -283,7 +309,19 @@ public class Board {
    * @return true if the king is in checkmate, false otherwise
    */
   public boolean checkmate(int color) {
-    return check(color) && getValidMoves(color).isEmpty();
+    Map<Position, Set<Position>> map = getValidMoves(color);
+
+    if (!check(color)) {
+      return false;
+    }
+
+    for (Position p : map.keySet()) {
+      if (!map.get(p).isEmpty()) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -294,6 +332,54 @@ public class Board {
    * @return true if the game is at a stalemate, false otherwise
    */
   public boolean stalemate(int color) {
-    return !check(color) && getValidMoves(color).isEmpty();
+    Map<Position, Set<Position>> map = getValidMoves(color);
+
+    if (check(color)) {
+      return false;
+    }
+
+    for (Position p : map.keySet()) {
+      if (!map.get(p).isEmpty()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Prints this board.
+   */
+  public void print() {
+    for (int i = 8; i > 0; i--) {
+      StringBuilder sb = new StringBuilder();
+      sb.append(i + ". ");
+      for (int j = 1; j <= 8; j++) {
+        Position p;
+        try {
+          p = new Position(j, i);
+          if (places.containsKey(p)) {
+            sb.append(WB[places.get(p).color()]);
+            sb.append(places.get(p).type());
+          } else {
+            sb.append("__");
+          }
+          sb.append(" ");
+        } catch (PositionException e) {
+          // Should never be reached
+          e.printStackTrace();
+        }
+      }
+      System.out.println(sb.toString());
+    }
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("   ");
+    for (int i = 1; i <= 8; i++) {
+      sb.append(i + "  ");
+    }
+    System.out.println(sb.toString());
+
   }
 }
