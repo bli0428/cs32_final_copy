@@ -140,7 +140,7 @@ public class Pawn implements Piece {
           out.add(p);
           if (!hasMoved) {
             try {
-              Position p2 = new Position(pos.col(), pos.row() - 1);
+              Position p2 = new Position(pos.col(), pos.row() - 2);
               if (!m.containsKey(p2)) {
                 out.add(p2);
               }

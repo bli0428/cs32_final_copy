@@ -82,16 +82,39 @@ public class ReplPlayer implements Player {
       e.printStackTrace();
     }
     if (s.matches("board") || s.matches("Board")) {
-      Map<Position, Piece> b = board.places();
-      for (Position p : b.keySet()) {
-        System.out.println(p.col() + "," + p.row() + " " + WB[b.get(p).color()]
-            + " " + b.get(p).type());
+      // Map<Position, Piece> b = board.places();
+      // for (Position p : b.keySet()) {
+      // System.out.println(p.col() + "," + p.row() + " " + WB[b.get(p).color()]
+      // + " " + b.get(p).type());
+      // }
+
+      for (int i = 1; i <= 8; i++) {
+        StringBuilder sb = new StringBuilder();
+        for (int j = 1; j <= 8; j++) {
+          Position p;
+          try {
+            p = new Position(j, i);
+            if (board.places().containsKey(p)) {
+              sb.append(WB[board.places().get(p).color()]);
+              sb.append(board.places().get(p).type());
+            } else {
+              sb.append("__");
+            }
+            sb.append(" ");
+          } catch (PositionException e) {
+            // TODO Auto-generated catch block
+            // Should never be reached
+            e.printStackTrace();
+          }
+        }
+        System.out.println(sb.toString());
       }
       return move();
     } else if (s.matches("bank") || s.matches("Bank")) {
       for (Piece p : bank) {
         System.out.println(p.type());
       }
+      return move();
     } else if (s.matches("[1-8],[1-8]\\s+[1-8],[1-8]")) {
       String[] tokens = s.split("\\s");
       String[] p1 = tokens[0].split(",");

@@ -61,7 +61,6 @@ public class ChessGame {
       } else {
         m = p2.move();
       }
-      System.out.println("Here");
       try {
         board.processMove(m.start(), m.end());
         turn = Math.abs(turn - 1);

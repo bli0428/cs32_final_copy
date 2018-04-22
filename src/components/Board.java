@@ -199,7 +199,7 @@ public class Board {
         } catch (InvalidMoveException e) {
           // e.printStackTrace();
         }
-        if (tempBoard.check(color)) {
+        if (tempBoard.check(Math.abs(color - 1))) {
           i.remove();
         }
       }
