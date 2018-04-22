@@ -146,30 +146,39 @@ public class ReplPlayer implements Player {
         + " k for knight, b for bishop, r for rook, q for queen:");
     System.out.println();
     String s = "";
-    try (BufferedReader br = new BufferedReader(
-        new InputStreamReader(System.in))) {
+    try {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
       s = br.readLine();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    // TODO: fix these constructor calls
+    Piece out = null;
     switch (s) {
     case "k":
     case "K":
-      return new Knight(p, color);
+      out = new Knight(p, color);
+      break;
     case "b":
     case "B":
-      return new Bishop(p, color);
+      out = new Bishop(p, color);
+      break;
     case "q":
     case "Q":
-      return new Queen(p, color);
+      out = new Queen(p, color);
+      break;
     case "r":
     case "R":
-      return new Rook(p, color);
+      out = new Rook(p, color);
+      break;
     default:
       System.out.println("Didn't recognize that token");
+      break;
+    }
+    if (out == null) {
       return promote(p);
+    } else {
+      return out;
     }
   }
 

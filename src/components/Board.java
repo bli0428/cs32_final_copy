@@ -169,7 +169,7 @@ public class Board {
     // Promotions
     if (!usrQuery && p.type().equals("p")
         && (dest.row() == 8 || dest.row() == 1)) {
-      places.put(start, players[p.color()].promote(start));
+      p = new PromotedPawn(players[p.color()].promote(start));
     }
 
     // If there's a piece at the destination, it will get taken. Send it to a

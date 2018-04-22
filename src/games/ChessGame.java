@@ -42,6 +42,7 @@ public class ChessGame {
    */
   public void play() {
     while (true) {
+      board.print();
       if (board.checkmate(turn)) {
         String t;
         if (turn == 0) {
