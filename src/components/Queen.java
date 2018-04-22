@@ -18,7 +18,6 @@ public class Queen implements Piece {
 
   private Position position;
   private int color;
-  private Board board;
 
   /**
    * Public constructor to be called at board construction.
@@ -27,15 +26,11 @@ public class Queen implements Piece {
    *          the starting position for this Queen
    * @param color
    *          the color of this Queen (0 = white 1 = black)
-   * @param board
-   *          the board this Queen is on (for calculating moves)
-   *
    * @param position
    * @param color
    * @param board
    */
-  public Queen(Position start, int color, Board board) {
-    this.board = board;
+  public Queen(Position start, int color) {
     this.color = color;
     this.position = start;
   }
@@ -46,7 +41,7 @@ public class Queen implements Piece {
   }
 
   @Override
-  public Set<Position> getValidMoves() {
+  public Set<Position> getValidMoves(Board board) {
     Set<Position> out = new HashSet<Position>();
     for (int i = position.col() + 1; i <= Position.BOARD_SIZE; i++) {
       try {
@@ -204,9 +199,125 @@ public class Queen implements Piece {
   }
 
   @Override
-  public Set<Position> threatens() {
-    // TODO Auto-generated method stub
-    return null;
+  public Set<Position> threatens(Board board) {
+    Set<Position> out = new HashSet<Position>();
+    for (int i = position.col() + 1; i <= Position.BOARD_SIZE; i++) {
+      try {
+        Position m = new Position(i, position.row());
+        if (!board.places().containsKey(m)) {
+          out.add(m);
+        } else {
+          out.add(m);
+          break;
+        }
+      } catch (PositionException pe) {
+        break;
+      }
+    }
+
+    for (int i = position.row() + 1; i <= Position.BOARD_SIZE; i++) {
+      try {
+        Position m = new Position(position.col(), i);
+        if (!board.places().containsKey(m)) {
+          out.add(m);
+        } else {
+          out.add(m);
+          break;
+        }
+      } catch (PositionException pe) {
+        break;
+      }
+    }
+
+    for (int i = position.col() - 1; i > 0; i--) {
+      try {
+        Position m = new Position(i, position.row());
+        if (!board.places().containsKey(m)) {
+          out.add(m);
+        } else {
+          out.add(m);
+          break;
+        }
+      } catch (PositionException pe) {
+        break;
+      }
+    }
+
+    for (int i = position.row() - 1; i > 0; i--) {
+      try {
+        Position m = new Position(position.col(), i);
+        if (!board.places().containsKey(m)) {
+          out.add(m);
+        } else {
+          out.add(m);
+          break;
+        }
+      } catch (PositionException pe) {
+        break;
+      }
+    }
+
+    for (int i = position.col() + 1, j = position.row()
+        + 1; i <= Position.BOARD_SIZE && j <= Position.BOARD_SIZE; i++, j++) {
+      try {
+        Position m = new Position(i, j);
+        if (!board.places().containsKey(m)) {
+          out.add(m);
+        } else {
+          out.add(m);
+          break;
+        }
+      } catch (PositionException pe) {
+        break;
+      }
+    }
+
+    for (int i = position.col() - 1, j = position.row() + 1; i > 0
+        && j <= Position.BOARD_SIZE; i--, j++) {
+      try {
+        Position m = new Position(i, j);
+        if (!board.places().containsKey(m)) {
+          out.add(m);
+        } else {
+          out.add(m);
+          break;
+        }
+      } catch (PositionException pe) {
+        break;
+      }
+    }
+
+    for (int i = position.col() + 1, j = position.row()
+        - 1; i <= Position.BOARD_SIZE && j > 0; i++, j--) {
+      try {
+        Position m = new Position(i, j);
+        if (!board.places().containsKey(m)) {
+          out.add(m);
+        } else {
+          out.add(m);
+          break;
+        }
+      } catch (PositionException pe) {
+        break;
+      }
+    }
+
+    for (int i = position.col() - 1, j = position.row() - 1; i > 0
+        && j > 0; i--, j--) {
+      try {
+        Position m = new Position(i, j);
+        if (!board.places().containsKey(m)) {
+          out.add(m);
+        } else {
+          out.add(m);
+          break;
+        }
+      } catch (PositionException pe) {
+        break;
+      }
+    }
+
+    return out;
   }
 
 }

@@ -17,7 +17,6 @@ public class Pawn implements Piece {
 
   private Position pos;
   private int color;
-  private Board board;
   private boolean hasMoved;
 
   /**
@@ -27,13 +26,10 @@ public class Pawn implements Piece {
    *          the starting position for this Pawn
    * @param color
    *          the color of this pawn (0 = white 1 = black)
-   * @param board
-   *          the board this Pawn is on (for calculating moves)
    */
-  public Pawn(Position start, int color, Board board) {
+  public Pawn(Position start, int color) {
     this.pos = start;
     this.color = color;
-    this.board = board;
     this.hasMoved = false;
   }
 
@@ -44,15 +40,12 @@ public class Pawn implements Piece {
    *          the starting position for this Pawn
    * @param color
    *          the color of this pawn (0 = white 1 = black)
-   * @param board
-   *          the board this Pawn is on (for calculating moves)
    * @param hasMoved
    *          can this pawn move forward twice?
    */
-  public Pawn(Position start, int color, Board board, Boolean hasMoved) {
+  public Pawn(Position start, int color, Boolean hasMoved) {
     this.pos = start;
     this.color = color;
-    this.board = board;
     this.hasMoved = hasMoved;
   }
 
@@ -178,7 +171,7 @@ public class Pawn implements Piece {
   }
 
   @Override
-  public Set<Position> threatens() {
+  public Set<Position> threatens(Board board) {
     Set<Position> out = new HashSet<Position>();
 
     if (color == 0) {

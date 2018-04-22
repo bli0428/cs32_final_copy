@@ -63,7 +63,10 @@ public interface Piece {
   /**
    * Calculates all positions threatened by this piece.
    *
+   * @param board
+   *          the Board that this piece is on.
+   *
    * @return a Set<Position> with all the threatened squares
    */
-  Set<Position> threatens();
+  Set<Position> threatens(Board board);
 }

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import positions.BankPosition;
 import positions.Position;
+import positions.PositionException;
 
 /**
  * Class that represents a chess board.
@@ -37,9 +38,76 @@ public class Board {
   /**
    * Default constructor that sets up the board in a standard chess
    * configuration.
+   *
+   * @throws PositionException
+   *           if there's an internal issue with Position
    */
-  public Board() {
-    this.places = DEFAULT_START;
+  public Board() throws PositionException {
+    this.places = new HashMap<Position, Piece>();// DEFAULT_START;
+    Position a1 = new Position(1, 1);
+    Position b1 = new Position(2, 1);
+    Position c1 = new Position(3, 1);
+    Position d1 = new Position(4, 1);
+    Position e1 = new Position(5, 1);
+    Position f1 = new Position(6, 1);
+    Position g1 = new Position(7, 1);
+    Position h1 = new Position(8, 1);
+    Position a2 = new Position(1, 2);
+    Position b2 = new Position(2, 2);
+    Position c2 = new Position(3, 2);
+    Position d2 = new Position(4, 2);
+    Position e2 = new Position(5, 2);
+    Position f2 = new Position(6, 2);
+    Position g2 = new Position(7, 2);
+    Position h2 = new Position(8, 2);
+    Position a8 = new Position(1, 8);
+    Position b8 = new Position(2, 8);
+    Position c8 = new Position(3, 8);
+    Position d8 = new Position(4, 8);
+    Position e8 = new Position(5, 8);
+    Position f8 = new Position(6, 8);
+    Position g8 = new Position(7, 8);
+    Position h8 = new Position(8, 8);
+    Position a7 = new Position(1, 7);
+    Position b7 = new Position(2, 7);
+    Position c7 = new Position(3, 7);
+    Position d7 = new Position(4, 7);
+    Position e7 = new Position(5, 7);
+    Position f7 = new Position(6, 7);
+    Position g7 = new Position(7, 7);
+    Position h7 = new Position(8, 7);
+    places.put(a1, new Rook(a1, 0));
+    places.put(b1, new Knight(b1, 0));
+    places.put(c1, new Bishop(c1, 0));
+    places.put(h1, new Rook(h1, 0));
+    places.put(g1, new Knight(g1, 0));
+    places.put(f1, new Bishop(f1, 0));
+    places.put(e1, new King(e1, 0));
+    places.put(d1, new Queen(d1, 0));
+    places.put(a2, new Pawn(a2, 0));
+    places.put(b2, new Pawn(b2, 0));
+    places.put(c2, new Pawn(c2, 0));
+    places.put(d2, new Pawn(d2, 0));
+    places.put(e2, new Pawn(e2, 0));
+    places.put(f2, new Pawn(f2, 0));
+    places.put(g2, new Pawn(g2, 0));
+    places.put(h2, new Pawn(h2, 0));
+    places.put(a8, new Rook(a8, 1));
+    places.put(b8, new Knight(b8, 1));
+    places.put(c8, new Bishop(c8, 1));
+    places.put(h8, new Rook(h8, 1));
+    places.put(g8, new Knight(g8, 1));
+    places.put(f8, new Bishop(f8, 1));
+    places.put(e8, new King(e8, 1));
+    places.put(d8, new Queen(d8, 1));
+    places.put(a7, new Pawn(a7, 1));
+    places.put(b7, new Pawn(b7, 1));
+    places.put(c7, new Pawn(c7, 1));
+    places.put(d7, new Pawn(d7, 1));
+    places.put(e7, new Pawn(e7, 1));
+    places.put(f7, new Pawn(f7, 1));
+    places.put(g7, new Pawn(g7, 1));
+    places.put(h7, new Pawn(h7, 1));
   }
 
   /**
@@ -76,7 +144,7 @@ public class Board {
       throw new InvalidMoveException(dest);
     }
     Piece p = places.get(start);
-    if (!p.getValidMoves().contains(dest)) {
+    if (!p.getValidMoves(this).contains(dest)) {
       throw new InvalidMoveException(dest);
     }
 
@@ -108,7 +176,7 @@ public class Board {
 
     // Creates all valid moves for this board.
     for (Position key : places.keySet()) {
-      results.put(key, places.get(key).getValidMoves());
+      results.put(key, places.get(key).getValidMoves(this));
     }
 
     // Filters all valid moves for moves that would leave King in check.
@@ -140,8 +208,8 @@ public class Board {
    * @return an ImmutableMap copy of places.
    */
   public Map<Position, Piece> places() {
-    return places; // TODO: Figure out why my Guava import isn't working and
-                   // make this an ImmutableMap
+    return places; // TODO: Figure out why my Guava import
+                   // isn't working and make this an ImmutableMap
   }
 
   /**
@@ -155,7 +223,7 @@ public class Board {
     Set<Position> out = new HashSet<Position>();
     for (Position p : places.keySet()) {
       if (places.get(p).color() == color) {
-        out.addAll(places.get(p).threatens());
+        out.addAll(places.get(p).threatens(this));
       }
     }
     return out;
@@ -176,7 +244,7 @@ public class Board {
     Map<Position, Piece> boardPlaces = board.places();
     for (Position p : boardPlaces.keySet()) {
       if (boardPlaces.get(p).color() == color) {
-        out.addAll(boardPlaces.get(p).threatens());
+        out.addAll(boardPlaces.get(p).threatens(this));
       }
     }
 
