@@ -12,10 +12,8 @@
   </head>
   <body>
      ${content}
-     <p>${results}<p>
      <!-- Again, we're serving up the unminified source for clarity. -->
      <script src="/js/jquery-3.1.1.js"></script>
-	 <script src="/js/autocorrect.js"></script>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

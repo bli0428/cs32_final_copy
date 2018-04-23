@@ -9,8 +9,8 @@ input[type="number"] {
   width: 3em;
 }
 form textarea {
-  height: 16px;
-  width: 48px;
+  height: 20px;
+  width: 400px;
   resize: none;
 }
 input[type="submit"] {

@@ -85,4 +85,18 @@ public final class Handling {
   public static void sqlError() {
     error("SQL error");
   }
+
+  /**
+   * Prints: "ERROR: you are not logged in".
+   */
+  public static void notLoggedIn() {
+    error("you are not logged in");
+  }
+
+  /**
+   * Prints: "ERROR: invalid username or password".
+   */
+  public static void invalidLogin() {
+    error("invalid username or password");
+  }
 }

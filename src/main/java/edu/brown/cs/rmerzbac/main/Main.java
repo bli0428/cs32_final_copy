@@ -1,4 +1,4 @@
-package edu.brown.cs.rmerzbacgajith.main;
+package edu.brown.cs.rmerzbac.main;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -12,6 +12,7 @@ public final class Main {
 
   private static final int DEFAULT_PORT = 4567;
   private static REPL repl;
+  private static GUI gui;
 
   /**
    * The initial method called when execution begins.
@@ -45,6 +46,9 @@ public final class Main {
     OptionSet options = parser.parse(args);
 
     repl = new REPL();
+    gui = new GUI(repl);
+    gui.runSparkServer((int) options.valueOf("port"));
+
     if (options.has("gui")) {
       System.out.println("gui not set up yet");
       // GUI.runSparkServer((int) options.valueOf("port"));
