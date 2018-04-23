@@ -10,7 +10,9 @@ data/maps/maps.sqlite3
 *.war
 *.ear
 hs_err_pid*
-
+bacon.sqlite3
+maps.sqlite3
+config/*
 
 #########
 # Maven #

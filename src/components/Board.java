@@ -1,0 +1,436 @@
+package components;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import games.Player;
+import positions.BankPosition;
+import positions.Position;
+import positions.PositionException;
+
+/**
+ * Class that represents a chess board.
+ *
+ * @author charliecutting
+ *
+ */
+public class Board {
+
+  private static final String[] WB = {"W", "B"};
+
+  private Map<Position, Piece> places;
+
+  private Player[] players;
+
+  /**
+   * Constructor that takes a map of starting positions (allows arbitrary game
+   * initialization).
+   *
+   * @param startingPlaces
+   *          a map of starting positions
+   */
+  public Board(Map<Position, Piece> startingPlaces, Player white,
+      Player black) {
+    this.places = startingPlaces;
+    players = new Player[2];
+    players[0] = white;
+    players[1] = black;
+  }
+
+  /**
+   * Default constructor that sets up the board in a standard chess
+   * configuration.
+   *
+   * @throws PositionException
+   *           if there's an internal issue with Position
+   */
+  public Board(Player white, Player black) throws PositionException {
+    this.places = new HashMap<Position, Piece>();
+    players = new Player[2];
+    Position a1 = new Position(1, 1);
+    Position b1 = new Position(2, 1);
+    Position c1 = new Position(3, 1);
+    Position d1 = new Position(4, 1);
+    Position e1 = new Position(5, 1);
+    Position f1 = new Position(6, 1);
+    Position g1 = new Position(7, 1);
+    Position h1 = new Position(8, 1);
+    Position a2 = new Position(1, 2);
+    Position b2 = new Position(2, 2);
+    Position c2 = new Position(3, 2);
+    Position d2 = new Position(4, 2);
+    Position e2 = new Position(5, 2);
+    Position f2 = new Position(6, 2);
+    Position g2 = new Position(7, 2);
+    Position h2 = new Position(8, 2);
+    Position a8 = new Position(1, 8);
+    Position b8 = new Position(2, 8);
+    Position c8 = new Position(3, 8);
+    Position d8 = new Position(4, 8);
+    Position e8 = new Position(5, 8);
+    Position f8 = new Position(6, 8);
+    Position g8 = new Position(7, 8);
+    Position h8 = new Position(8, 8);
+    Position a7 = new Position(1, 7);
+    Position b7 = new Position(2, 7);
+    Position c7 = new Position(3, 7);
+    Position d7 = new Position(4, 7);
+    Position e7 = new Position(5, 7);
+    Position f7 = new Position(6, 7);
+    Position g7 = new Position(7, 7);
+    Position h7 = new Position(8, 7);
+    places.put(a1, new Rook(a1, 0));
+    places.put(b1, new Knight(b1, 0));
+    places.put(c1, new Bishop(c1, 0));
+    places.put(h1, new Rook(h1, 0));
+    places.put(g1, new Knight(g1, 0));
+    places.put(f1, new Bishop(f1, 0));
+    places.put(e1, new King(e1, 0));
+    places.put(d1, new Queen(d1, 0));
+    places.put(a2, new Pawn(a2, 0));
+    places.put(b2, new Pawn(b2, 0));
+    places.put(c2, new Pawn(c2, 0));
+    places.put(d2, new Pawn(d2, 0));
+    places.put(e2, new Pawn(e2, 0));
+    places.put(f2, new Pawn(f2, 0));
+    places.put(g2, new Pawn(g2, 0));
+    places.put(h2, new Pawn(h2, 0));
+    places.put(a8, new Rook(a8, 1));
+    places.put(b8, new Knight(b8, 1));
+    places.put(c8, new Bishop(c8, 1));
+    places.put(h8, new Rook(h8, 1));
+    places.put(g8, new Knight(g8, 1));
+    places.put(f8, new Bishop(f8, 1));
+    places.put(e8, new King(e8, 1));
+    places.put(d8, new Queen(d8, 1));
+    places.put(a7, new Pawn(a7, 1));
+    places.put(b7, new Pawn(b7, 1));
+    places.put(c7, new Pawn(c7, 1));
+    places.put(d7, new Pawn(d7, 1));
+    places.put(e7, new Pawn(e7, 1));
+    places.put(f7, new Pawn(f7, 1));
+    places.put(g7, new Pawn(g7, 1));
+    places.put(h7, new Pawn(h7, 1));
+
+    players[0] = white;
+    players[1] = black;
+  }
+
+  /**
+   * A copy constructor that creates a new instance of Board that is a shallow
+   * copy of the old board.
+   *
+   * @param oldBoard
+   *          The board to be copied.
+   */
+  public Board(Board oldBoard) {
+    this.places = new HashMap<Position, Piece>();
+    for (Position key : oldBoard.places().keySet()) {
+      this.places.put(key, oldBoard.places().get(key).copyOf());
+    }
+
+    players = new Player[2];
+    players[0] = oldBoard.players[0];
+    players[1] = oldBoard.players[1];
+  }
+
+  /**
+   * Processes a move from start to dest, taking in a promoted Piece.
+   * 
+   * @param start
+   * @param dest
+   * @param prmtPiece
+   *          A piece in the form of something like Knight or Queen. Not the
+   *          actual PromotedPawn class.
+   * @return
+   * @throws InvalidMoveException
+   */
+  public Piece processMove(Position start, Position dest, Piece prmtPiece)
+      throws InvalidMoveException {
+    Piece out = null;
+
+    // If there's no piece at start or the piece at start can't move to end,
+    // throw an exception
+    if (!places.containsKey(start)) {
+      throw new InvalidMoveException(dest);
+    }
+    Piece p = places.get(start);
+    if (!p.getValidMoves(this).contains(dest)) {
+      throw new InvalidMoveException(dest);
+    }
+
+    // Promotions
+    if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
+      p = new PromotedPawn(prmtPiece);
+    }
+
+    // If there's a piece at the destination, it will get taken. Send it to a
+    // bank.
+    if (places.containsKey(dest)) {
+      Piece endPiece = places.get(dest);
+      if (endPiece.type().equals("pp")) {
+        out = new Pawn(new BankPosition(), endPiece.color(), true);
+      } else {
+        out = places.get(dest);
+        endPiece.move(new BankPosition());
+      }
+      places.remove(dest);
+    }
+
+    // Process the move by updating the piece's internal position and the
+    // positions map.
+    p.move(dest);
+    places.put(dest, p);
+    places.remove(start);
+    return out;
+  }
+
+  /**
+   * Processes a move from start to dest.
+   *
+   * @param start
+   *          the start position
+   * @param dest
+   *          the end position
+   * @param usrQuery
+   *          is this move a temporary process
+   * @throws InvalidMoveException
+   *           if the start position or end position are invalid.
+   * @return a reference to the piece that was at dest, or null if there was
+   *         nothing there
+   */
+  public Piece processMove(Position start, Position dest, boolean usrQuery)
+      throws InvalidMoveException {
+
+    Piece out = null;
+
+    // If there's no piece at start or the piece at start can't move to end,
+    // throw an exception
+    if (!places.containsKey(start)) {
+      throw new InvalidMoveException(dest);
+    }
+    Piece p = places.get(start);
+    if (!p.getValidMoves(this).contains(dest)) {
+      throw new InvalidMoveException(dest);
+    }
+
+    // Promotions
+    if (!usrQuery && p.type().equals("p")
+        && (dest.row() == 8 || dest.row() == 1)) {
+      p = new PromotedPawn(players[p.color()].promote(start));
+    }
+
+    // If there's a piece at the destination, it will get taken. Send it to a
+    // bank.
+    if (places.containsKey(dest)) {
+      Piece endPiece = places.get(dest);
+      if (endPiece.type().equals("pp")) {
+        out = new Pawn(new BankPosition(), endPiece.color(), true);
+      } else {
+        out = places.get(dest);
+        endPiece.move(new BankPosition());
+      }
+      places.remove(dest);
+    }
+
+    // Process the move by updating the piece's internal position and the
+    // positions map.
+    p.move(dest);
+    places.put(dest, p);
+    places.remove(start);
+    return out;
+  }
+
+  /**
+   * Returns the valid moves of this board for a given color.
+   *
+   * @param color
+   *          The color of the current player.
+   * @return The valid moves represented as a Map.
+   */
+  public Map<Position, Set<Position>> getValidMoves(int color) {
+    Map<Position, Set<Position>> results = new HashMap<>();
+
+    // Creates all valid moves for this board.
+    for (Position key : places.keySet()) {
+      if (places.get(key).color() == color) {
+        results.put(key, places.get(key).getValidMoves(this));
+      }
+    }
+
+    // Filters all valid moves for moves that would leave King in check.
+    for (Position key : results.keySet()) {
+
+      Position start = key;
+      Set<Position> validMoves = results.get(key);
+
+      for (Iterator<Position> i = validMoves.iterator(); i.hasNext();) {
+        Board tempBoard = new Board(this);
+        Position end = i.next();
+        try {
+          tempBoard.processMove(start, end, true);
+        } catch (InvalidMoveException e) {
+          // e.printStackTrace();
+        }
+        if (tempBoard.check(color)) {
+          i.remove();
+        }
+      }
+
+    }
+
+    return results;
+  }
+
+  /**
+   * Getter for places.
+   *
+   * @return an ImmutableMap copy of places.
+   */
+  public Map<Position, Piece> places() {
+    return places;
+  }
+
+  /**
+   * Build the set of all positions threatened by pieces of a particular color.
+   *
+   * @param color
+   *          0 for white, 1 for black
+   * @return the set of threatened spaces
+   */
+  public Set<Position> threatened(int color) {
+    Set<Position> out = new HashSet<Position>();
+    for (Position p : places.keySet()) {
+      if (places.get(p).color() == color) {
+        out.addAll(places.get(p).threatens(this));
+      }
+    }
+    return out;
+  }
+
+  /**
+   * Build the set of all positions threatened by pieces of a particular color
+   * for a particular board.
+   *
+   * @param color
+   *          0 for white, 1 for black
+   * @param board
+   *          The board to check on.
+   * @return the set of threatened spaces
+   */
+  public Set<Position> threatened(int color, Board board) {
+    Set<Position> out = new HashSet<Position>();
+    Map<Position, Piece> boardPlaces = board.places();
+    for (Position p : boardPlaces.keySet()) {
+      if (boardPlaces.get(p).color() == color) {
+        out.addAll(boardPlaces.get(p).threatens(this));
+      }
+    }
+
+    return out;
+  }
+
+  /**
+   * Is the king of the given color in check.
+   *
+   * @param color
+   *          0 for white, 1 for black
+   * @return true if the king is in check, false otherwise
+   */
+  public boolean check(int color) {
+    Set<Position> threats = threatened(Math.abs(color - 1));
+    for (Position p : threats) {
+      Piece k = places.get(p);
+      if (k != null && k.type().equals("K") && k.color() == color) {
+        // System.out.println(p.col() + "," + p.row());
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Is the king of the given color in checkmate.
+   *
+   * @param color
+   *          0 for white, 1 for black
+   * @return true if the king is in checkmate, false otherwise
+   */
+  public boolean checkmate(int color) {
+    Map<Position, Set<Position>> map = getValidMoves(color);
+
+    if (!check(color)) {
+      return false;
+    }
+
+    for (Position p : map.keySet()) {
+      if (!map.get(p).isEmpty()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Is the game at a stalemate.
+   *
+   * @param color
+   *          0 for white's turn, 1 for black's turn
+   * @return true if the game is at a stalemate, false otherwise
+   */
+  public boolean stalemate(int color) {
+    Map<Position, Set<Position>> map = getValidMoves(color);
+
+    if (check(color)) {
+      return false;
+    }
+
+    for (Position p : map.keySet()) {
+      if (!map.get(p).isEmpty()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Prints this board.
+   */
+  public void print() {
+    for (int i = 8; i > 0; i--) {
+      StringBuilder sb = new StringBuilder();
+      sb.append(i + ". ");
+      for (int j = 1; j <= 8; j++) {
+        Position p;
+        try {
+          p = new Position(j, i);
+          if (places.containsKey(p)) {
+            sb.append(WB[places.get(p).color()]);
+            sb.append(places.get(p).type());
+          } else {
+            sb.append("__");
+          }
+          sb.append(" ");
+        } catch (PositionException e) {
+          // Should never be reached
+          e.printStackTrace();
+        }
+      }
+      System.out.println(sb.toString());
+    }
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("   ");
+    for (int i = 1; i <= 8; i++) {
+      sb.append(i + "  ");
+    }
+    System.out.println(sb.toString());
+
+  }
+}
