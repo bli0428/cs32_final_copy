@@ -6,7 +6,7 @@ import joptsimple.OptionSet;
 /**
  * The Main class of our project. This is where execution begins.
  *
- * @author rmerzbac, jj
+ * @author gajith, rmerzbac, jj
  */
 public final class Main {
 
@@ -46,12 +46,16 @@ public final class Main {
     OptionSet options = parser.parse(args);
 
     repl = new REPL();
+<<<<<<< HEAD:src/main/java/edu/brown/cs/rmerzbac/main/Main.java
     gui = new GUI(repl);
     gui.runSparkServer((int) options.valueOf("port"));
 
+=======
+    
+>>>>>>> 1edfecb2f740b86ef687484973772c9b8667bdbb:src/main/java/edu/brown/cs/rmerzbacgajith/main/Main.java
     if (options.has("gui")) {
-      System.out.println("gui not set up yet");
-      // GUI.runSparkServer((int) options.valueOf("port"));
+      gui = new GUI(repl);
+      gui.runSparkServer((int) options.valueOf("port"));
     }
     repl.runRepl();
   }
