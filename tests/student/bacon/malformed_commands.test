@@ -1,0 +1,14 @@
+INPUT
+mdb data/bacon/smallBacon. sqlite3
+mdb data/bacon/smallBacon.sqlite3
+connect Taylor Swift Sylvester Stallone
+connect Taylor Swift,Sylvester Stallone
+connect " " " "
+connect "" ""
+OUTPUT
+ERROR:
+db set to data/bacon/smallBacon.sqlite3
+ERROR:
+ERROR:
+ERROR:
+END

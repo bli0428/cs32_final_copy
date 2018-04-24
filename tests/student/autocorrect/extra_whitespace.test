@@ -1,0 +1,10 @@
+INPUT
+corpus data/autocorrect/dictionary.txt
+ac space at the end     
+ac this     is ridiculous
+OUTPUT
+corpus data/autocorrect/dictionary.txt added
+ac space at the end     
+ac this     is ridiculous
+this is ridiculous
+END

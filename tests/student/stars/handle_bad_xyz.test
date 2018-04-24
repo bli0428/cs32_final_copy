@@ -1,0 +1,12 @@
+INPUT
+stars data/stars/stardata.csv
+neighbors 1 x y z
+neighbors 1 1 y z
+neighbors 1 x 1 z
+neighbors 1 x y 1
+OUTPUT
+Read 119617 stars from data/stars/stardata.csv
+ERROR: must enter valid x y z coordinates
+ERROR: must enter valid x y z coordinates
+ERROR: must enter valid x y z coordinates
+END

@@ -1,0 +1,7 @@
+INPUT
+mdb ltmp/bacon/bacon.sqlite3
+connect "Dalida" "Taylor Swift"
+OUTPUT
+db set to ltmp/bacon/bacon.sqlite3
+Dalida -/- Taylor Swift
+END

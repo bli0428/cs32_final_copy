@@ -1,0 +1,9 @@
+INPUT
+corpus data/autocorrect/norton.txt
+led -1
+led 2.3
+OUTPUT
+corpus data/autocorrect/norton.txt added
+ERROR: led must be set to a positive integer
+ERROR: led must be set to an integer
+END

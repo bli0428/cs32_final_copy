@@ -1,0 +1,42 @@
+INPUT
+corpus data/autocorrect/great_expectations.txt
+prefix on
+whitespace on
+smart off
+led 0
+ac the
+mdb data/bacon/smallBacon.sqlite3
+connect "Taylor Swift" "Sylvester Stallone"
+stars data/stars/stardata.csv
+neighbors 5 0 0 0
+neighbors 5 "Sol"
+ac hel
+OUTPUT
+corpus data/autocorrect/great_expectations.txt added
+ac the
+the
+there
+t he
+then
+they
+db set to data/bacon/smallBacon.sqlite3
+Taylor Swift -> Shirley McLaine : Valentine's Day
+Shirley McLaine -> Matthew McConaughey : Bernie
+Matthew McConaughey -> Mini Anden : Tropic Thunder
+Mini Anden -> Amy Stiller : Tropic Thunder
+Amy Stiller -> Sylvester Stallone : Lovers and Other Strangers
+Read 119617 stars from data/stars/stardata.csv
+0
+70667
+71454
+71457
+87666
+70667
+71454
+71457
+87666
+118721
+ac hel
+held
+help
+END

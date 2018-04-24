@@ -1,0 +1,5 @@
+INPUT
+stars data/nosuchfile.csv
+OUTPUT
+ERROR: file could not be found
+END

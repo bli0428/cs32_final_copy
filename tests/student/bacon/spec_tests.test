@@ -1,0 +1,24 @@
+INPUT
+mdb ltmp/bacon/bacon.sqlite3
+connect "Samuel L. Jackson" "Sylvester Stallone"
+connect "Abigail Mason" "Laurel Bryce"
+connect "Sam Worthington" "Lance Henrikson"
+OUTPUT
+db set to ltmp/bacon/bacon.sqlite3
+Samuel L. Jackson -> John Travolta : Pulp Fiction
+John Travolta -> Tony Shalhoub : Primary Colors
+Tony Shalhoub -> Sylvester Stallone : Men in Black
+Abigail Mason -> Martin Landau : You’ll Never Amount to Anything
+Martin Landau -> Lisa Marie : Sleepy Hollow
+Lisa Marie -> Mike Starr : Ed Wood
+Mike Starr -> Scarlett Johansson : The Black Dahlia
+Scarlett Johansson -> Justin Long : He’s Just Not That Into You
+Justin Long -> Laurel Bryce : After.Life
+Sam Worthington -> Wes Studi : Avatar
+Wes Studi -> Sigourney Weaver : Avatar
+Sigourney Weaver -> William Finley : Terror in the Aisles
+William Finley -> Faye Dunaway : Terror in the Aisles
+Faye Dunaway -> Donald Sutherland : Terror in the Aisles
+Donald Sutherland -> Steve Lemme : Beerfest
+Steve Lemme -> Lance Henriksen : The Slammin’ Salmon
+END

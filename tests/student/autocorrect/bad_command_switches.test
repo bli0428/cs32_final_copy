@@ -1,0 +1,17 @@
+INPUT
+corpus data/autocorrect/norton.txt
+prefix on off
+prefix 3
+prefix yes
+whitespace -2
+whitespace no
+smart yes
+OUTPUT
+corpus data/autocorrect/norton.txt added
+ERROR: Please enter a valid command.
+ERROR: command should be prefix <on|off>
+ERROR: command should be prefix <on|off>
+ERROR: command should be whitespace <on|off>
+ERROR: command should be whitespace <on|off>
+ERROR: command should be smart <on|off>
+END

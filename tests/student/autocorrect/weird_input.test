@@ -1,0 +1,23 @@
+INPUT
+corpus data/autocorrect/dictionary.txt
+ac test!!!!!!!!
+ac test !!
+ac !! test
+ac !!test
+ac a !! test
+ac test
+OUTPUT
+corpus data/autocorrect/dictionary.txt added
+ac test!!!!!!!!
+test
+ac test !!
+test
+ac !! test
+test
+ac !!test
+test
+ac a !! test
+a test
+ac test
+test
+END

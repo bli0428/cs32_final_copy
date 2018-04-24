@@ -1,0 +1,20 @@
+INPUT
+stars data/stars/stardata.csv
+neighbors -1 0 0 0
+radius -1 0 0 0
+neighbors 9.8 0 0 0
+neighbors -1 "Sol"
+radius -1 "Sol"
+neighbors 3.2 "Sol"
+neighbors "" 0 0 0
+radius "" 0 0 0
+OUTPUT
+Read 119617 stars from data/stars/stardata.csv
+ERROR: k must be non-negative
+ERROR: r must be non-negative
+ERROR: k must be an integer
+ERROR: k must be non-negative
+ERROR: r must be non-negative
+ERROR: k must be an integer
+ERROR: r must be an integer
+END

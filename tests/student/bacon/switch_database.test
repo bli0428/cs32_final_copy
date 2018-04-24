@@ -1,0 +1,22 @@
+INPUT
+mdb data/bacon/smallBacon.sqlite3
+connect "Taylor Swift" "Sylvester Stallone"
+connect "Samuel L. Jackson" "Taylor Parks"
+mdb ltmp/bacon/bacon.sqlite3
+connect "Samuel L. Jackson" "Taylor Parks"
+mdb data/bacon/smallBacon.sqlite3
+connect "Samuel L. Jackson" "Taylor Parks"
+OUTPUT
+db set to data/bacon/smallBacon.sqlite3
+Taylor Swift -> Shirley McLaine : Valentine's Day
+Shirley McLaine -> Matthew McConaughey : Bernie
+Matthew McConaughey -> Mini Anden : Tropic Thunder
+Mini Anden -> Amy Stiller : Tropic Thunder
+Amy Stiller -> Sylvester Stallone : Lovers and Other Strangers
+Samuel L. Jackson -/- Taylor Parks
+db set to ltmp/bacon/bacon.sqlite3
+Samuel L. Jackson -> John Travolta : Our Friend, Martin
+John Travolta -> Taylor Parks : Hairspray
+db set to data/bacon/smallBacon.sqlite3
+Samuel L. Jackson -/- Taylor Parks
+END

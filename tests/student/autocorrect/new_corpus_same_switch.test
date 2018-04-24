@@ -1,0 +1,26 @@
+INPUT
+corpus data/autocorrect/norton.txt
+prefix
+whitespace
+smart
+led
+prefix on
+smart on
+led 2
+corpus data/autocorrect/split.txt
+prefix
+whitespace
+smart
+led
+OUTPUT
+corpus data/autocorrect/norton.txt added
+prefix off
+whitespace off
+smart off
+led 0
+corpus data/autocorrect/split.txt added
+prefix on
+whitespace off
+smart on
+led 2
+END

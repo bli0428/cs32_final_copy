@@ -1,0 +1,9 @@
+INPUT
+stars data/stars/stardata.csv
+neighbors 1 Sol
+neighbors 1 "nosuchstar"
+OUTPUT
+Read 119617 stars from data/stars/stardata.csv
+ERROR: star name must be given in quotation marks
+ERROR: star could not be found
+END

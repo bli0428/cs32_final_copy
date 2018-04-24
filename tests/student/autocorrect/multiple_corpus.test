@@ -1,0 +1,16 @@
+INPUT
+corpus data/autocorrect/norton.txt
+ac norton
+corpus data/autocorrect/split.txt
+ac split
+ac norton
+OUTPUT
+corpus data/autocorrect/norton.txt added
+ac norton
+norton
+corpus data/autocorrect/split.txt added
+ac split
+split
+ac norton
+norton
+END

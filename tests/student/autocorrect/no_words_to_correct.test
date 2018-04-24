@@ -1,0 +1,7 @@
+INPUT
+corpus data/autocorrect/norton.txt
+ac
+OUTPUT
+corpus data/autocorrect/norton.txt added
+ERROR: ac expects words to autocorrect
+END
