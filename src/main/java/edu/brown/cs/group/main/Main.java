@@ -8,14 +8,19 @@ import java.util.ArrayList;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 /**
  * The Main class of our project. This is where execution begins.
  *
- * @author klee50
+ * @author rmerzbac, jj
  */
 public final class Main {
 
   private static final int DEFAULT_PORT = 4567;
+  private static REPL repl;
+  private static GUI gui;
 
   /**
    * The initial method called when execution begins.
@@ -34,31 +39,28 @@ public final class Main {
   }
 
   /**
-   * Run executes the program.
-   *
+   * Runs the program.
    */
   private void run() {
 
+    // Parse command line arguments
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
     parser.accepts("port").withRequiredArg().ofType(Integer.class)
         .defaultsTo(DEFAULT_PORT);
-    OptionSet options = parser.parse(args);
-    
-    GUI.runSparkServer((int) options.valueOf("port")); //TODO: DELETE THIS
-    if (options.has("gui")) {
-      GUI.runSparkServer((int) options.valueOf("port"));
-    }
 
-    try (BufferedReader br = new BufferedReader(
-        new InputStreamReader(System.in))) {
-      String k;
-      while ((k = br.readLine()) != null) {
-        // TODO
-      }
-    } catch (IOException e) {
-      System.out.println("ERROR: Please enter a valid command.");
+    OptionSet options = parser.parse(args);
+
+    repl = new REPL();
+
+    gui = new GUI(repl);
+    gui.runSparkServer((int) options.valueOf("port"));
+
+    if (options.has("gui")) {
+      gui = new GUI(repl);
+      gui.runSparkServer((int) options.valueOf("port"));
     }
+    repl.runRepl();
   }
 
 }
