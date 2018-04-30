@@ -19,6 +19,7 @@ public class GUIPlayer implements Player {
   private List<Move> moves;
   private List<Piece> toPromote;
   private int color;
+  private int id;
 
   public GUIPlayer() {
     bank = Collections.synchronizedSet(new HashSet<Piece>());

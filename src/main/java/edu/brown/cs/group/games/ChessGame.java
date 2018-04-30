@@ -11,7 +11,7 @@ import edu.brown.cs.group.positions.PositionException;
  * @author charliecutting
  *
  */
-public class ChessGame {
+public class ChessGame implements Game {
 
   private Player p1;
   private Player p2;

@@ -10,7 +10,7 @@ import edu.brown.cs.group.components.Piece;
  * @author charliecutting
  *
  */
-public class BughouseGame {
+public class BughouseGame implements Game {
   private Player p0;
   private Player p1;
   private Player p2;
@@ -92,7 +92,9 @@ public class BughouseGame {
         try {
           Piece p = boards[b].processMove(m.start(), m.end(), false);
           turn = Math.abs(turn - 1);
-          teams[turn][Math.abs(b - 1)].acceptPiece(p);
+          if (p != null) {
+            teams[turn][Math.abs(b - 1)].acceptPiece(p);
+          }
           System.out.println("Moved from " + m.start().col() + ","
               + m.start().row() + " to " + m.end().col() + "," + m.end().row());
         } catch (InvalidMoveException e) {
