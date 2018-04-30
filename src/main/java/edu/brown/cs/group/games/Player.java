@@ -1,10 +1,10 @@
-package main.java.edu.brown.cs.group.games;
+package edu.brown.cs.group.games;
 
 import java.util.Set;
 
-import main.java.edu.brown.cs.group.components.Board;
-import main.java.edu.brown.cs.group.components.Piece;
-import main.java.edu.brown.cs.group.positions.Position;
+import edu.brown.cs.group.components.Board;
+import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.positions.Position;
 
 /**
  * Interface that represents a Player of chess or bughouse.

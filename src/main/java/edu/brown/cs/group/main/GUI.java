@@ -1,4 +1,4 @@
-package main.java.edu.brown.cs.group.main;
+package edu.brown.cs.group.main;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +15,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.sun.corba.se.impl.presentation.rmi.ExceptionHandler;
 
-import main.java.edu.brown.cs.group.accounts.User;
+import edu.brown.cs.group.main.REPL;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
+import spark.Request;
 import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;

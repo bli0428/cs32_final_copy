@@ -1,8 +1,8 @@
-package main.java.edu.brown.cs.group.games;
+package edu.brown.cs.group.games;
 
 import java.util.List;
 
-import main.java.edu.brown.cs.group.components.Board;
+import edu.brown.cs.group.components.Board;
 
 /**
  * Represents a Heuristic function that takes in a board and evaluates the

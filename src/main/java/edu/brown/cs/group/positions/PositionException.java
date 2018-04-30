@@ -1,4 +1,4 @@
-package main.java.edu.brown.cs.group.positions;
+package edu.brown.cs.group.positions;
 
 /**
  * Exception to throw when something tries to access a position off the board.

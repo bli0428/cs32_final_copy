@@ -1,4 +1,4 @@
-package main.java.edu.brown.cs.group.accounts;
+package edu.brown.cs.group.accounts;
 
 public class Protection {
   private final int SALT_LENGTH = 8;
