@@ -1,4 +1,4 @@
-package edu.brown.cs.group.games;
+package main.java.edu.brown.cs.group.games;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,14 +8,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import edu.brown.cs.group.components.Bishop;
-import edu.brown.cs.group.components.Board;
-import edu.brown.cs.group.components.Knight;
-import edu.brown.cs.group.components.Piece;
-import edu.brown.cs.group.components.Queen;
-import edu.brown.cs.group.components.Rook;
-import edu.brown.cs.group.positions.Position;
-import edu.brown.cs.group.positions.PositionException;
+import main.java.edu.brown.cs.group.components.Bishop;
+import main.java.edu.brown.cs.group.components.Board;
+import main.java.edu.brown.cs.group.components.Knight;
+import main.java.edu.brown.cs.group.components.Piece;
+import main.java.edu.brown.cs.group.components.Queen;
+import main.java.edu.brown.cs.group.components.Rook;
+import main.java.edu.brown.cs.group.positions.Position;
+import main.java.edu.brown.cs.group.positions.PositionException;
 
 /**
  * Player whose commands are entered via the command line.

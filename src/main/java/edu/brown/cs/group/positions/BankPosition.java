@@ -1,4 +1,4 @@
-package edu.brown.cs.group.positions;
+package main.java.edu.brown.cs.group.positions;
 
 /**
  * Class that represents a Position() not on the board (which is in a piece

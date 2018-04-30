@@ -1,4 +1,4 @@
-package edu.brown.cs.group.accounts;
+package main.java.edu.brown.cs.group.accounts;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 
-import edu.brown.cs.group.handling.Handling;
+import main.java.edu.brown.cs.group.handling.Handling;
 
 /*
  * SQLITE3 COMMAND TO BUILD TABLE:

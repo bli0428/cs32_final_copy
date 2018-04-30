@@ -1,8 +1,8 @@
-package edu.brown.cs.group.games;
+package main.java.edu.brown.cs.group.games;
 
-import edu.brown.cs.group.components.Board;
-import edu.brown.cs.group.components.InvalidMoveException;
-import edu.brown.cs.group.components.Piece;
+import main.java.edu.brown.cs.group.components.Board;
+import main.java.edu.brown.cs.group.components.InvalidMoveException;
+import main.java.edu.brown.cs.group.components.Piece;
 
 /**
  * Class representing a game of Bughouse.
@@ -22,6 +22,7 @@ public class BughouseGame {
   private Player[] team2;
   private Board[] boards;
   private Player[][] teams;
+  private boolean gameOver;
 
   /**
    * Public constructor.
@@ -57,6 +58,7 @@ public class BughouseGame {
     boards = b;
     Player[][] t = { team1, team2 };
     teams = t;
+    gameOver = false;
   }
 
   /**
@@ -80,8 +82,9 @@ public class BughouseGame {
 
     @Override
     public void run() {
-      while (true) {
+      while (!gameOver) {
         if (boards[b].checkmate(turn)) {
+          endGame();
           System.out.println("Game over!");
           break;
         }
@@ -99,6 +102,18 @@ public class BughouseGame {
       }
 
     }
+  }
+
+  private synchronized void endGame() {
+    gameOver = true;
+  }
+
+  public void play() {
+    Thread b0 = new Thread(new SubGame(0));
+    Thread b1 = new Thread(new SubGame(1));
+
+    b0.run();
+    b1.run();
   }
 
 }
