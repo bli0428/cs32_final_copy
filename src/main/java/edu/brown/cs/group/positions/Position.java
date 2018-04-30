@@ -1,4 +1,4 @@
-package edu.brown.cs.group.positions;
+package main.java.edu.brown.cs.group.positions;
 
 import java.util.Objects;
 

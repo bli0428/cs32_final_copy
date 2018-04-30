@@ -1,6 +1,6 @@
-package edu.brown.cs.group.games;
+package main.java.edu.brown.cs.group.games;
 
-import edu.brown.cs.group.positions.Position;
+import main.java.edu.brown.cs.group.positions.Position;
 
 /**
  * Class that holds both positions of a Move.

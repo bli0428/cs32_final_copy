@@ -1,6 +1,6 @@
-package edu.brown.cs.group.components;
+package main.java.edu.brown.cs.group.components;
 
-import edu.brown.cs.group.positions.Position;
+import main.java.edu.brown.cs.group.positions.Position;
 
 /**
  * Exception thrown when something happens such that a piece is attempted to be

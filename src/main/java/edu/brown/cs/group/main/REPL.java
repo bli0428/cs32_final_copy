@@ -1,13 +1,13 @@
-package edu.brown.cs.group.main;
+package main.java.edu.brown.cs.group.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.brown.cs.group.accounts.DatabaseManager;
-import edu.brown.cs.group.accounts.Protection;
-import edu.brown.cs.group.accounts.User;
-import edu.brown.cs.group.handling.Handling;
+import main.java.edu.brown.cs.group.accounts.DatabaseManager;
+import main.java.edu.brown.cs.group.accounts.Protection;
+import main.java.edu.brown.cs.group.accounts.User;
+import main.java.edu.brown.cs.group.handling.Handling;
 
 public class REPL {
   private Protection prot;

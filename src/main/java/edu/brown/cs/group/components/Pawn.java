@@ -1,11 +1,11 @@
-package edu.brown.cs.group.components;
+package main.java.edu.brown.cs.group.components;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import edu.brown.cs.group.positions.Position;
-import edu.brown.cs.group.positions.PositionException;
+import main.java.edu.brown.cs.group.positions.Position;
+import main.java.edu.brown.cs.group.positions.PositionException;
 
 /**
  * Class that represents a pawn.
