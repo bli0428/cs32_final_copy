@@ -1,4 +1,4 @@
-package edu.brown.cs.group.components;
+package main.java.edu.brown.cs.group.components;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import edu.brown.cs.group.games.Player;
-import edu.brown.cs.group.positions.BankPosition;
-import edu.brown.cs.group.positions.Position;
-import edu.brown.cs.group.positions.PositionException;
+import main.java.edu.brown.cs.group.games.Player;
+import main.java.edu.brown.cs.group.positions.BankPosition;
+import main.java.edu.brown.cs.group.positions.Position;
+import main.java.edu.brown.cs.group.positions.PositionException;
 
 /**
  * Class that represents a chess board.
@@ -19,7 +19,7 @@ import edu.brown.cs.group.positions.PositionException;
  */
 public class Board {
 
-  private static final String[] WB = {"W", "B"};
+  private static final String[] WB = { "W", "B" };
 
   private Map<Position, Piece> places;
 

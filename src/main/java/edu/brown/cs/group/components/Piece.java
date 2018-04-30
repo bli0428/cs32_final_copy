@@ -1,8 +1,8 @@
-package edu.brown.cs.group.components;
+package main.java.edu.brown.cs.group.components;
 
 import java.util.Set;
 
-import edu.brown.cs.group.positions.Position;
+import main.java.edu.brown.cs.group.positions.Position;
 
 /**
  * Interface that represents a chess piece.

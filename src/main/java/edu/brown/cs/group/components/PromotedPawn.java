@@ -1,8 +1,8 @@
-package edu.brown.cs.group.components;
+package main.java.edu.brown.cs.group.components;
 
 import java.util.Set;
 
-import edu.brown.cs.group.positions.Position;
+import main.java.edu.brown.cs.group.positions.Position;
 
 /**
  * Class that represents a PromotedPawn. Its type is "pp". Acts as a proxy for
@@ -33,7 +33,7 @@ public class PromotedPawn implements Piece {
 
   @Override
   public Piece copyOf() {
-    return new PromotedPawn(promotedPiece);
+    return new PromotedPawn(promotedPiece.copyOf());
   }
 
   @Override
