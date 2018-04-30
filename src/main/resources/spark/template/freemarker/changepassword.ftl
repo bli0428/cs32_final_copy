@@ -7,7 +7,7 @@
   <input name="currpassword" type="password" placeholder="current password"></input><br><br>
   <input name="newpassword" type="password" placeholder="new password"></input><br><br>
   <input name="newpassword2" type="password" placeholder="confirm new password"></input><br><br>
-  <input type="submit">
+  <input name="submit" type="submit">
 </form>
 </p>
 <p>${message}</p>
