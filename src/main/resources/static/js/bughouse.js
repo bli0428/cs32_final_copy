@@ -10,14 +10,14 @@ function initializeBank() {
 		const chooseArray = ['&#9823','&#9820','&#9822','&#9821','&#9819'];
 		var col = "";
 		for (var c = 0; c < 5; c++) {
-			col += "<td id='" + c + "''><p class='piece'>" + chooseArray[c] + "</p><p class='count'>0</p></td>";
+			col += "<td id='" + c + "''><p class='count'>0</p><p class='piece'>" + chooseArray[c] + "</p></td>";
 		}
 		$("#bank").append("<tr>" + col + "</tr>");
 	} else {
 		const chooseArray = ['&#9817','&#9814','&#9816','&#9815','&#9813'];
 		var col = "";
 		for (var c = 0; c < 5; c++) {
-			col += "<td id='" + c + "''><p class='piece'>" + chooseArray[c] + "</p><p class='count'>0</p></td>";
+			col += "<td id='" + c + "''><p class='count'>0</p><p class='piece'>" + chooseArray[c] + "</p></td>";
 		}
 		$("#bank").append("<tr>" + col + "</tr>");
 	}

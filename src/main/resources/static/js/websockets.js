@@ -48,6 +48,11 @@ const setup_live_moves = () => {
         var moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
         moveOpponent(moveFrom, moveTo);
         myTurn = true;
+        printTurn(myTurn);
+        break;
+      case MESSAGE_TYPE.GAMEOVER:
+        winner = data.payload.winner;
+        printGameOver(winner);
         break;
     }
   };
