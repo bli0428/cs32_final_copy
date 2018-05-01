@@ -1,12 +1,12 @@
-package main.java.edu.brown.cs.group.games;
+package edu.brown.cs.group.games;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import main.java.edu.brown.cs.group.components.Board;
-import main.java.edu.brown.cs.group.components.Piece;
-import main.java.edu.brown.cs.group.positions.Position;
+import edu.brown.cs.group.components.Board;
+import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.positions.Position;
 
 /**
  * Represents a simple Heuristic that generates the difference between the sum

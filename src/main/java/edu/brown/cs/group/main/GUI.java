@@ -1,4 +1,4 @@
-package main.java.edu.brown.cs.group.main;
+package edu.brown.cs.group.main;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,20 +8,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.login.Configuration;
-import javax.xml.ws.Response;
+//import javax.security.auth.login.Configuration;
+//import javax.xml.ws.Response;
+
+import freemarker.template.Configuration;
+//import freemarker.template.Version;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
-import com.sun.corba.se.impl.presentation.rmi.ExceptionHandler;
+//import com.sun.corba.se.impl.presentation.rmi.ExceptionHandler;
 
-import main.java.edu.brown.cs.group.accounts.User;
+
+import edu.brown.cs.group.accounts.User;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
+
+import spark.ExceptionHandler;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import spark.Request;
+import spark.Response;
+
 
 /**
  * A class that runs the GUI.
@@ -148,6 +159,7 @@ public final class GUI {
 
       String username = qm.value("username");
       String password = qm.value("password");
+      String remember = qm.value("remember");
       repl.processCommand("login " + username + " " + password);
       User user = repl.getUser();
 
@@ -264,7 +276,7 @@ public final class GUI {
       return new ModelAndView(variables, "changeusername.ftl");
     }
   }
-
+  
   public static class ChangeUsernameResultsHandler
       implements TemplateViewRoute {
     @Override

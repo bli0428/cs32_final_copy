@@ -1,4 +1,4 @@
-package main.java.edu.brown.cs.group.components;
+package edu.brown.cs.group.components;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import main.java.edu.brown.cs.group.games.Player;
-import main.java.edu.brown.cs.group.positions.BankPosition;
-import main.java.edu.brown.cs.group.positions.Position;
-import main.java.edu.brown.cs.group.positions.PositionException;
+import edu.brown.cs.group.games.Player;
+import edu.brown.cs.group.positions.BankPosition;
+import edu.brown.cs.group.positions.Position;
+import edu.brown.cs.group.positions.PositionException;
 
 /**
  * Class that represents a chess board.
@@ -24,6 +24,8 @@ public class Board {
   private Map<Position, Piece> places;
 
   private Player[] players;
+  
+  private Piece passant;
 
   /**
    * Constructor that takes a map of starting positions (allows arbitrary game
@@ -206,7 +208,8 @@ public class Board {
       throws InvalidMoveException {
 
     Piece out = null;
-
+    
+    
     // If there's no piece at start or the piece at start can't move to end,
     // throw an exception
     if (!places.containsKey(start)) {
@@ -235,6 +238,22 @@ public class Board {
       }
       places.remove(dest);
     }
+    King king = (King) p;
+    
+    // If the piece is a pawn, and en-passant is an option, and the pawn is moving to the left or right column,
+    // this indicates that the player, in fact, does want to perform en-passant
+    if (passant != null && p.getValidMoves(this).contains(dest) 
+        && dest.col() != start.col() && p.type().equals("p")
+        && !places.containsKey(dest)) {
+      out = new Pawn(new BankPosition(), passant.color(), true);
+      places.remove(passant.position());
+    }
+    
+    if (p.type().equals("p") && (start.row() == dest.row() - 2 || start.row() == dest.row() + 2)) {
+      passant = p;
+    } else {
+      passant = null;
+    }
 
     // Process the move by updating the piece's internal position and the
     // positions map.
@@ -242,6 +261,10 @@ public class Board {
     places.put(dest, p);
     places.remove(start);
     return out;
+  }
+  
+  public Piece getPassant() {
+    return passant;
   }
 
   /**

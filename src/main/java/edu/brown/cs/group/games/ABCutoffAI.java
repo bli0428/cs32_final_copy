@@ -1,15 +1,15 @@
-package main.java.edu.brown.cs.group.games;
+package edu.brown.cs.group.games;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import main.java.edu.brown.cs.group.components.Board;
-import main.java.edu.brown.cs.group.components.InvalidMoveException;
-import main.java.edu.brown.cs.group.components.Piece;
-import main.java.edu.brown.cs.group.components.Queen;
-import main.java.edu.brown.cs.group.positions.Position;
+import edu.brown.cs.group.components.Board;
+import edu.brown.cs.group.components.InvalidMoveException;
+import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.components.Queen;
+import edu.brown.cs.group.positions.Position;
 
 /**
  * Represents a Minimax ai using alpha-beta cutoff.

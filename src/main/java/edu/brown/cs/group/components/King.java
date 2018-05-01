@@ -1,10 +1,10 @@
-package main.java.edu.brown.cs.group.components;
+package edu.brown.cs.group.components;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import main.java.edu.brown.cs.group.positions.Position;
-import main.java.edu.brown.cs.group.positions.PositionException;
+import edu.brown.cs.group.positions.Position;
+import edu.brown.cs.group.positions.PositionException;
 
 /**
  * Class that represents a king.
@@ -16,6 +16,7 @@ public class King implements Piece {
 
   private Position position;
   private int color;
+  private boolean hasMoved;
 
   /**
    * Public constructor to be called at board construction.

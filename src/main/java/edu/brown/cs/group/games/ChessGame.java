@@ -1,9 +1,9 @@
-package main.java.edu.brown.cs.group.games;
+package edu.brown.cs.group.games;
 
-import main.java.edu.brown.cs.group.components.Board;
-import main.java.edu.brown.cs.group.components.InvalidMoveException;
-import main.java.edu.brown.cs.group.positions.Position;
-import main.java.edu.brown.cs.group.positions.PositionException;
+import edu.brown.cs.group.components.Board;
+import edu.brown.cs.group.components.InvalidMoveException;
+import edu.brown.cs.group.positions.Position;
+import edu.brown.cs.group.positions.PositionException;
 
 /**
  * Class for running a chess game. Handles turn order, checkmate, etc.
