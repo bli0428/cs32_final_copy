@@ -6,7 +6,8 @@ var black = false; // boolean indicating whether player is black or white
 var currPieces = []; // an array of ids of the player's curr pieces
 var selected = false; // is there a current piece
 var myTurn = true; // boolean indicating whether or not it is my turn (assume I move first)
-var gameOver = false;
+
+var winner = ""; // might not need winner variable
 
 const PLAYER_NUM = 0; // the id number of the session/player
 
@@ -16,6 +17,7 @@ var validMoveFunctionality = true; // boolean indicating whether or not to displ
 $(document).ready(() => {
     initializeBoard(black);
     initializeBank();
+    printTurn(myTurn);
 });
 
 function getColor(row, col) {
@@ -195,6 +197,7 @@ function removePieceFromCurrPieces(id) {
 $("#chessboard").on("click", "td", function(e){
     console.log(e.target.id);
     var currId = e.target.id;
+    printTurn(myTurn);
     if (myTurn) {
         if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
             console.log(1);
@@ -222,13 +225,27 @@ $("#chessboard").on("click", "td", function(e){
         } else if (selected && currId != currPiece && validMoves.includes(currId)) {
             movePiece(currPiece, currId);
             myTurn = false;
+            printTurn(myTurn);
         }
 
         //TODO: more cases
 }
 
-
 });
+
+
+function printGameOver(winner){
+    $("#message").html("Game Over! " + winner + " is the winner!");
+}
+
+function printTurn(myTurn) {
+    if (myTurn) {
+        $("#message").html("It's your turn!");
+    } else {
+        $("#message").html("Wait!");
+    }
+}
+
 
 function convertFrontToBackCoordinates(id) {
     var splitId = id.split("-");

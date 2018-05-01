@@ -1,6 +1,8 @@
 <#assign content>
 
-
+<div id="messageHolder">
+	<p id="message"></p>
+</div>
 <div id="main">
 	<div id="boardHolder">
 		<table id="chessboard"></table>
