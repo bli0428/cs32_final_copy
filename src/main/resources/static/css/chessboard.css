@@ -68,6 +68,13 @@ table#bank {
     margin: 0px auto;
 }   
 
+.piece {
+  text-align: center;
+}
+
+.count {
+  text-align: right;
+}
 
 
 

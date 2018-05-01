@@ -159,6 +159,7 @@ function displayValidMoves() {
     }
 }
 
+//TODO: NEEED TO CHANGE CHESS LOGIC REMOVE PIECE IF PIECE IS IS IN SQUARE MOVED TO??
 function squareContainsPiece(id) {
     if ($("#" + id).html() !=  "") {
         return true;
