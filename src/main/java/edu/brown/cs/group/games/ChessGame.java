@@ -69,6 +69,16 @@ public class ChessGame implements Game {
             JsonObject message = new JsonObject();
             message.addProperty("type",
                 ChessWebSocket.MESSAGE_TYPE.GAMEOVER.ordinal());
+            JsonObject payload = new JsonObject();
+            payload.addProperty("winner", t);
+            message.add("payload", payload);
+            try {
+              session.getRemote()
+                  .sendString(ChessWebSocket.GSON.toJson(message));
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
           }
         }
         break;
@@ -80,6 +90,16 @@ public class ChessGame implements Game {
             JsonObject message = new JsonObject();
             message.addProperty("type",
                 ChessWebSocket.MESSAGE_TYPE.GAMEOVER.ordinal());
+            JsonObject payload = new JsonObject();
+            payload.addProperty("winner", "draw");
+            message.add("payload", payload);
+            try {
+              session.getRemote()
+                  .sendString(ChessWebSocket.GSON.toJson(message));
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
           }
         }
         break;
