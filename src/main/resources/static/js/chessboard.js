@@ -5,15 +5,18 @@ var currPiece = ""; // the selected piece to be moved
 var black = false; // boolean indicating whether player is black or white
 var currPieces = []; // an array of ids of the player's curr pieces
 var selected = false; // is there a current piece
+var myTurn = true; // boolean indicating whether or not it is my turn (assume I move first)
+var gameOver = false;
+
 const PLAYER_NUM = 0; // the id number of the session/player
 
 //TODO: attatch button functionality
 var validMoveFunctionality = true; // boolean indicating whether or not to display valid moves
 
 $(document).ready(() => {
-        initializeBoard(black);
-        initializeBank();
-    });
+    initializeBoard(black);
+    initializeBank();
+});
 
 function getColor(row, col) {
     if (row % 2 == 0 && col % 2 == 0) {
@@ -58,24 +61,24 @@ function initializeBoard(black) {
         $('#1-7').html('&#9817');
 
          // black pieces
-        $('#7-0').html('&#9820');
-        $('#7-1').html('&#9822');
-        $('#7-2').html('&#9821');
-        $('#7-3').html('&#9819');
-        $('#7-4').html('&#9818');
-        $('#7-5').html('&#9821');
-        $('#7-6').html('&#9822');
-        $('#7-7').html('&#9820');
+         $('#7-0').html('&#9820');
+         $('#7-1').html('&#9822');
+         $('#7-2').html('&#9821');
+         $('#7-3').html('&#9819');
+         $('#7-4').html('&#9818');
+         $('#7-5').html('&#9821');
+         $('#7-6').html('&#9822');
+         $('#7-7').html('&#9820');
 
-        $('#6-0').html('&#9823');
-        $('#6-1').html('&#9823');
-        $('#6-2').html('&#9823');
-        $('#6-3').html('&#9823');
-        $('#6-4').html('&#9823');
-        $('#6-5').html('&#9823');
-        $('#6-6').html('&#9823');
-        $('#6-7').html('&#9823');
-    } else {
+         $('#6-0').html('&#9823');
+         $('#6-1').html('&#9823');
+         $('#6-2').html('&#9823');
+         $('#6-3').html('&#9823');
+         $('#6-4').html('&#9823');
+         $('#6-5').html('&#9823');
+         $('#6-6').html('&#9823');
+         $('#6-7').html('&#9823');
+     } else {
         // black pieces
         $('#0-0').html('&#9820');
         $('#0-1').html('&#9822');
@@ -115,7 +118,7 @@ function initializeBoard(black) {
         $('#6-7').html('&#9817');
     }
     currPieces = ["7-0", "7-1", "7-2", "7-3", "7-4", "7-5", "7-6", "7-7",
-                    "6-0", "6-1", "6-2", "6-3", "6-4", "6-5", "6-6", "6-7"];
+    "6-0", "6-1", "6-2", "6-3", "6-4", "6-5", "6-6", "6-7"];
 
 }
 
@@ -139,15 +142,21 @@ function movePiece(start, end) {
 
         var move = [start, end];
         new_move(move);
-
-        //TODO: send update to backend, also need to think about pieces getting removed
-        // maybe: pass in a piece to remove, if its null, no piece has to be removed, if it contains something remove the piece and update the board
-        // piece needs to be added to the bank
     }
+}
+
+function moveOpponent(start, end) {
+    var startPiece = $("#" + start).text();
+    $("#" + start).html("");
+    $("#" + end).html(startPiece);
+    if (currPieces.includes(end)) {
+        removePieceFromCurrPieces(end);
+    }    
 }
 
 function getMoves(id) {
     if (currPieces.includes(id)) {
+        console.log("currPiece includes id");
         new_tohighlight(id);
     }
 }
@@ -186,35 +195,38 @@ function removePieceFromCurrPieces(id) {
 $("#chessboard").on("click", "td", function(e){
     console.log(e.target.id);
     var currId = e.target.id;
-    console.log(selected);
-
-    if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
-        $("#" + currPiece).toggleClass('selected');
-        selected = false;
-        currPiece = "";
-        if (validMoveFunctionality) {
-            displayValidMoves();  // clear the valid moves of the current piece
+    if (myTurn) {
+        if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
+            console.log(1);
+            $("#" + currPiece).toggleClass('selected');
+            selected = false;
+            currPiece = "";
+            if (validMoveFunctionality) {
+                displayValidMoves();  // clear the valid moves of the current piece
+            }
+        } else if (!selected && validPiece(currId)) { // first click
+            console.log(2);
+            currPiece = currId;
+            $("#" + currPiece).toggleClass('selected');
+            getMoves(currPiece);
+            selected = true;
+        } else if (selected && validPiece(currId)) { // another square has been picked
+            console.log(3);
+            $("#" + currPiece).toggleClass('selected');
+            if (validMoveFunctionality) {
+                displayValidMoves(); // reset the previously selected valid moves
+            }
+            currPiece = currId;
+            $("#" + currPiece).toggleClass('selected');
+            getMoves(currPiece);
+        } else if (selected && currId != currPiece && validMoves.includes(currId)) {
+            movePiece(currPiece, currId);
+            myTurn = false;
         }
-    } else if (!selected && validPiece(currId)) { // first click
-        currPiece = currId;
-        $("#" + currPiece).toggleClass('selected');
-        getMoves(currPiece);
-        selected = true;
-    } else if (selected && validPiece(currId)) { // another square has been picked
-        $("#" + currPiece).toggleClass('selected');
-        if (validMoveFunctionality) {
-            displayValidMoves(); // reset the previously selected valid moves
-        }
-        currPiece = currId;
-        $("#" + currPiece).toggleClass('selected');
-        getMoves(currPiece);
-    }
 
-    else if (selected && currId != currPiece && validMoves.includes(currId)) {
-        movePiece(currPiece, currId);
-    }
+        //TODO: more cases
+}
 
-    //TODO: more cases
 
 });
 

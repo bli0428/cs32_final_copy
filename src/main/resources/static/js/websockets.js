@@ -25,18 +25,15 @@ const setup_live_moves = () => {
 
   conn.onmessage = msg => {
     const data = JSON.parse(msg.data);
-    console.log("here!!!");
     switch (data.type) {
       default:
         console.log('Unknown message type!', data.type);
         break;
       case MESSAGE_TYPE.CONNECT:
-        console.log("in frontend connect")
         myId = data.payload.id;
         //TODO: maybe need to know whether player is black or white
         break;
       case MESSAGE_TYPE.HIGHLIGHT:
-        myId = data.payload.id;
         validMoves = [];
         var backendValidMoves = data.payload.validMoves;
         for (var i = 0; i < backendValidMoves.length; i++) {
@@ -47,10 +44,10 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
-        myId = data.payload.id;
         var moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
         var moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
-        movePiece(moveFrom, moveTo);
+        moveOpponent(moveFrom, moveTo);
+        myTurn = true;
         break;
     }
   };

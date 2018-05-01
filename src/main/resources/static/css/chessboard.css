@@ -73,7 +73,8 @@ table#bank {
 }
 
 .count {
-  text-align: right;
+  position: absolute;
+  font-size: 10px;
 }
 
 
