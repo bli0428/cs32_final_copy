@@ -100,8 +100,14 @@ public final class GUI {
 	private static class ChessHandler implements TemplateViewRoute {
 		@Override
 		public ModelAndView handle(Request req, Response res) {
-			//game = new ChessGame(new GUIPlayer(), new ABCutoffAI());
-			//game.play();
+			try {
+				game = new ChessGame(new GUIPlayer(), new ABCutoffAI());
+				game.play();
+			} catch (PositionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			Map<String, Object> variables = ImmutableMap.of("title", "CHESS");
 			return new ModelAndView(variables, "board.ftl");
 		}
