@@ -58,18 +58,18 @@ public class ChessWebSocket {
 
 		////////////////////
 		// TODO: Replace this:
-//		GUIPlayer p = new GUIPlayer();
-//		playerSession.put(session, p);
-//		try {
-//			ChessGame g = new ChessGame(p, new ABCutoffAI());
-//			playerNum.put(p, 0);
-//			games.put(session, g);
-//			Thread t = new Thread((() -> g.play()));
-//			t.run();
-//		} catch (PositionException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		GUIPlayer p = new GUIPlayer();
+		playerSession.put(session, p);
+		try {
+			ChessGame g = new ChessGame(p, new ABCutoffAI());
+			playerNum.put(p, 0);
+			games.put(session, g);
+			Thread t = new Thread((() -> g.play()));
+			t.run();
+		} catch (PositionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		////////////////////
 
 
