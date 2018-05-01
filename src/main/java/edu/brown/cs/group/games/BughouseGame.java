@@ -1,8 +1,11 @@
 package edu.brown.cs.group.games;
 
+import java.util.Set;
+
 import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.InvalidMoveException;
 import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.positions.Position;
 
 /**
  * Class representing a game of Bughouse.
@@ -116,6 +119,15 @@ public class BughouseGame implements Game {
 
     b0.run();
     b1.run();
+  }
+
+  @Override
+  public Set<Position> moves(int player, Position pos) {
+    if (player % 2 == 0) {
+      return boards[0].getValidMoves(player / 2).get(pos);
+    } else {
+      return boards[0].getValidMoves(player % 3).get(pos);
+    }
   }
 
 }
