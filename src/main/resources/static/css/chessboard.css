@@ -47,6 +47,31 @@ table#chessboard {
   background: #c4d29b;
 }
 
+table#bank {
+  border: 2px solid #181818; 
+  margin: auto;
+  margin-top: 10%;
+  margin-bottom: 5%;
+}
+
+#bank tr td { 
+  width: 60px; 
+  height: 60px;
+  text-align: center;
+  font-size: 250%;
+}
+
+#main > div {
+    display: inline-block;
+}
+
+#main {
+    text-align: center;
+    margin: 0px auto;
+}   
+
+
+
 
 /****************/
 /* The switch - the box around the slider */

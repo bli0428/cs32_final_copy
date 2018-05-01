@@ -4,12 +4,15 @@ var validMoves = []; // the valid moves of the currPiece
 var currPiece = ""; // the selected piece to be moved
 var black = false; // boolean indicating whether player is black or white
 var currPieces = []; // an array of ids of the player's curr pieces
-var selected = false;
+var selected = false; // is there a current piece
+const PLAYER_NUM = 0; // the id number of the session/player
 
+//TODO: attatch button functionality
 var validMoveFunctionality = true; // boolean indicating whether or not to display valid moves
 
 $(document).ready(() => {
-        startBoard(black);
+        initializeBoard(black);
+        initializeBank();
     });
 
 function getColor(row, col) {
@@ -24,7 +27,7 @@ function getColor(row, col) {
     }
 }
 
-function startBoard(black) {
+function initializeBoard(black) {
     for (var r = 0; r < BOARD_DIM; r++) {
         var col = "";
         for (var c = 0; c < BOARD_DIM; c++) {
@@ -35,7 +38,43 @@ function startBoard(black) {
     }
 
     if (black) {
-        // TODO: initialize board when player is black
+        // white pieces
+        $('#0-0').html('&#9814');
+        $('#0-1').html('&#9816');
+        $('#0-2').html('&#9815');
+        $('#0-3').html('&#9813');
+        $('#0-4').html('&#9812');
+        $('#0-5').html('&#9815');
+        $('#0-6').html('&#9816');
+        $('#0-7').html('&#9814');
+
+        $('#1-0').html('&#9817');
+        $('#1-1').html('&#9817');
+        $('#1-2').html('&#9817');
+        $('#1-3').html('&#9817');
+        $('#1-4').html('&#9817');
+        $('#1-5').html('&#9817');
+        $('#1-6').html('&#9817');
+        $('#1-7').html('&#9817');
+
+         // black pieces
+        $('#7-0').html('&#9820');
+        $('#7-1').html('&#9822');
+        $('#7-2').html('&#9821');
+        $('#7-3').html('&#9819');
+        $('#7-4').html('&#9818');
+        $('#7-5').html('&#9821');
+        $('#7-6').html('&#9822');
+        $('#7-7').html('&#9820');
+
+        $('#6-0').html('&#9823');
+        $('#6-1').html('&#9823');
+        $('#6-2').html('&#9823');
+        $('#6-3').html('&#9823');
+        $('#6-4').html('&#9823');
+        $('#6-5').html('&#9823');
+        $('#6-6').html('&#9823');
+        $('#6-7').html('&#9823');
     } else {
         // black pieces
         $('#0-0').html('&#9820');
@@ -96,6 +135,10 @@ function movePiece(start, end) {
         selected = false;
         removePieceFromCurrPieces(start);
         currPieces.push(end);
+
+        //TODO: send update to backend, also need to think about pieces getting removed
+        // maybe: pass in a piece to remove, if its null, no piece has to be removed, if it contains something remove the piece and update the board
+        // piece needs to be added to the bank
     }
 }
 
@@ -183,6 +226,14 @@ $("#chessboard").on("click", "td", function(e){
     //TODO: more cases
 
 });
+
+function convertCoordinates(id) {
+    var splitId = id.split("-");
+    var row = BOARD_DIM - parseInt(splitId[0]);
+    var col = parseInt(splitId[1]) + 1;
+    var toReturn = col.toString() + "," + row.toString();
+    return toReturn;
+}
 
 // $("#moveToggle").on("click", function(){
 //     toggleMoveFunctionality();

@@ -10,7 +10,7 @@ let myId = -1;
 
 // Setup the WebSocket connection for live updating of scores.
 const setup_live_scores = () => {
-  conn = new WebSocket("ws://localhost:4567/scores"); //TODO: change this
+  conn = new WebSocket("ws://localhost:4567/chess"); //TODO: change this
 
   conn.onerror = err => {
     console.log('Connection error:', err);
@@ -30,17 +30,20 @@ const setup_live_scores = () => {
         currId = data.payload.id;
 
         //TODO: update board with appropriate move 
+        // might have to do different cases for different players
         break;
     }
   };
 }
 
+var move = [];
+var placement = [];
 //TODO: WHERE TO CALL THIS?????????
-function new_move {
+const new_move = move => {
   var toSendPayload = {
     id: myId,
-    moveFrom: , //TODO: pass in og coordinate
-    moveTo: //TODO: pass in new coordinate
+    moveFrom: convertCoordinates(move[0]),
+    moveTo: move[1]
   }
 
   var toSend = {
@@ -51,11 +54,11 @@ function new_move {
   conn.send(JSON.stringify(toSend));
 }
 
-function new_placement {
+const new_placement = placement => {
   var toSendPayload = {
     id: myId,
-    bankIndex: , //TODO: index in bank
-    moveTo: //TODO: pass in new coordinate
+    bankIndex: placement[0], //TODO: index in bank
+    moveTo: placement[1] //TODO: pass in new coordinate
   }
 
   var toSend = {
