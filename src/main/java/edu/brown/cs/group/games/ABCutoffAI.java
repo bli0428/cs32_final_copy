@@ -28,6 +28,9 @@ public class ABCutoffAI implements Player {
   private long startTime;
   private long endTime;
   private int depth;
+  private int numRepeat = 0;
+  
+  private Set<Board> visitedBoards = new HashSet<>();
 
   /**
    * Instantiates a new ABCutoffAI with a bank.
@@ -44,7 +47,10 @@ public class ABCutoffAI implements Player {
   
   private void printBench() {
     endTime = System.nanoTime();
-    System.out.println(String.format("%d nodes searched in depth %d in %f seconds", nodesSearched, depth, (endTime - startTime)/1000000000.0));
+    System.out.println(String.format(
+        "%d nodes searched in depth %d in %f seconds with %d boards repeated", 
+        nodesSearched, depth, (endTime - startTime)/1000000000.0, numRepeat));
+    System.out.println(visitedBoards.size());
     startTime = System.nanoTime();
   }
 
@@ -82,6 +88,7 @@ public class ABCutoffAI implements Player {
 
         try {
           newBoard.processMove(start, end, promote(end));
+          
         } catch (InvalidMoveException e) {
 
           e.printStackTrace();
@@ -108,6 +115,11 @@ public class ABCutoffAI implements Player {
   private double alphaBetaCutoffMax(Board tempBoard, int ply, double a,
       double b, Heuristic heur, int currColor) {
     nodesSearched ++;
+    
+    if (visitedBoards.contains(tempBoard)) {
+      numRepeat++;
+    }
+    visitedBoards.add(tempBoard);
 
     double v = Double.NEGATIVE_INFINITY;
     int gameOver = tempBoard.gameOver(color);
@@ -137,6 +149,7 @@ public class ABCutoffAI implements Player {
     for (Position start : validMoves.keySet()) {
       for (Position end : validMoves.get(start)) {
         Board newBoard = new Board(tempBoard);
+        
         try {
           newBoard.processMove(start, end, new Queen(end, currColor));
         } catch (InvalidMoveException e) {
@@ -157,11 +170,17 @@ public class ABCutoffAI implements Player {
 
   private double alphaBetaCutoffMin(Board tempBoard, int ply, double a,
       double b, Heuristic heur, int currColor) {
+    
+    nodesSearched ++;
+    
+    if (visitedBoards.contains(tempBoard)) {
+      numRepeat++;
+    }
+    visitedBoards.add(tempBoard);
+    
     double v = Double.POSITIVE_INFINITY;
     
     int gameOver = tempBoard.gameOver(color);
-
-    nodesSearched ++;
     
     // checks for stalemate.
     if (gameOver == 2) {
@@ -219,7 +238,12 @@ public class ABCutoffAI implements Player {
 
   @Override
   public Move move() {
-    return alphaBetaCutoff(cutoff, new MaterialHeuristic());
+    Move result = null;
+    for (int i = 1; i < cutoff; i++) {
+      result = alphaBetaCutoff(i, new MaterialHeuristic());
+    }
+    
+    return result;
   }
 
   @Override

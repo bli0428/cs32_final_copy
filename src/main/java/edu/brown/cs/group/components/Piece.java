@@ -76,4 +76,5 @@ public interface Piece {
    * @return a Set<Position> with all the threatened squares
    */
   Set<Position> threatens(Board board);
+  
 }
