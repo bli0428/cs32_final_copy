@@ -34,23 +34,22 @@ public class GUIPlayer implements Player {
     return bank;
   }
 
-  public void setMove(Move move) {
+  public synchronized void setMove(Move move) {
     moves.set(0, move);
     moves.notifyAll();
   }
 
   @Override
-  public Move move() {
+  public synchronized Move move() {
     try {
-      synchronized (moves) {
-        moves.wait();
-      }
+      moves.wait();
     } catch (InterruptedException e) {
       try {
         if (moves.get(0) == moves.get(1)) {
           return move();
         }
       } catch (NullPointerException npe) {
+        npe.printStackTrace();
       }
       return moves.get(0);
     }
@@ -64,17 +63,16 @@ public class GUIPlayer implements Player {
   }
 
   @Override
-  public Piece promote(Position p) {
+  public synchronized Piece promote(Position p) {
     try {
-      synchronized (toPromote) {
-        toPromote.wait();
-      }
+      toPromote.wait();
     } catch (InterruptedException e) {
       try {
         if (toPromote.get(0) == toPromote.get(1)) {
           return promote(p);
         }
       } catch (NullPointerException npe) {
+        npe.printStackTrace();
       }
       return toPromote.get(0);
     }
