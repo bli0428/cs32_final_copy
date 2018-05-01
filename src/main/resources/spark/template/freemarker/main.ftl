@@ -13,6 +13,11 @@
 
      <script src="/js/jquery-3.1.1.js"></script>
      <script src="/js/chessboard.js"></script>
+<<<<<<< HEAD
      <script src="/js/menu.js"></script>
+=======
+     <script src="/js/bughouse.js"></script>
+     <script src="/js/websockets.js"></script>
+>>>>>>> f14856628912a0932cbe0489a397ceeed3023f12
   </body>
 </html>

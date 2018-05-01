@@ -33,7 +33,7 @@ public class PromotedPawn implements Piece {
 
   @Override
   public Piece copyOf() {
-    return new PromotedPawn(promotedPiece);
+    return new PromotedPawn(promotedPiece.copyOf());
   }
 
   @Override

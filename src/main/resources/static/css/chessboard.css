@@ -2,7 +2,7 @@ body {
   background-color: #dcf2f2;
 }
 
-table { 
+table {
   border-collapse: collapse; 
   border-spacing: 0;
 }
@@ -46,6 +46,36 @@ table#chessboard {
 .validMove.white {
   background: #c4d29b;
 }
+
+table#bank {
+  border: 2px solid #181818; 
+  margin: auto;
+}
+
+#bank tr td { 
+  width: 60px; 
+  height: 60px;
+  text-align: center;
+  font-size: 250%;
+}
+
+#main > div {
+    display: inline-block;
+}
+
+#main {
+    text-align: center;
+    margin: 0px auto;
+}   
+
+.piece {
+  text-align: center;
+}
+
+.count {
+  text-align: right;
+}
+
 
 
 /****************/
