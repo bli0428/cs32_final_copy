@@ -32,10 +32,17 @@ public class GUIPlayer implements Player {
     return bank;
   }
 
+  public void setMove(Move move) {
+    moves.set(0, move);
+    moves.notifyAll();
+  }
+
   @Override
   public Move move() {
     try {
-      moves.wait();
+      synchronized (moves) {
+        moves.wait();
+      }
     } catch (InterruptedException e) {
       try {
         if (moves.get(0) == moves.get(1)) {
@@ -57,17 +64,19 @@ public class GUIPlayer implements Player {
   @Override
   public Piece promote(Position p) {
     try {
-      moves.wait();
+      synchronized (toPromote) {
+        toPromote.wait();
+      }
     } catch (InterruptedException e) {
       try {
-        if (moves.get(0) == moves.get(1)) {
+        if (toPromote.get(0) == toPromote.get(1)) {
           return promote(p);
         }
       } catch (NullPointerException npe) {
       }
       return toPromote.get(0);
     }
-    moves.set(1, moves.get(0));
+    toPromote.set(1, toPromote.get(0));
     return toPromote.get(0);
   }
 

@@ -1,5 +1,7 @@
 package edu.brown.cs.group.games;
 
+import java.util.Set;
+
 import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.InvalidMoveException;
 import edu.brown.cs.group.positions.Position;
@@ -77,5 +79,10 @@ public class ChessGame implements Game {
         System.out.println("That's not a valid move!");
       }
     }
+  }
+
+  @Override
+  public Set<Position> moves(int player, Position pos) {
+    return board.getValidMoves(player).get(pos);
   }
 }
