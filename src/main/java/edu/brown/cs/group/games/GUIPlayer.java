@@ -32,6 +32,11 @@ public class GUIPlayer implements Player {
     return bank;
   }
 
+  public void setMove(Move move) {
+    moves.set(0, move);
+    moves.notifyAll();
+  }
+
   @Override
   public Move move() {
     try {
