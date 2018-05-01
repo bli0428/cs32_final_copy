@@ -28,7 +28,7 @@ import edu.brown.cs.group.positions.PositionException;
 
 @WebSocket
 public class ChessWebSocket {
-  private static final Gson GSON = new Gson();
+  public static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
   public static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
   public static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();

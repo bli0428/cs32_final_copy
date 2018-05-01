@@ -1,5 +1,6 @@
 package edu.brown.cs.group.games;
 
+import java.io.IOException;
 import java.util.Set;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -91,11 +92,17 @@ public class ChessGame implements Game {
               JsonObject payload = new JsonObject();
               payload.addProperty("moveFrom", m.start().numString());
               payload.addProperty("moveTo", m.end().numString());
+              message.add("payload", payload);
+              session.getRemote()
+                  .sendString(ChessWebSocket.GSON.toJson(message));
             }
           }
         }
       } catch (InvalidMoveException e) {
         System.out.println("That's not a valid move!");
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
       System.out.println("here!");
     }
