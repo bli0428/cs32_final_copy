@@ -25,6 +25,10 @@ public class GUIPlayer implements Player {
     bank = Collections.synchronizedSet(new HashSet<Piece>());
     moves = Collections.synchronizedList(new ArrayList<Move>());
     toPromote = Collections.synchronizedList(new ArrayList<Piece>());
+    moves.add(null);
+    moves.add(null);
+    toPromote.add(null);
+    toPromote.add(null);
   }
 
   @Override

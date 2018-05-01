@@ -2,8 +2,13 @@ package edu.brown.cs.group.games;
 
 import java.util.Set;
 
+import org.eclipse.jetty.websocket.api.Session;
+
+import com.google.gson.JsonObject;
+
 import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.InvalidMoveException;
+import edu.brown.cs.group.main.ChessWebSocket;
 import edu.brown.cs.group.positions.Position;
 import edu.brown.cs.group.positions.PositionException;
 
@@ -75,9 +80,24 @@ public class ChessGame implements Game {
         turn = Math.abs(turn - 1);
         System.out.println("Moved from " + m.start().col() + ","
             + m.start().row() + " to " + m.end().col() + "," + m.end().row());
+        for (Session session : ChessWebSocket.games.keySet()) {
+          if (ChessWebSocket.games.get(session) == this) {
+            if (ChessWebSocket.playerNum
+                .get(ChessWebSocket.playerSession.get(session)) == Math
+                    .abs(turn - 1)) {
+              JsonObject message = new JsonObject();
+              message.addProperty("type",
+                  ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
+              JsonObject payload = new JsonObject();
+              payload.addProperty("moveFrom", m.start().numString());
+              payload.addProperty("moveTo", m.end().numString());
+            }
+          }
+        }
       } catch (InvalidMoveException e) {
         System.out.println("That's not a valid move!");
       }
+      System.out.println("here!");
     }
   }
 

@@ -30,13 +30,13 @@ import edu.brown.cs.group.positions.PositionException;
 public class ChessWebSocket {
   private static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
-  private static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
-  private static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();
-  private static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
+  public static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
+  public static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();
+  public static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
   private static int nextId = 0;
   private static int nextGame = 0;
 
-  private static enum MESSAGE_TYPE {
+  public static enum MESSAGE_TYPE {
     CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT
   }
 
@@ -94,10 +94,8 @@ public class ChessWebSocket {
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       // TODO: create payloads and add properties
       GUIPlayer p = playerSession.get(session);
-      String[] p1 = recievedPayload.get("ogCoordinate").getAsString()
-          .split(",");
-      String[] p2 = recievedPayload.get("newCoordinate").getAsString()
-          .split(",");
+      String[] p1 = recievedPayload.get("moveFrom").getAsString().split(",");
+      String[] p2 = recievedPayload.get("moveTo").getAsString().split(",");
       try {
         Position start = new Position(Integer.parseInt(p1[0]),
             Integer.parseInt(p1[1]));

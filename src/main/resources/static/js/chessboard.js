@@ -121,7 +121,7 @@ function initializeBoard(black) {
 
 function movePiece(start, end) {
     var startPiece = $("#" + start).text();
-    
+
     if (validMoves.includes(end)) { // confirms that piece is being moved to a valid square
         $("#" + start).html("");
         $("#" + end).html(startPiece);
@@ -137,7 +137,7 @@ function movePiece(start, end) {
         currPieces.push(end);
 
 
-        var move = start, end];
+        var move = [start, end];
         new_move(move);
 
         //TODO: send update to backend, also need to think about pieces getting removed
@@ -149,7 +149,7 @@ function movePiece(start, end) {
 function getMoves(id) {
     if (currPieces.includes(id)) {
         new_tohighlight(id);
-    } 
+    }
 }
 
 // toggle on and off the valid moves
@@ -207,7 +207,7 @@ $("#chessboard").on("click", "td", function(e){
         currPiece = currId;
         $("#" + currPiece).toggleClass('selected');
         getMoves(currPiece);
-    } 
+    }
 
     else if (selected && currId != currPiece && validMoves.includes(currId)) {
         movePiece(currPiece, currId);
@@ -244,5 +244,3 @@ function convertBackToFrontCoordinates(stringCoordinates) {
 //         validMoveFunctionality = true;
 //     }
 // }
-
-
