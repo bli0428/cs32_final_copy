@@ -472,12 +472,10 @@ public class Board {
     return true;
   }
 
-  /**
-   * Prints this board.
-   */
-  public void print() {
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
     for (int i = 8; i > 0; i--) {
-      StringBuilder sb = new StringBuilder();
       sb.append(i + ". ");
       for (int j = 1; j <= 8; j++) {
         Position p;
@@ -495,16 +493,31 @@ public class Board {
           e.printStackTrace();
         }
       }
-      System.out.println(sb.toString());
+      sb.append("\n");
     }
-
-    StringBuilder sb = new StringBuilder();
 
     sb.append("   ");
     for (int i = 1; i <= 8; i++) {
       sb.append(i + "  ");
     }
-    System.out.println(sb.toString());
-
+    sb.append("\n");
+    return sb.toString();
+  }
+  
+  public void print() {
+    System.out.println(toString());
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Board) {
+      return ((Board) o).toString().equals(toString());
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 }

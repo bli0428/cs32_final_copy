@@ -26,6 +26,10 @@ public class GUIPlayer implements Player {
     bank = Collections.synchronizedSet(new HashSet<Piece>());
     moves = Collections.synchronizedList(new ArrayList<Move>());
     toPromote = Collections.synchronizedList(new ArrayList<Piece>());
+    moves.add(null);
+    moves.add(null);
+    toPromote.add(null);
+    toPromote.add(null);
   }
 
   @Override
@@ -33,26 +37,30 @@ public class GUIPlayer implements Player {
     return bank;
   }
 
-  public void setMove(Move move) {
+  public synchronized void setMove(Move move) {
     moves.set(0, move);
-    moves.notifyAll();
+    notifyAll();
   }
 
   @Override
-  public Move move() {
+  public synchronized Move move() {
+    System.out.println("Started move");
     try {
-      synchronized (moves) {
-        moves.wait();
-      }
+      System.out.println("Try block");
+      wait();
+      System.out.println("After wait");
     } catch (InterruptedException e) {
+      System.out.println("SHIT");
       try {
         if (moves.get(0) == moves.get(1)) {
           return move();
         }
       } catch (NullPointerException npe) {
+        npe.printStackTrace();
       }
       return moves.get(0);
     }
+    System.out.println("exited try");
     moves.set(1, moves.get(0));
     return moves.get(0);
   }
@@ -63,17 +71,16 @@ public class GUIPlayer implements Player {
   }
 
   @Override
-  public Piece promote(Position p) {
+  public synchronized Piece promote(Position p) {
     try {
-      synchronized (toPromote) {
-        toPromote.wait();
-      }
+      wait();
     } catch (InterruptedException e) {
       try {
         if (toPromote.get(0) == toPromote.get(1)) {
           return promote(p);
         }
       } catch (NullPointerException npe) {
+        npe.printStackTrace();
       }
       return toPromote.get(0);
     }

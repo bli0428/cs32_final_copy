@@ -139,6 +139,22 @@ public class Rook implements Piece {
   public int color() {
     return color;
   }
+  
+  @Override
+  public int hashCode() {
+    return type().hashCode();
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Rook) {
+      return ((Rook) o).type().equals(type());
+    }
+    if (o instanceof PromotedPawn) {
+      return ((PromotedPawn) o).innerType().equals(type());
+    }
+    return false;
+  }
 
   @Override
   public Set<Position> threatens(Board board) {

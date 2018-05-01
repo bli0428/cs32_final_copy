@@ -28,20 +28,21 @@ import edu.brown.cs.group.positions.PositionException;
 
 @WebSocket
 public class ChessWebSocket {
-  private static final Gson GSON = new Gson();
+  public static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
-  private static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
-  private static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();
-  private static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
+  public static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
+  public static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();
+  public static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
   private static int nextId = 0;
   private static int nextGame = 0;
 
-  private static enum MESSAGE_TYPE {
+  public static enum MESSAGE_TYPE {
     CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT
   }
 
   @OnWebSocketConnect
   public void connected(Session session) throws IOException {
+    System.out.println("backend connect");
     sessions.add(session);
 
     JsonObject payload = new JsonObject();
@@ -53,6 +54,8 @@ public class ChessWebSocket {
 
     // TODO: add black or white to payload
 
+    session.getRemote().sendString(GSON.toJson(toSend));
+
     ////////////////////
     // TODO: Replace this:
     GUIPlayer p = new GUIPlayer();
@@ -61,16 +64,17 @@ public class ChessWebSocket {
       ChessGame g = new ChessGame(p, new ABCutoffAI());
       playerNum.put(p, 0);
       games.put(session, g);
-      g.play();
+      Thread t = new Thread((() -> g.play()));
+      t.start();
+      System.out.println("here");
     } catch (PositionException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     ////////////////////
 
-    session.getRemote().sendString(GSON.toJson(toSend));
-
     nextId++;
+    System.out.println("here");
   }
 
   @OnWebSocketClose
@@ -80,19 +84,18 @@ public class ChessWebSocket {
 
   @OnWebSocketMessage
   public void message(Session session, String message) throws IOException {
+    System.out.println("in message");
     JsonObject received = GSON.fromJson(message, JsonObject.class);
 
     int messageInt = received.get("type").getAsInt();
 
     if (messageInt == MESSAGE_TYPE.MOVE.ordinal()) { // regular move from one
-                                                     // square to another
+      // square to another
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       // TODO: create payloads and add properties
       GUIPlayer p = playerSession.get(session);
-      String[] p1 = recievedPayload.get("ogCoordinate").getAsString()
-          .split(",");
-      String[] p2 = recievedPayload.get("newCoordinate").getAsString()
-          .split(",");
+      String[] p1 = recievedPayload.get("moveFrom").getAsString().split(",");
+      String[] p2 = recievedPayload.get("moveTo").getAsString().split(",");
       try {
         Position start = new Position(Integer.parseInt(p1[0]),
             Integer.parseInt(p1[1]));
@@ -106,14 +109,15 @@ public class ChessWebSocket {
       }
 
     } else if (messageInt == MESSAGE_TYPE.PLACEMENT.ordinal()) { // placement
-                                                                 // move from
-                                                                 // the bank
-                                                                 // onto the
-                                                                 // board
+      // move from
+      // the bank
+      // onto the
+      // board
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       // TODO: create payloads and add properties
 
     } else if (messageInt == MESSAGE_TYPE.TOHIGHLIGHT.ordinal()) {
+      System.out.println("recieved tohighlight");
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       String piece = recievedPayload.get("piece").getAsString();
       String[] p1 = piece.split(",");
