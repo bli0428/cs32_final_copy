@@ -53,6 +53,8 @@ public class ChessWebSocket {
 
     // TODO: add black or white to payload
 
+    session.getRemote().sendString(GSON.toJson(toSend));
+
     ////////////////////
     // TODO: Replace this:
     GUIPlayer p = new GUIPlayer();
@@ -61,14 +63,13 @@ public class ChessWebSocket {
       ChessGame g = new ChessGame(p, new ABCutoffAI());
       playerNum.put(p, 0);
       games.put(session, g);
-      g.play();
+      Thread t = new Thread((() -> g.play()));
+      t.run();
     } catch (PositionException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     ////////////////////
-
-    session.getRemote().sendString(GSON.toJson(toSend));
 
     nextId++;
   }
