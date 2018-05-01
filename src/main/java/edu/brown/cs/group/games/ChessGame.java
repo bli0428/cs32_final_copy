@@ -64,10 +64,24 @@ public class ChessGame implements Game {
           System.out.println(p.col() + "," + p.row());
         }
         System.out.println("Game over, " + t + " wins!");
+        for (Session session : ChessWebSocket.games.keySet()) {
+          if (ChessWebSocket.games.get(session) == this) {
+            JsonObject message = new JsonObject();
+            message.addProperty("type",
+                ChessWebSocket.MESSAGE_TYPE.GAMEOVER.ordinal());
+          }
+        }
         break;
       }
       if (gameOver == 2) {
         System.out.println("Game over, it's a draw!");
+        for (Session session : ChessWebSocket.games.keySet()) {
+          if (ChessWebSocket.games.get(session) == this) {
+            JsonObject message = new JsonObject();
+            message.addProperty("type",
+                ChessWebSocket.MESSAGE_TYPE.GAMEOVER.ordinal());
+          }
+        }
         break;
       }
       Move m;
