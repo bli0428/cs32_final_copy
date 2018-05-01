@@ -34,13 +34,13 @@ public class GUIPlayer implements Player {
 
   public synchronized void setMove(Move move) {
     moves.set(0, move);
-    moves.notifyAll();
+    notifyAll();
   }
 
   @Override
   public synchronized Move move() {
     try {
-      moves.wait();
+      wait();
     } catch (InterruptedException e) {
       try {
         if (moves.get(0) == moves.get(1)) {
@@ -63,7 +63,7 @@ public class GUIPlayer implements Player {
   @Override
   public synchronized Piece promote(Position p) {
     try {
-      toPromote.wait();
+      wait();
     } catch (InterruptedException e) {
       try {
         if (toPromote.get(0) == toPromote.get(1)) {
