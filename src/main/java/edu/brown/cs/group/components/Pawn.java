@@ -61,8 +61,7 @@ public class Pawn implements Piece {
 
   @Override
   public Set<Position> getValidMoves(Board board) {
-    // TODO: En-passant, promotion
-    //^^ En-passant should work now
+    // TODO: promotion
 
     Map<Position, Piece> m = board.places();
 
@@ -221,6 +220,7 @@ public class Pawn implements Piece {
   @Override
   public void move(Position dest) {
     pos = dest;
+    hasMoved = true;
   }
 
   @Override

@@ -163,7 +163,7 @@ public class Board {
     if (!p.getValidMoves(this).contains(dest)) {
       throw new InvalidMoveException(dest);
     }
-
+   
     // Promotions
     if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(prmtPiece);
@@ -220,6 +220,32 @@ public class Board {
       throw new InvalidMoveException(dest);
     }
 
+    // Castling
+    if (p.type().equals("K") && Math.abs(dest.col() - start.col()) == 2) {
+      Piece rook;
+      Position rookDest;
+      Position rookStart;
+      try {
+        if (dest.col() - start.col() == 2) {
+          rookStart = new Position(8, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(6, dest.row());
+        } else {
+         //dest.col() - start.col() == -2
+          rookStart = new Position(1, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(4, dest.row()); 
+        }
+        rook.move(rookDest);
+        places.put(rookDest, rook);
+        places.remove(rookStart);
+      } catch (PositionException pe) {
+        // Something wrong with the rook
+        System.out.println("ERROR: Invalid Castle!");
+      }
+    }
+
+    
     // Promotions
     if (!usrQuery && p.type().equals("p")
         && (dest.row() == 8 || dest.row() == 1)) {
@@ -241,7 +267,7 @@ public class Board {
     
     // If the piece is a pawn, and en-passant is an option, and the pawn is moving to the left or right column,
     // this indicates that the player, in fact, does want to perform en-passant
-    if (passant != null && p.getValidMoves(this).contains(dest) 
+    if (passant != null 
         && dest.col() != start.col() && p.type().equals("p")
         && !places.containsKey(dest)) {
       out = new Pawn(new BankPosition(), passant.color(), true);

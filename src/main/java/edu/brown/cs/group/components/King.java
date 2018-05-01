@@ -40,6 +40,32 @@ public class King implements Piece {
   public Position position() {
     return position;
   }
+  
+  private boolean validCastle(Position rook, Board board) throws PositionException{
+    Set<Position> threats = board.threatened(Math.abs(color - 1));
+    int start;
+    int end;
+    if (rook.col() == 1) {
+      start = 3;
+      end = 4;
+    } else {
+      //rook.col() == 8
+      start = 6;
+      end = 7;
+    }
+    if (!board.places().containsKey(rook) && 
+        ((Rook)board.places().get(rook)).moveStatus()) {
+      return false;
+    }
+    for (int i = start; i <= end; i++) {
+      Position pos = new Position(i, position.row());
+      if (threats.contains(pos)
+          || board.places().containsKey(pos)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   @Override
   public Set<Position> getValidMoves(Board board) {
@@ -66,6 +92,22 @@ public class King implements Piece {
         }
       }
     }
+
+    // Check castling
+    if (!hasMoved && !threats.contains(position)) {
+      try {
+        Position rRook = new Position(8, position.row());
+        Position lRook = new Position(1, position.row());
+        if (validCastle(rRook, board)) {
+            out.add(new Position(7, position.row()));
+        }
+        if (validCastle(lRook, board)) {
+            out.add(new Position(3, position.row()));
+        }
+      } catch (PositionException pe) {
+        
+      }
+    }
     return out;
   }
 
@@ -82,6 +124,7 @@ public class King implements Piece {
   @Override
   public void move(Position dest) {
     position = dest;
+    hasMoved = true;
   }
 
   @Override

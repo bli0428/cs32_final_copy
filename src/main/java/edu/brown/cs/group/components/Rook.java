@@ -124,6 +124,15 @@ public class Rook implements Piece {
   @Override
   public void move(Position dest) {
     position = dest;
+    hasMoved = true;
+  }
+  
+  /**
+   * Gets whether or not the rook has moved (for castling purposes)
+   * @return whether or not the rook moved
+   */
+  public boolean moveStatus() {
+    return hasMoved;
   }
 
   @Override

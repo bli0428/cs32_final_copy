@@ -63,7 +63,7 @@ public class REPL {
       }
     } else if (parsed[0].equals("game")) {
       try {
-      ChessGame game = new ChessGame(new ReplPlayer(), new ABCutoffAI());
+      ChessGame game = new ChessGame(new ReplPlayer(), new ReplPlayer()); //Change ReplPlayer back to ABCutoffAI
       game.play();
       }
       catch (PositionException e) {
