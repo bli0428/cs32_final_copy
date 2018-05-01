@@ -53,8 +53,6 @@ public class ChessWebSocket {
 
     // TODO: add black or white to payload
 
-    session.getRemote().sendString(GSON.toJson(toSend));
-
     ////////////////////
     // TODO: Replace this:
     GUIPlayer p = new GUIPlayer();
@@ -69,6 +67,8 @@ public class ChessWebSocket {
       e.printStackTrace();
     }
     ////////////////////
+
+    session.getRemote().sendString(GSON.toJson(toSend));
 
     nextId++;
   }
