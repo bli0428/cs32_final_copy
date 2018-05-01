@@ -38,8 +38,13 @@ const setup_live_moves = () => {
         console.log("highlight");
         validMoves = [];
         var backendValidMoves = data.payload.validMoves;
+        console.log(backendValidMoves);
         for (var i = 0; i < backendValidMoves.length; i++) {
-          validMoves[i] = convertBackToFront(backendValidMoves[i]);
+          validMoves[i] = convertBackToFrontCoordinates(backendValidMoves[i]);
+        }
+        console.log(validMoves);
+        if (validMoveFunctionality) {
+            displayValidMoves();
         }
         break;
       case MESSAGE_TYPE.UPDATE:
