@@ -32,10 +32,10 @@ public class Position {
     this.col = col;
     this.row = row;
     if (!(col >= 1 && col <= BOARD_SIZE)) {
-      throw new PositionException(this);
+      throw PositionException.getInstance();
     }
     if (!(row >= 1 && row <= BOARD_SIZE)) {
-      throw new PositionException(this);
+      throw PositionException.getInstance();
     }
     // assert col >= 1 && col <= BOARD_SIZE;
     // assert row >= 1 && row <= BOARD_SIZE;

@@ -7,6 +7,7 @@ package edu.brown.cs.group.positions;
  *
  */
 public class PositionException extends Exception {
+  private static final PositionException SINGLETON = new PositionException(new Position());
 
   private final Position p;
 
@@ -18,6 +19,10 @@ public class PositionException extends Exception {
    */
   public PositionException(Position p) {
     this.p = p;
+  }
+  
+  public static PositionException getInstance() {
+    return SINGLETON;
   }
 
   /**
