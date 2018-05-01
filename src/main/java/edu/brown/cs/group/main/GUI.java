@@ -36,7 +36,6 @@ import spark.template.freemarker.FreeMarkerEngine;
 public final class GUI {
   private static final Gson GSON = new Gson();
   private static REPL repl;
-
   /**
    * Constructor for GUI.
    *

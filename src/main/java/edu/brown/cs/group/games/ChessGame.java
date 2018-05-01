@@ -44,7 +44,8 @@ public class ChessGame implements Game {
   public void play() {
     while (true) {
       board.print();
-      if (board.checkmate(turn)) {
+      int gameOver = board.gameOver(turn);
+      if (gameOver == 1) {
         String t;
         if (turn == 0) {
           t = "Black";
@@ -57,7 +58,7 @@ public class ChessGame implements Game {
         System.out.println("Game over, " + t + " wins!");
         break;
       }
-      if (board.stalemate(turn)) {
+      if (gameOver == 2) {
         System.out.println("Game over, it's a draw!");
         break;
       }

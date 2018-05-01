@@ -22,12 +22,30 @@ public class ABCutoffAI implements Player {
   private Set<Piece> bank;
   private Board board;
   private int color;
+  private final int cutoff = 6;
+  
+  private int nodesSearched = 0;
+  private long startTime;
+  private long endTime;
+  private int depth;
 
   /**
    * Instantiates a new ABCutoffAI with a bank.
    */
   public ABCutoffAI() {
     bank = Collections.synchronizedSet(new HashSet<Piece>());
+  }
+  
+  private void startBench() {
+    nodesSearched = 0;
+    startTime = System.nanoTime();
+    depth = 0;
+  }
+  
+  private void printBench() {
+    endTime = System.nanoTime();
+    System.out.println(String.format("%d nodes searched in depth %d in %f seconds", nodesSearched, depth, (endTime - startTime)/1000000000.0));
+    startTime = System.nanoTime();
   }
 
   /**
@@ -43,7 +61,9 @@ public class ABCutoffAI implements Player {
    * @return The best Move.
    */
   private Move alphaBetaCutoff(int cutoff, Heuristic heur) {
-
+    startBench();
+    nodesSearched = 0;
+    
     Move bestMove = null;
     double a = Double.NEGATIVE_INFINITY;
     double b = Double.POSITIVE_INFINITY;
@@ -53,6 +73,7 @@ public class ABCutoffAI implements Player {
 
     for (Position start : validMoves.keySet()) {
       for (Position end : validMoves.get(start)) {
+        
         Move tempMove = new Move(start, end);
 
         // System.out.println(String.format("Looking at Move: %s, type %s",
@@ -80,26 +101,29 @@ public class ABCutoffAI implements Player {
       }
     }
 
+    printBench();
     return bestMove;
   }
 
   private double alphaBetaCutoffMax(Board tempBoard, int ply, double a,
       double b, Heuristic heur, int currColor) {
+    nodesSearched ++;
 
     double v = Double.NEGATIVE_INFINITY;
-
+    int gameOver = tempBoard.gameOver(color);
+    
     // checks for stalemate.
-    if (tempBoard.stalemate(color)) {
+    if (gameOver == 2) {
       return -1000.0;
     }
 
     // checks that the calling player is in checkmate.
-    if (tempBoard.checkmate(color)) {
+    if (gameOver == 1) {
       return -10000.0;
     }
 
     // checks that the enemy player is in checkmate.
-    if (tempBoard.checkmate(Math.abs(color - 1))) {
+    if (tempBoard.gameOver(Math.abs(color - 1)) == 1) {
       return 10000.0;
     }
 
@@ -134,19 +158,23 @@ public class ABCutoffAI implements Player {
   private double alphaBetaCutoffMin(Board tempBoard, int ply, double a,
       double b, Heuristic heur, int currColor) {
     double v = Double.POSITIVE_INFINITY;
+    
+    int gameOver = tempBoard.gameOver(color);
 
+    nodesSearched ++;
+    
     // checks for stalemate.
-    if (tempBoard.stalemate(color)) {
+    if (gameOver == 2) {
       return -1000.0;
     }
 
     // checks that the calling player is in checkmate.
-    if (tempBoard.checkmate(color)) {
+    if (gameOver == 1) {
       return -10000.0;
     }
 
-    // checks that the enepy player is in checkmate.
-    if (tempBoard.checkmate(Math.abs(color - 1))) {
+    // checks that the enemy player is in checkmate.
+    if (tempBoard.gameOver(Math.abs(color - 1)) == 1) {
       return 10000.0;
     }
 
@@ -191,7 +219,7 @@ public class ABCutoffAI implements Player {
 
   @Override
   public Move move() {
-    return alphaBetaCutoff(4, new MaterialHeuristic());
+    return alphaBetaCutoff(cutoff, new MaterialHeuristic());
   }
 
   @Override
