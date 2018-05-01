@@ -375,6 +375,32 @@ public class Board {
   }
 
   /**
+   * Checks whether the game is over.
+   * @param color 
+   *          0 for white, 1 for black
+   * @return 1 if in checkmate, 2 if in stalemate, 0 otherwise
+   */
+  public int gameOver(int color) {
+    boolean inCheck = check(color);
+    boolean hasMoves = false;
+    Map<Position, Set<Position>> map = getValidMoves(color);
+    
+    for (Position p : map.keySet()) {
+      if (!map.get(p).isEmpty()) {
+        hasMoves = true;
+        break;
+      }
+    }
+    
+    if (!hasMoves) {
+      return inCheck ? 1 : 2;
+    }
+    
+    return 0;
+    
+  }
+  
+  /**
    * Is the king of the given color in checkmate.
    *
    * @param color

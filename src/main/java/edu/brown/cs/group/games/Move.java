@@ -1,5 +1,9 @@
 package edu.brown.cs.group.games;
 
+
+import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.positions.BankPosition;
+
 import edu.brown.cs.group.positions.Position;
 
 /**
@@ -12,6 +16,7 @@ public class Move {
   private Position start;
   private Position end;
   private double value;
+  private Piece piece;
 
   /**
    * Public constructor.
@@ -24,6 +29,12 @@ public class Move {
   public Move(Position start, Position end) {
     this.start = start;
     this.end = end;
+  }
+
+  public Move(Position end, Piece piece) {
+    this.start = new BankPosition();
+    this.end = end;
+    this.piece = piece;
   }
 
   public Move(Position start, Position end, double value) {

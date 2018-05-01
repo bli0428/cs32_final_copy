@@ -11,17 +11,20 @@ import java.util.Map;
 //import javax.security.auth.login.Configuration;
 //import javax.xml.ws.Response;
 
-import freemarker.template.Configuration;
-//import freemarker.template.Version;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 //import com.sun.corba.se.impl.presentation.rmi.ExceptionHandler;
 
 
 import edu.brown.cs.group.accounts.User;
+import edu.brown.cs.group.main.REPL;
+import freemarker.template.Configuration;
+import spark.ExceptionHandler;
+
 import spark.ModelAndView;
 import spark.QueryParamsMap;
+import spark.Request;
+import spark.Response;
 import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
@@ -42,7 +45,6 @@ import spark.Response;
 public final class GUI {
   private static final Gson GSON = new Gson();
   private static REPL repl;
-
   /**
    * Constructor for GUI.
    *
