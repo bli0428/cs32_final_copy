@@ -17,7 +17,6 @@ import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
 import edu.brown.cs.group.games.Game;
 import edu.brown.cs.group.positions.PositionException;
-
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
@@ -78,6 +77,8 @@ public final class GUI {
 		Spark.exception(Exception.class, new ExceptionPrinter());
 
 		FreeMarkerEngine freeMarker = createEngine();
+		
+		Spark.webSocket("/play", ChessWebSocket.class);
 
 		// Setup Spark Routes
 		Spark.get("/login", new LoginFrontPageHandler(), freeMarker);
@@ -95,19 +96,13 @@ public final class GUI {
 
 		Spark.get("/chess", new ChessHandler(), freeMarker);
 		Spark.post("/chess", new MoveHandler());
+		
+		
 	}
 
 	private static class ChessHandler implements TemplateViewRoute {
 		@Override
 		public ModelAndView handle(Request req, Response res) {
-			try {
-				game = new ChessGame(new GUIPlayer(), new ABCutoffAI());
-				game.play();
-			} catch (PositionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
 			Map<String, Object> variables = ImmutableMap.of("title", "CHESS");
 			return new ModelAndView(variables, "board.ftl");
 		}
@@ -116,6 +111,7 @@ public final class GUI {
 	private static class MoveHandler implements Route {
 		@Override
 		public String handle(Request req, Response res) {
+			game.play();
 			QueryParamsMap qm = req.queryMap();
 			int row = Integer.parseInt(qm.value("row"));
 			int col = Integer.parseInt(qm.value("col"));

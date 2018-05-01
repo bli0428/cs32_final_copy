@@ -144,7 +144,7 @@ function movePiece(start, end) {
 
 function getMoves(id) {
     if (currPieces.includes(id)) {
-        new_tohighlight();
+        new_tohighlight(id);
     } 
 }
 

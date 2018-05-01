@@ -16,7 +16,7 @@ let myId = -1;
 
 // Setup the WebSocket connection for live updating of scores.
 const setup_live_moves = () => {
-  conn = new WebSocket("ws://localhost:4567/chess"); //TODO: change this
+  conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
 
   conn.onerror = err => {
     console.log('Connection error:', err);
@@ -24,15 +24,18 @@ const setup_live_moves = () => {
 
   conn.onmessage = msg => {
     const data = JSON.parse(msg.data);
+    console.log("here!!!");
     switch (data.type) {
       default:
         console.log('Unknown message type!', data.type);
         break;
       case MESSAGE_TYPE.CONNECT:
+        console.log("in frontend connect")
         myId = data.payload.id;
-        black = data.payload.black; //TODO: maybe change based on payload scheme -> need to know whether player is black or white
+        //TODO: maybe need to know whether player is black or white
         break;
       case MESSAGE_TYPE.HIGHLIGHT:
+        console.log("highlight");
         validMoves = [];
         var backendValidMoves = data.payload.validMoves;
         for (var i = 0; i < backendValidMoves.length; i++) {
@@ -60,14 +63,21 @@ const new_tohighlight = currPiece => {
     type: 9,
     payload: toSendPayload
   }
-
   conn.send(JSON.stringify(toSend));
+
+  console.log(toSend);
+
+  console.log("sent");
 }
 
 
 
 
 
+
+
+
+//////////////////////////////////////////////////
 
 
 

@@ -28,137 +28,139 @@ import edu.brown.cs.group.positions.PositionException;
 
 @WebSocket
 public class ChessWebSocket {
-  private static final Gson GSON = new Gson();
-  private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
-  private static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
-  private static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();
-  private static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
-  private static int nextId = 0;
-  private static int nextGame = 0;
+	private static final Gson GSON = new Gson();
+	private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
+	private static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
+	private static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();
+	private static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
+	private static int nextId = 0;
+	private static int nextGame = 0;
 
-  private static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT
-  }
+	private static enum MESSAGE_TYPE {
+		CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT
+	}
 
-  @OnWebSocketConnect
-  public void connected(Session session) throws IOException {
-    sessions.add(session);
+	@OnWebSocketConnect
+	public void connected(Session session) throws IOException {
+		System.out.println("backend connect");
+		sessions.add(session);
 
-    JsonObject payload = new JsonObject();
-    payload.addProperty("id", nextId);
+		JsonObject payload = new JsonObject();
+		payload.addProperty("id", nextId);
 
-    JsonObject toSend = new JsonObject();
-    toSend.addProperty("type", MESSAGE_TYPE.CONNECT.ordinal());
-    toSend.add("payload", payload);
+		JsonObject toSend = new JsonObject();
+		toSend.addProperty("type", MESSAGE_TYPE.CONNECT.ordinal());
+		toSend.add("payload", payload);
 
-    // TODO: add black or white to payload
+		// TODO: add black or white to payload
+		
+		session.getRemote().sendString(GSON.toJson(toSend));
+
+		////////////////////
+		// TODO: Replace this:
+//		GUIPlayer p = new GUIPlayer();
+//		playerSession.put(session, p);
+//		try {
+//			ChessGame g = new ChessGame(p, new ABCutoffAI());
+//			playerNum.put(p, 0);
+//			games.put(session, g);
+//			Thread t = new Thread((() -> g.play()));
+//			t.run();
+//		} catch (PositionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		////////////////////
 
 
-    ////////////////////
-    // TODO: Replace this:
-    GUIPlayer p = new GUIPlayer();
-    playerSession.put(session, p);
-    try {
-      ChessGame g = new ChessGame(p, new ABCutoffAI());
-      playerNum.put(p, 0);
-      games.put(session, g);
-      g.play();
-    } catch (PositionException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    ////////////////////
-    
-    session.getRemote().sendString(GSON.toJson(toSend));
+		nextId++;
+	}
 
-    session.getRemote().sendString(GSON.toJson(toSend));
+	@OnWebSocketClose
+	public void closed(Session session, int statusCode, String reason) {
+		sessions.remove(session);
+	}
 
-    nextId++;
-  }
+	@OnWebSocketMessage
+	public void message(Session session, String message) throws IOException {
+		System.out.println("in message");
+		JsonObject received = GSON.fromJson(message, JsonObject.class);
 
-  @OnWebSocketClose
-  public void closed(Session session, int statusCode, String reason) {
-    sessions.remove(session);
-  }
+		int messageInt = received.get("type").getAsInt();
 
-  @OnWebSocketMessage
-  public void message(Session session, String message) throws IOException {
-    JsonObject received = GSON.fromJson(message, JsonObject.class);
+		if (messageInt == MESSAGE_TYPE.MOVE.ordinal()) { // regular move from one
+			// square to another
+			JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+			// TODO: create payloads and add properties
+			GUIPlayer p = playerSession.get(session);
+			String[] p1 = recievedPayload.get("ogCoordinate").getAsString()
+					.split(",");
+			String[] p2 = recievedPayload.get("newCoordinate").getAsString()
+					.split(",");
+			try {
+				Position start = new Position(Integer.parseInt(p1[0]),
+						Integer.parseInt(p1[1]));
+				Position end = new Position(Integer.parseInt(p2[0]),
+						Integer.parseInt(p2[1]));
+				Move m = new Move(start, end);
+				p.setMove(m);
+			} catch (PositionException pe) {
+				pe.printStackTrace();
+				// Shouldn't get here
+			}
 
-    int messageInt = received.get("type").getAsInt();
+		} else if (messageInt == MESSAGE_TYPE.PLACEMENT.ordinal()) { // placement
+			// move from
+			// the bank
+			// onto the
+			// board
+			JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+			// TODO: create payloads and add properties
 
-    if (messageInt == MESSAGE_TYPE.MOVE.ordinal()) { // regular move from one
-                                                     // square to another
-      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
-      // TODO: create payloads and add properties
-      GUIPlayer p = playerSession.get(session);
-      String[] p1 = recievedPayload.get("ogCoordinate").getAsString()
-          .split(",");
-      String[] p2 = recievedPayload.get("newCoordinate").getAsString()
-          .split(",");
-      try {
-        Position start = new Position(Integer.parseInt(p1[0]),
-            Integer.parseInt(p1[1]));
-        Position end = new Position(Integer.parseInt(p2[0]),
-            Integer.parseInt(p2[1]));
-        Move m = new Move(start, end);
-        p.setMove(m);
-      } catch (PositionException pe) {
-        pe.printStackTrace();
-        // Shouldn't get here
-      }
+		} else if (messageInt == MESSAGE_TYPE.TOHIGHLIGHT.ordinal()) {
+			System.out.println("recieved tohighlight");
+			JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+			String piece = recievedPayload.get("piece").getAsString();
+			String[] p1 = piece.split(",");
+			try {
+				Position start = new Position(Integer.parseInt(p1[0]),
+						Integer.parseInt(p1[1]));
+				Set<Position> moves = games.get(session)
+						.moves(playerNum.get(playerSession.get(session)), start);
+				JsonArray outMoves = new JsonArray();
+				for (Position p : moves) {
+					outMoves.add(p.numString());
+				}
+				JsonObject payload = new JsonObject();
+				payload.add("validMoves", outMoves);
+				payload.addProperty("id", recievedPayload.get("id").getAsInt());
+				JsonObject out = new JsonObject();
+				out.add("payload", payload);
+				out.addProperty("type", MESSAGE_TYPE.HIGHLIGHT.ordinal());
+				session.getRemote().sendString(GSON.toJson(out));
+			} catch (PositionException pe) {
+				pe.printStackTrace();
+				// Shouldn't get here
+			}
 
-    } else if (messageInt == MESSAGE_TYPE.PLACEMENT.ordinal()) { // placement
-                                                                 // move from
-                                                                 // the bank
-                                                                 // onto the
-                                                                 // board
-      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
-      // TODO: create payloads and add properties
+		} else if (messageInt == MESSAGE_TYPE.CREATEGAME.ordinal()) {
+			nextGame++;
+		}
 
-    } else if (messageInt == MESSAGE_TYPE.TOHIGHLIGHT.ordinal()) {
-      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
-      String piece = recievedPayload.get("piece").getAsString();
-      String[] p1 = piece.split(",");
-      try {
-        Position start = new Position(Integer.parseInt(p1[0]),
-            Integer.parseInt(p1[1]));
-        Set<Position> moves = games.get(session)
-            .moves(playerNum.get(playerSession.get(session)), start);
-        JsonArray outMoves = new JsonArray();
-        for (Position p : moves) {
-          outMoves.add(p.numString());
-        }
-        JsonObject payload = new JsonObject();
-        payload.add("validMoves", outMoves);
-        payload.addProperty("id", recievedPayload.get("id").getAsInt());
-        JsonObject out = new JsonObject();
-        out.add("payload", payload);
-        out.addProperty("type", MESSAGE_TYPE.HIGHLIGHT.ordinal());
-        session.getRemote().sendString(GSON.toJson(out));
-      } catch (PositionException pe) {
-        pe.printStackTrace();
-        // Shouldn't get here
-      }
+		// TODO: update payload needs to send if a piece was removed in the move
 
-    } else if (messageInt == MESSAGE_TYPE.CREATEGAME.ordinal()) {
-      nextGame++;
-    }
+		// JsonObject payload = new JsonObject();
+		// payload.addProperty("id", recievedPayload.get("id").getAsString());
+		//
+		//
+		// JsonObject toSend = new JsonObject();
+		// toSend.addProperty("type", MESSAGE_TYPE.UPDATE.ordinal());
+		// toSend.add("payload", payload);
+		//
+		// for (Session k : sessions) {
+		// k.getRemote().sendString(GSON.toJson(toSend));
+		// }
 
-    // TODO: update payload needs to send if a piece was removed in the move
-
-    // JsonObject payload = new JsonObject();
-    // payload.addProperty("id", recievedPayload.get("id").getAsString());
-    //
-    //
-    // JsonObject toSend = new JsonObject();
-    // toSend.addProperty("type", MESSAGE_TYPE.UPDATE.ordinal());
-    // toSend.add("payload", payload);
-    //
-    // for (Session k : sessions) {
-    // k.getRemote().sendString(GSON.toJson(toSend));
-    // }
-
-  }
+	}
 
 }
