@@ -53,7 +53,6 @@ public class ChessWebSocket {
 
     // TODO: add black or white to payload
 
-    
 
     ////////////////////
     // TODO: Replace this:
@@ -70,6 +69,8 @@ public class ChessWebSocket {
     }
     ////////////////////
     
+    session.getRemote().sendString(GSON.toJson(toSend));
+
     session.getRemote().sendString(GSON.toJson(toSend));
 
     nextId++;
