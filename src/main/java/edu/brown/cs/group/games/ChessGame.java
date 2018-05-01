@@ -84,8 +84,7 @@ public class ChessGame implements Game {
         for (Session session : ChessWebSocket.games.keySet()) {
           if (ChessWebSocket.games.get(session) == this) {
             if (ChessWebSocket.playerNum
-                .get(ChessWebSocket.playerSession.get(session)) == Math
-                    .abs(turn - 1)) {
+                .get(ChessWebSocket.playerSession.get(session)) == turn) {
               JsonObject message = new JsonObject();
               message.addProperty("type",
                   ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
