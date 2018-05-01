@@ -21,11 +21,13 @@ import edu.brown.cs.group.games.Game;
 public class ChessWebSocket {
   private static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
-  private static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
+  private static final Map<Integer, Game> games = new ConcurrentHashMap<Integer, Game>();
+  private static final Map<Session, Integer> gameSession = new ConcurrentHashMap<Session, Integer>();
   private static int nextId = 0;
+  private static int nextGame = 0;
 
   private static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME
   }
 
   @OnWebSocketConnect
@@ -70,6 +72,10 @@ public class ChessWebSocket {
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       // TODO: create payloads and add properties
 
+    } else if (messageInt == MESSAGE_TYPE.HIGHLIGHT.ordinal()) {
+
+    } else if (messageInt == MESSAGE_TYPE.CREATEGAME.ordinal()) {
+      nextGame++;
     }
 
     // TODO: update payload needs to send if a piece was removed in the move
@@ -86,10 +92,6 @@ public class ChessWebSocket {
     // k.getRemote().sendString(GSON.toJson(toSend));
     // }
 
-  }
-
-  public static Map<Session, Game> getGames() {
-    return games;
   }
 
 }
