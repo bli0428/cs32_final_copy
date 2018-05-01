@@ -4,13 +4,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.jetty.util.ConcurrentHashSet;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.group.accounts.GameList;
+import edu.brown.cs.group.accounts.MenuGame;
 import edu.brown.cs.group.accounts.User;
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;
@@ -19,6 +27,7 @@ import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import spark.Session;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -31,6 +40,8 @@ import spark.template.freemarker.FreeMarkerEngine;
 public final class GUI {
 	private static final Gson GSON = new Gson();
 	private static REPL repl;
+	private static ConcurrentHashMap<String, User> sessions;
+	private static GameList gameList;
 
 	/**
 	 * Constructor for GUI.
@@ -40,6 +51,8 @@ public final class GUI {
 	 */
 	public GUI(REPL repl) {
 		this.repl = repl;
+		sessions = new ConcurrentHashMap<>();
+		gameList = new GameList();
 	}
 
 	/**
@@ -73,6 +86,7 @@ public final class GUI {
 		FreeMarkerEngine freeMarker = createEngine();
 
 		// Setup Spark Routes
+		Spark.get("/home", new HomeFrontHandler(), freeMarker);
 		Spark.get("/login", new LoginFrontPageHandler(), freeMarker);
 		Spark.post("/loginresults", new LoginResultsHandler(), freeMarker);
 		Spark.get("/newaccount", new NewAccountFrontHandler(), freeMarker);
@@ -83,10 +97,25 @@ public final class GUI {
 		Spark.post("/changeusernameresults", new ChangeUsernameResultsHandler(), freeMarker);
 		Spark.post("/logout", new LogoutHandler(), freeMarker);
 		
+		Spark.post("/addGame", new AddGameHandler());
+    Spark.get("/joingame/:something", new JoinGameHandler(), freeMarker);
 		
 		Spark.get("/chess", new ChessHandler(), freeMarker);
 		Spark.post("/chess", new MoveHandler());
 	}
+	
+	private static class HomeFrontHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request req, Response res) {
+      User u = sessions.get(req.session().id());
+      if (u == null) {
+        res.redirect("/login");
+      }
+      Map<String, Object> variables = ImmutableMap.of("title", "Home", "content",
+          "<p>Welcome " + u.getUsername(repl.getDbm()) + ".</p>" + "<div id=\"menu\">" + gameList.printListHtml() + "</div>");
+      return new ModelAndView(variables, "home.ftl");
+    }
+  }
 
 	private static class ChessHandler implements TemplateViewRoute {
 		@Override
@@ -148,14 +177,14 @@ public final class GUI {
 			User user = repl.getUser();
 
 			if (user != null) {
-				Map<String, Object> variables = ImmutableMap.of("title", "Home", "content",
-						"<p>Welcome " + user.getUsername(repl.getDbm()) + ".</p>");
-				return new ModelAndView(variables, "home.ftl");
+			  sessions.put(req.session(true).id(), user);
+			  res.redirect("/home");
 			} else {
 				Map<String, Object> variables = ImmutableMap.of("title", "Login", "message",
 						"Invalid username or password.");
 				return new ModelAndView(variables, "login.ftl");
 			}
+      return null;
 		}
 	}
 
@@ -279,6 +308,44 @@ public final class GUI {
 			return new ModelAndView(variables, "home.ftl");
 		}
 	}
+	
+	private static class AddGameHandler implements Route {
+    @Override
+    public String handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String gameType = qm.value("gameType");
+      
+      if (gameType.equals("bughouse")) {
+        gameList.addGame(4);
+      } else {
+        gameList.addGame(2);
+      }
+      
+      Map<String, Object> variables = ImmutableMap.of("games", gameList.printListHtml());
+      return GSON.toJson(variables);
+    }
+	}
+	
+	public static class JoinGameHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response)
+        throws SQLException, UnsupportedEncodingException {
+      User u = sessions.get(request.session().id());
+      if (u == null) {
+        response.redirect("/login");
+      }
+      String gameId = java.net.URLDecoder.decode(request.params(":something"),
+          "UTF-8");
+      GameList l = gameList;
+      MenuGame game = gameList.getGame(Integer.parseInt(gameId));
+      if (game.getCurrPlayers().size() == game.getNumPlayers()) {
+        response.redirect("/home");
+      }
+      game.addUser(u);
+      Map<String, Object> variables = ImmutableMap.of("title", "Join game", "gameId", gameId);
+      return new ModelAndView(variables, "join.ftl");
+    }
+  }
 
 	/**
 	 * Handles "radius" commands via the GUI and displays the results.
@@ -289,6 +356,7 @@ public final class GUI {
 		@Override
 		public ModelAndView handle(Request req, Response res) {
 			repl.processCommand("logout");
+			sessions.remove(req.session().id());
 			Map<String, Object> variables = ImmutableMap.of("title", "Log in", "message", "");
 			return new ModelAndView(variables, "login.ftl");
 		}
