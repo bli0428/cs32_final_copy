@@ -22,8 +22,8 @@ public class ABCutoffAI implements Player {
   private Set<Piece> bank;
   private Board board;
   private int color;
-  private final int cutoff = 6;
-  
+  private final int cutoff = 3;
+
   private int nodesSearched = 0;
   private long startTime;
   private long endTime;
@@ -38,13 +38,13 @@ public class ABCutoffAI implements Player {
   public ABCutoffAI() {
     bank = Collections.synchronizedSet(new HashSet<Piece>());
   }
-  
+
   private void startBench() {
     nodesSearched = 0;
     startTime = System.nanoTime();
     depth = 0;
   }
-  
+
   private void printBench() {
     endTime = System.nanoTime();
     System.out.println(String.format(
@@ -69,7 +69,7 @@ public class ABCutoffAI implements Player {
   private Move alphaBetaCutoff(int cutoff, Heuristic heur) {
     startBench();
     nodesSearched = 0;
-    
+
     Move bestMove = null;
     double a = Double.NEGATIVE_INFINITY;
     double b = Double.POSITIVE_INFINITY;
@@ -79,7 +79,7 @@ public class ABCutoffAI implements Player {
 
     for (Position start : validMoves.keySet()) {
       for (Position end : validMoves.get(start)) {
-        
+
         Move tempMove = new Move(start, end);
 
         // System.out.println(String.format("Looking at Move: %s, type %s",
@@ -114,6 +114,7 @@ public class ABCutoffAI implements Player {
 
   private double alphaBetaCutoffMax(Board tempBoard, int ply, double a,
       double b, Heuristic heur, int currColor) {
+
     nodesSearched ++;
     
     if (visitedBoards.contains(tempBoard)) {
@@ -123,7 +124,7 @@ public class ABCutoffAI implements Player {
 
     double v = Double.NEGATIVE_INFINITY;
     int gameOver = tempBoard.gameOver(color);
-    
+
     // checks for stalemate.
     if (gameOver == 2) {
       return -1000.0;
@@ -179,9 +180,9 @@ public class ABCutoffAI implements Player {
     visitedBoards.add(tempBoard);
     
     double v = Double.POSITIVE_INFINITY;
-    
+
     int gameOver = tempBoard.gameOver(color);
-    
+
     // checks for stalemate.
     if (gameOver == 2) {
       return -1000.0;
