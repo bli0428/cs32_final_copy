@@ -136,6 +136,10 @@ function movePiece(start, end) {
         removePieceFromCurrPieces(start);
         currPieces.push(end);
 
+
+        var move = start, end];
+        new_move(move);
+
         //TODO: send update to backend, also need to think about pieces getting removed
         // maybe: pass in a piece to remove, if its null, no piece has to be removed, if it contains something remove the piece and update the board
         // piece needs to be added to the bank

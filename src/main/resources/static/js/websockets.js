@@ -76,6 +76,25 @@ const new_tohighlight = currPiece => {
 }
 
 
+const new_move = move => {
+  var toSendPayload = {
+    id: myId,
+    moveFrom: convertFrontToBackCoordinates(move[0]),
+    moveTo: convertFrontToBackCoordinates(move[1])
+  }
+
+  var toSend = {
+    type: 1,
+    payload: toSendPayload
+  }
+
+  conn.send(JSON.stringify(toSend));
+}
+
+
+
+
+
 
 
 
@@ -86,23 +105,7 @@ const new_tohighlight = currPiece => {
 
 
 
-var move = [];
 var placement = [];
-//TODO: WHERE TO CALL THIS?????????
-const new_move = move => {
-  var toSendPayload = {
-    id: myId,
-    moveFrom: convertCoordinates(move[0]),
-    moveTo: move[1]
-  }
-
-  var toSend = {
-    type: 1,
-    payload: toSendPayload
-  }
-
-  conn.send(JSON.stringify(toSend));
-}
 
 const new_placement = placement => {
   var toSendPayload = {
