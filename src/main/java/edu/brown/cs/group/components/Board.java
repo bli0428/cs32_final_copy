@@ -238,7 +238,6 @@ public class Board {
       }
       places.remove(dest);
     }
-    King king = (King) p;
     
     // If the piece is a pawn, and en-passant is an option, and the pawn is moving to the left or right column,
     // this indicates that the player, in fact, does want to perform en-passant
