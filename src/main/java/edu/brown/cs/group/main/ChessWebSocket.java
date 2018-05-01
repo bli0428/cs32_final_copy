@@ -42,6 +42,7 @@ public class ChessWebSocket {
 
   @OnWebSocketConnect
   public void connected(Session session) throws IOException {
+    System.out.println("backend connect");
     sessions.add(session);
 
     JsonObject payload = new JsonObject();
@@ -64,7 +65,8 @@ public class ChessWebSocket {
       playerNum.put(p, 0);
       games.put(session, g);
       Thread t = new Thread((() -> g.play()));
-      t.run();
+      t.start();
+      System.out.println("here");
     } catch (PositionException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -72,6 +74,7 @@ public class ChessWebSocket {
     ////////////////////
 
     nextId++;
+    System.out.println("here");
   }
 
   @OnWebSocketClose
@@ -81,12 +84,13 @@ public class ChessWebSocket {
 
   @OnWebSocketMessage
   public void message(Session session, String message) throws IOException {
+    System.out.println("in message");
     JsonObject received = GSON.fromJson(message, JsonObject.class);
 
     int messageInt = received.get("type").getAsInt();
 
     if (messageInt == MESSAGE_TYPE.MOVE.ordinal()) { // regular move from one
-                                                     // square to another
+      // square to another
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       // TODO: create payloads and add properties
       GUIPlayer p = playerSession.get(session);
@@ -107,14 +111,15 @@ public class ChessWebSocket {
       }
 
     } else if (messageInt == MESSAGE_TYPE.PLACEMENT.ordinal()) { // placement
-                                                                 // move from
-                                                                 // the bank
-                                                                 // onto the
-                                                                 // board
+      // move from
+      // the bank
+      // onto the
+      // board
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       // TODO: create payloads and add properties
 
     } else if (messageInt == MESSAGE_TYPE.TOHIGHLIGHT.ordinal()) {
+      System.out.println("recieved tohighlight");
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       String piece = recievedPayload.get("piece").getAsString();
       String[] p1 = piece.split(",");

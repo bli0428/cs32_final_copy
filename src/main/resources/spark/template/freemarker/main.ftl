@@ -13,5 +13,7 @@
 
      <script src="/js/jquery-3.1.1.js"></script>
      <script src="/js/chessboard.js"></script>
+     <script src="/js/bughouse.js"></script>
+     <script src="/js/websockets.js"></script>
   </body>
 </html>

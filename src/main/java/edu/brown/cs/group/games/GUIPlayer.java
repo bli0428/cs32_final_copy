@@ -39,9 +39,13 @@ public class GUIPlayer implements Player {
 
   @Override
   public synchronized Move move() {
+    System.out.println("Started move");
     try {
+      System.out.println("Try block");
       wait();
+      System.out.println("After wait");
     } catch (InterruptedException e) {
+      System.out.println("SHIT");
       try {
         if (moves.get(0) == moves.get(1)) {
           return move();
@@ -51,6 +55,7 @@ public class GUIPlayer implements Player {
       }
       return moves.get(0);
     }
+    System.out.println("exited try");
     moves.set(1, moves.get(0));
     return moves.get(0);
   }
