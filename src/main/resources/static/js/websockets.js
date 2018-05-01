@@ -9,6 +9,7 @@ const MESSAGE_TYPE = {
   JOINGAME: 7,
   HIGHLIGHT: 8,
   TOHIGHLIGHT: 9
+
 };
 
 let conn;
@@ -35,23 +36,21 @@ const setup_live_moves = () => {
         //TODO: maybe need to know whether player is black or white
         break;
       case MESSAGE_TYPE.HIGHLIGHT:
-        console.log("highlight");
+        myId = data.payload.id;
         validMoves = [];
         var backendValidMoves = data.payload.validMoves;
-        console.log(backendValidMoves);
         for (var i = 0; i < backendValidMoves.length; i++) {
           validMoves[i] = convertBackToFrontCoordinates(backendValidMoves[i]);
         }
-        console.log(validMoves);
         if (validMoveFunctionality) {
             displayValidMoves();
         }
         break;
       case MESSAGE_TYPE.UPDATE:
-        currId = data.payload.id;
-
-        //TODO: update board with appropriate move 
-        // might have to do different cases for different players
+        myId = data.payload.id;
+        var moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
+        var moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
+        movePiece(moveFrom, moveTo);
         break;
     }
   };
@@ -69,10 +68,6 @@ const new_tohighlight = currPiece => {
     payload: toSendPayload
   }
   conn.send(JSON.stringify(toSend));
-
-  console.log(toSend);
-
-  console.log("sent");
 }
 
 

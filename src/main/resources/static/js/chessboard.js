@@ -137,7 +137,7 @@ function movePiece(start, end) {
         currPieces.push(end);
 
 
-        var move = start, end];
+        var move = [start, end];
         new_move(move);
 
         //TODO: send update to backend, also need to think about pieces getting removed
@@ -159,6 +159,7 @@ function displayValidMoves() {
     }
 }
 
+//TODO: NEEED TO CHANGE CHESS LOGIC REMOVE PIECE IF PIECE IS IS IN SQUARE MOVED TO??
 function squareContainsPiece(id) {
     if ($("#" + id).html() !=  "") {
         return true;
