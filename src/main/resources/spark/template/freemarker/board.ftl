@@ -19,3 +19,9 @@
 
 </#assign>
 <#include "main.ftl">
+
+<script>
+$(document).ready(function() {
+  setup_live_moves();
+});
+</script>

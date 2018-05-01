@@ -2,14 +2,20 @@ const MESSAGE_TYPE = {
   CONNECT: 0,
   MOVE: 1,
   PLACEMENT: 2,
-  UPDATE: 3
+  UPDATE: 3,
+  GAMEOVER: 4,
+  PROMOTE: 5,
+  CREATEGAME: 6,
+  JOINGAME: 7,
+  HIGHLIGHT: 8,
+  TOHIGHLIGHT: 9
 };
 
 let conn;
 let myId = -1;
 
 // Setup the WebSocket connection for live updating of scores.
-const setup_live_scores = () => {
+const setup_live_moves = () => {
   conn = new WebSocket("ws://localhost:4567/chess"); //TODO: change this
 
   conn.onerror = err => {
@@ -26,6 +32,13 @@ const setup_live_scores = () => {
         myId = data.payload.id;
         black = data.payload.black; //TODO: maybe change based on payload scheme -> need to know whether player is black or white
         break;
+      case MESSAGE_TYPE.HIGHLIGHT:
+        validMoves = [];
+        var backendValidMoves = data.payload.validMoves;
+        for (var i = 0; i < backendValidMoves.length; i++) {
+          validMoves[i] = convertBackToFront(backendValidMoves[i]);
+        }
+        break;
       case MESSAGE_TYPE.UPDATE:
         currId = data.payload.id;
 
@@ -35,6 +48,28 @@ const setup_live_scores = () => {
     }
   };
 }
+
+
+const new_tohighlight = currPiece => {
+  var toSendPayload = {
+    id: myId,
+    piece: convertFrontToBackCoordinates(currPiece)
+  }
+
+  var toSend = {
+    type: 9,
+    payload: toSendPayload
+  }
+
+  conn.send(JSON.stringify(toSend));
+}
+
+
+
+
+
+
+
 
 var move = [];
 var placement = [];
@@ -68,3 +103,5 @@ const new_placement = placement => {
 
   conn.send(JSON.stringify(toSend));
 }
+
+

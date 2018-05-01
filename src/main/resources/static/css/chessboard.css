@@ -2,7 +2,7 @@ body {
   background-color: #dcf2f2;
 }
 
-table { 
+table {
   border-collapse: collapse; 
   border-spacing: 0;
 }
@@ -50,8 +50,6 @@ table#chessboard {
 table#bank {
   border: 2px solid #181818; 
   margin: auto;
-  margin-top: 10%;
-  margin-bottom: 5%;
 }
 
 #bank tr td { 

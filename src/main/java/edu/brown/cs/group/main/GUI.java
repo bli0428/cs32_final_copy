@@ -15,6 +15,7 @@ import edu.brown.cs.group.accounts.User;
 import edu.brown.cs.group.games.ABCutoffAI;
 import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
+import edu.brown.cs.group.games.Game;
 import edu.brown.cs.group.positions.PositionException;
 
 import freemarker.template.Configuration;
@@ -35,7 +36,7 @@ import spark.template.freemarker.FreeMarkerEngine;
 public final class GUI {
 	private static final Gson GSON = new Gson();
 	private static REPL repl;
-	private static ChessGame game;
+	private static Game game;
 
 	/**
 	 * Constructor for GUI.
@@ -99,12 +100,8 @@ public final class GUI {
 	private static class ChessHandler implements TemplateViewRoute {
 		@Override
 		public ModelAndView handle(Request req, Response res) {
-			try {
-				game = new ChessGame(new GUIPlayer(), new ABCutoffAI());
-			} catch (PositionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			//game = new ChessGame(new GUIPlayer(), new ABCutoffAI());
+			//game.play();
 			Map<String, Object> variables = ImmutableMap.of("title", "CHESS");
 			return new ModelAndView(variables, "board.ftl");
 		}

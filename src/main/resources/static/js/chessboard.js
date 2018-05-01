@@ -144,20 +144,7 @@ function movePiece(start, end) {
 
 function getMoves(id) {
     if (currPieces.includes(id)) {
-        // might have to change based on backend
-        var splitId = id.split("-");
-        var row = parseInt(splitId[0]);
-        var col = parseInt(splitId[1]);
-
-        const postParameters = {row: row, col: col};
-
-        $.post("/chess", postParameters, responseJSON => {
-            const responseObject = JSON.parse(responseJSON);
-            validMoves = responseObject.validMoves;
-            if (validMoveFunctionality) {
-                displayValidMoves();
-            }
-        });
+        new_tohighlight();
     } 
 }
 
@@ -194,6 +181,7 @@ function removePieceFromCurrPieces(id) {
 $("#chessboard").on("click", "td", function(e){
     console.log(e.target.id);
     var currId = e.target.id;
+    console.log(selected);
 
     if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
         $("#" + currPiece).toggleClass('selected');
@@ -202,13 +190,11 @@ $("#chessboard").on("click", "td", function(e){
         if (validMoveFunctionality) {
             displayValidMoves();  // clear the valid moves of the current piece
         }
-
     } else if (!selected && validPiece(currId)) { // first click
         currPiece = currId;
         $("#" + currPiece).toggleClass('selected');
         getMoves(currPiece);
         selected = true;
-
     } else if (selected && validPiece(currId)) { // another square has been picked
         $("#" + currPiece).toggleClass('selected');
         if (validMoveFunctionality) {
@@ -227,11 +213,19 @@ $("#chessboard").on("click", "td", function(e){
 
 });
 
-function convertCoordinates(id) {
+function convertFrontToBackCoordinates(id) {
     var splitId = id.split("-");
     var row = BOARD_DIM - parseInt(splitId[0]);
     var col = parseInt(splitId[1]) + 1;
     var toReturn = col.toString() + "," + row.toString();
+    return toReturn;
+}
+
+function convertBackToFrontCoordinates(stringCoordinates) {
+    var splitCoordinates = stringCoordinates.split(",");
+    var row = BOARD_DIM - parseInt(splitCoordinates[1]);
+    var col = parseInt(splitCoordinates[0]) - 1;
+    var toReturn = row.toString() + "-" + col.toString();
     return toReturn;
 }
 

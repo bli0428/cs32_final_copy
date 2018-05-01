@@ -6,11 +6,18 @@
 //need to not be able to make a move unless it is the player's turn -> boolean
 
 function initializeBank() {
-	for (var r = 0; r < BOARD_DIM; r++) {
+	if (black) {
+		const chooseArray = ['&#9823','&#9820','&#9822','&#9821','&#9819'];
 		var col = "";
-		for (var c = 0; c < BOARD_DIM; c++) {
-			var id = r.toString() + "-" + c.toString();
-			col += "<td id='" + id + "''></td>";
+		for (var c = 0; c < 5; c++) {
+			col += "<td id='" + c + "''>" + chooseArray[c] + "</td>";
+		}
+		$("#bank").append("<tr>" + col + "</tr>");
+	} else {
+		const chooseArray = ['&#9817','&#9814','&#9816','&#9815','&#9813'];
+		var col = "";
+		for (var c = 0; c < 5; c++) {
+			col += "<td id='" + c + "''>" + chooseArray[c] + "</td>";
 		}
 		$("#bank").append("<tr>" + col + "</tr>");
 	}
