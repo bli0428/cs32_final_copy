@@ -117,7 +117,7 @@ public class Rook implements Piece {
 
   @Override
   public int value() {
-    return 5;
+    return 500;
   }
 
   @Override

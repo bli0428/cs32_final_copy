@@ -22,13 +22,14 @@ public class ABCutoffAI implements Player {
   private Set<Piece> bank;
   private Board board;
   private int color;
-  private final int cutoff = 3;
+  private final int cutoff = 6;
 
   private int nodesSearched = 0;
   private long startTime;
   private long endTime;
   private int depth;
   private int numRepeat = 0;
+  private int trimmed = 0;
   
   private Set<Board> visitedBoards = new HashSet<>();
 
@@ -48,9 +49,9 @@ public class ABCutoffAI implements Player {
   private void printBench() {
     endTime = System.nanoTime();
     System.out.println(String.format(
-        "%d nodes searched in depth %d in %f seconds with %d boards repeated", 
-        nodesSearched, depth, (endTime - startTime)/1000000000.0, numRepeat));
-    System.out.println(visitedBoards.size());
+        "%d nodes searched in depth %d in %f seconds with %d boards repeated, %d boards trimmed", 
+        nodesSearched, depth, (endTime - startTime)/1000000000.0, numRepeat, trimmed));
+    
     startTime = System.nanoTime();
   }
 
@@ -69,6 +70,7 @@ public class ABCutoffAI implements Player {
   private Move alphaBetaCutoff(int cutoff, Heuristic heur) {
     startBench();
     nodesSearched = 0;
+    trimmed = 0;
 
     Move bestMove = null;
     double a = Double.NEGATIVE_INFINITY;
@@ -96,12 +98,16 @@ public class ABCutoffAI implements Player {
         double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
             color);
         if (temp > v) {
+//          System.out.println("hi");
+//          System.out.println(temp);
+//          System.out.println(v);
           bestMove = tempMove;
           v = temp;
           // System.out.println(String.format("new best move: %s with value %f",
           // bestMove.toString(), v));
         }
         if (v >= b) {
+          trimmed ++;
           new Move(start, end);
         }
         a = Math.max(a, temp);
@@ -127,17 +133,17 @@ public class ABCutoffAI implements Player {
 
     // checks for stalemate.
     if (gameOver == 2) {
-      return -1000.0;
+      return 0;
     }
 
     // checks that the calling player is in checkmate.
     if (gameOver == 1) {
-      return -10000.0;
+      return -200000.0;
     }
 
     // checks that the enemy player is in checkmate.
     if (tempBoard.gameOver(Math.abs(color - 1)) == 1) {
-      return 10000.0;
+      return 200000.0;
     }
 
     // checks that the max depth has been reached.
@@ -160,6 +166,7 @@ public class ABCutoffAI implements Player {
             Math.abs(currColor - 1)));
         if (v >= b) {
           // System.out.println("returning from cutoffmax early" + v);
+          trimmed ++;
           return v;
         }
         a = Math.max(a, v);
@@ -222,6 +229,8 @@ public class ABCutoffAI implements Player {
             Math.abs(currColor - 1)));
         if (v <= a) {
           // System.out.println("returning from cutoffmin early" + v);
+//          System.out.println("trimmed 3");
+          trimmed ++;
           return v;
         }
         b = Math.min(b, v);
@@ -240,8 +249,8 @@ public class ABCutoffAI implements Player {
   @Override
   public Move move() {
     Move result = null;
-    for (int i = 1; i < cutoff; i++) {
-      result = alphaBetaCutoff(i, new MaterialHeuristic());
+    for (int i = 1; i < 3; i++) {
+      result = alphaBetaCutoff(i, new VersionTwoHeuristic());
     }
     
     return result;

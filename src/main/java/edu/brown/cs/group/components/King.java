@@ -75,7 +75,7 @@ public class King implements Piece {
 
   @Override
   public int value() {
-    return 0;
+    return 20000;
   }
 
   @Override

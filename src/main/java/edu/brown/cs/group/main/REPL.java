@@ -8,6 +8,7 @@ import edu.brown.cs.group.accounts.DatabaseManager;
 import edu.brown.cs.group.accounts.Protection;
 import edu.brown.cs.group.accounts.User;
 import edu.brown.cs.group.games.ABCutoffAI;
+import edu.brown.cs.group.games.ABCutoffAIV2;
 import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.ReplPlayer;
 import edu.brown.cs.group.handling.Handling;
@@ -60,7 +61,9 @@ public class REPL {
       }
     } else if (parsed[0].equals("game")) {
       try {
-      ChessGame game = new ChessGame(new ReplPlayer(), new ABCutoffAI());
+//        ChessGame game = new ChessGame(new ABCutoffAI(), new ABCutoffAIV2());
+      ChessGame game = new ChessGame(new ReplPlayer(), new ABCutoffAIV2());
+//      ChessGame game = new ChessGame(new ReplPlayer(), new ReplPlayer());
       game.play();
       }
       catch (PositionException e) {

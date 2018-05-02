@@ -169,7 +169,7 @@ public class Pawn implements Piece {
 
   @Override
   public int value() {
-    return 1;
+    return 100;
   }
 
   @Override
