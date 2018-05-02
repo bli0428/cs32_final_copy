@@ -1,6 +1,14 @@
 <#assign content>
 
-<h1> Joining game ${gameId} </h1>
+<h1> Joining game <div id="gameId">${gameId}</div> </h1>
+<div id="users">
+${users}
+</div>
 
 </#assign>
 <#include "main.ftl">
+<script>
+$(document).ready(function() {
+  setup();
+});
+</script>

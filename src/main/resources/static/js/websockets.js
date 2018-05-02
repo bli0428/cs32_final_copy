@@ -8,8 +8,8 @@ const MESSAGE_TYPE = {
   CREATEGAME: 6,
   JOINGAME: 7,
   HIGHLIGHT: 8,
-  TOHIGHLIGHT: 9
-
+  TOHIGHLIGHT: 9,
+  TOPROMOTE: 10
 };
 
 let conn;
@@ -51,9 +51,14 @@ const setup_live_moves = () => {
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.GAMEOVER:
-        winner = data.payload.winner;
+        var winner = data.payload.winner;
         printGameOver(winner);
         break;
+      case MESSAGE_TYPE.PROMOTE:
+        $(".modal").css("display", "block");
+        var coordinates = convertBackToFrontCoordinates(data.payload.coordinates);
+        promotePiece(coordinates);
+        new_promotion(piece);
     }
   };
 }
@@ -88,6 +93,20 @@ const new_move = move => {
   conn.send(JSON.stringify(toSend));
 }
 
+
+const new_promotion = piece => {
+  var toSendPayload = {
+    id: myId,
+    piece: piece
+  }
+
+  var toSend = {
+    type: 10,
+    payload: toSendPayload
+  }
+
+  conn.send(JSON.stringify(toSend));
+}
 
 
 
