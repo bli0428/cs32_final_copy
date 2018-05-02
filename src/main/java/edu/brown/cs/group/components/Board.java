@@ -445,10 +445,22 @@ public class Board {
    *          0 for white, 1 for black
    * @return true if the king is in check, false otherwise
    */
+//  public boolean check(int color) {
+//    for (Position p : places.keySet()) {
+//      if (places.get(p).type().equals("K") && places.get(p).color() == color) {
+//        return isAttacked(Math.abs(color - 1), p);
+//      }
+//    }
+//    return false;
+//  }
+  
   public boolean check(int color) {
-    for (Position p : places.keySet()) {
-      if (places.get(p).type().equals("K") && places.get(p).color() == color) {
-        return isAttacked(Math.abs(color - 1), p);
+    Set<Position> threats = threatened(Math.abs(color - 1));
+    for (Position p : threats) {
+      Piece k = places.get(p);
+      if (k != null && k.type().equals("K") && k.color() == color) {
+        // System.out.println(p.col() + "," + p.row());
+        return true;
       }
     }
     return false;
