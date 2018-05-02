@@ -61,7 +61,7 @@ public class Pawn implements Piece {
 
   @Override
   public Set<Position> getValidMoves(Board board) {
-    // TODO: En-pessant, promotion
+    // TODO: promotion
 
     Map<Position, Piece> m = board.places();
 
@@ -71,7 +71,29 @@ public class Pawn implements Piece {
     // forward in the + direction, one goes in the - direction), so we have to
     // check the color
     if (color == 0) {
-
+      // Check for en passant
+      try {
+        Position p = new Position(pos.col() + 1, pos.row());
+        if (board.getPassant() != null && board.getPassant().color() == 1 && 
+            board.getPassant().position().row() == p.row() &&
+            board.getPassant().position().col() == p.col()) {
+          out.add(new Position(pos.col() + 1, pos.row() + 1));
+        }
+      } catch (PositionException pe) {
+        // Do nothing 
+      }
+      
+      try {
+        Position p = new Position(pos.col() - 1, pos.row());
+        if (board.getPassant() != null && board.getPassant().color() == 1 && 
+            board.getPassant().position().row() == p.row() &&
+            board.getPassant().position().col() == p.col()) {
+          out.add(new Position(pos.col() - 1, pos.row() + 1));
+        }
+      } catch (PositionException pe) {
+        // Do nothing
+      }
+      
       // Check one threatened side
       try {
         Position p = new Position(pos.col() + 1, pos.row() + 1);
@@ -112,6 +134,29 @@ public class Pawn implements Piece {
         // System.out.println("Here");
       }
     } else {
+      
+      // Check for en passant
+      try {
+        Position p = new Position(pos.col() + 1, pos.row());
+        if (board.getPassant() != null && board.getPassant().color() == 0 && 
+            board.getPassant().position().row() == p.row() &&
+            board.getPassant().position().col() == p.col()) {
+          out.add(new Position(pos.col() + 1, pos.row() - 1));
+        }
+      } catch (PositionException pe) {
+        // Do nothing 
+      }
+      
+      try {
+        Position p = new Position(pos.col() - 1, pos.row());
+        if (board.getPassant() != null && board.getPassant().color() == 0 && 
+            board.getPassant().position().row() == p.row() &&
+            board.getPassant().position().col() == p.col()) {
+          out.add(new Position(pos.col() - 1, pos.row() - 1));
+        }
+      } catch (PositionException pe) {
+        // Do nothing
+      }
 
       // Check one threatened side
       try {
@@ -175,6 +220,7 @@ public class Pawn implements Piece {
   @Override
   public void move(Position dest) {
     pos = dest;
+    hasMoved = true;
   }
 
   @Override
@@ -221,6 +267,22 @@ public class Pawn implements Piece {
     }
 
     return out;
+  }
+  
+  @Override
+  public int hashCode() {
+    return type().hashCode();
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Pawn) {
+      return ((Pawn) o).type().equals(type());
+    }
+    if (o instanceof PromotedPawn) {
+      return ((PromotedPawn) o).innerType().equals(type());
+    }
+    return false;
   }
 
 }

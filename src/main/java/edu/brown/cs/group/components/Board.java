@@ -24,6 +24,8 @@ public class Board {
   private Map<Position, Piece> places;
 
   private Player[] players;
+  
+  private Piece passant;
 
   /**
    * Constructor that takes a map of starting positions (allows arbitrary game
@@ -161,7 +163,7 @@ public class Board {
     if (!p.getValidMoves(this).contains(dest)) {
       throw new InvalidMoveException(dest);
     }
-
+   
     // Promotions
     if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(prmtPiece);
@@ -206,7 +208,8 @@ public class Board {
       throws InvalidMoveException {
 
     Piece out = null;
-
+    
+    
     // If there's no piece at start or the piece at start can't move to end,
     // throw an exception
     if (!places.containsKey(start)) {
@@ -217,6 +220,32 @@ public class Board {
       throw new InvalidMoveException(dest);
     }
 
+    // Castling
+    if (p.type().equals("K") && Math.abs(dest.col() - start.col()) == 2) {
+      Piece rook;
+      Position rookDest;
+      Position rookStart;
+      try {
+        if (dest.col() - start.col() == 2) {
+          rookStart = new Position(8, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(6, dest.row());
+        } else {
+         //dest.col() - start.col() == -2
+          rookStart = new Position(1, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(4, dest.row()); 
+        }
+        rook.move(rookDest);
+        places.put(rookDest, rook);
+        places.remove(rookStart);
+      } catch (PositionException pe) {
+        // Something wrong with the rook
+        System.out.println("ERROR: Invalid Castle!");
+      }
+    }
+
+    
     // Promotions
     if (!usrQuery && p.type().equals("p")
         && (dest.row() == 8 || dest.row() == 1)) {
@@ -235,6 +264,21 @@ public class Board {
       }
       places.remove(dest);
     }
+    
+    // If the piece is a pawn, and en-passant is an option, and the pawn is moving to the left or right column,
+    // this indicates that the player, in fact, does want to perform en-passant
+    if (passant != null 
+        && dest.col() != start.col() && p.type().equals("p")
+        && !places.containsKey(dest)) {
+      out = new Pawn(new BankPosition(), passant.color(), true);
+      places.remove(passant.position());
+    }
+    
+    if (p.type().equals("p") && (start.row() == dest.row() - 2 || start.row() == dest.row() + 2)) {
+      passant = p;
+    } else {
+      passant = null;
+    }
 
     // Process the move by updating the piece's internal position and the
     // positions map.
@@ -242,6 +286,10 @@ public class Board {
     places.put(dest, p);
     places.remove(start);
     return out;
+  }
+  
+  public Piece getPassant() {
+    return passant;
   }
 
   /**
@@ -427,12 +475,10 @@ public class Board {
     return true;
   }
 
-  /**
-   * Prints this board.
-   */
-  public void print() {
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
     for (int i = 8; i > 0; i--) {
-      StringBuilder sb = new StringBuilder();
       sb.append(i + ". ");
       for (int j = 1; j <= 8; j++) {
         Position p;
@@ -450,16 +496,31 @@ public class Board {
           e.printStackTrace();
         }
       }
-      System.out.println(sb.toString());
+      sb.append("\n");
     }
-
-    StringBuilder sb = new StringBuilder();
 
     sb.append("   ");
     for (int i = 1; i <= 8; i++) {
       sb.append(i + "  ");
     }
-    System.out.println(sb.toString());
-
+    sb.append("\n");
+    return sb.toString();
+  }
+  
+  public void print() {
+    System.out.println(toString());
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Board) {
+      return ((Board) o).toString().equals(toString());
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 }

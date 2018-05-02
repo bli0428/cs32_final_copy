@@ -8,6 +8,7 @@ import java.util.Set;
 
 import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.Piece;
+
 import edu.brown.cs.group.games.Move;
 import edu.brown.cs.group.games.Player;
 import edu.brown.cs.group.positions.Position;
