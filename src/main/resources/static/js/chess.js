@@ -147,7 +147,11 @@ function setPromotionPiece(piece, coordinates) {
 
 
 function checkCastling(start, end, king) {
+<<<<<<< HEAD
+    if (king === '&#9818' || king === '&#9812') {
+=======
     if (king === "♔" || king === "♚") {
+>>>>>>> b3b89fe7ec15abf571d325d2138688be413de092
         if (getRow(start) === getRow(end)) {
             var kingRow = getRow(start);
             var kingCol = getCol(end);
@@ -175,5 +179,3 @@ function checkCastling(start, end, king) {
     }
 
 }
-
-
