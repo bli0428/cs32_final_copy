@@ -183,7 +183,9 @@ public final class GUI {
   private static class ChessHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("title", "CHESS", "gameId", -1);
+
+      Map<String, Object> variables = ImmutableMap.of("title", "CHESS",
+          "gameId", 99);
       return new ModelAndView(variables, "board.ftl");
     }
   }
