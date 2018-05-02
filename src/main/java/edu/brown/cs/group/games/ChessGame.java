@@ -45,6 +45,16 @@ public class ChessGame implements Game {
     p1.setColor(0);
     p2.setColor(1);
   }
+  
+  public ChessGame(Player p1, Player p2, Board board) throws PositionException {
+    this.p1 = p1;
+    this.p2 = p2;
+    this.board = board;
+    p2.setBoard(board);
+    p1.setBoard(board);
+    p1.setColor(0);
+    p2.setColor(1);
+  }
 
   /**
    * Plays a chess game.
@@ -104,6 +114,13 @@ public class ChessGame implements Game {
         e.printStackTrace();
       }
       System.out.println("here!");
+      
+      // Extra gameover check to deal with the 1 turn delay for stalemate
+//      gameOver = board.gameOver(turn);
+//      if (gameOver == 2) {
+//        System.out.println("Game over, it's a draw!");
+//        break;
+//      }
     }
   }
 

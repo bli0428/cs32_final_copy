@@ -1,5 +1,9 @@
 package edu.brown.cs.group.components;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,6 +28,11 @@ public class Board {
   private Map<Position, Piece> places;
 
   private Player[] players;
+  
+  private Piece passant;
+  
+  private int fiftyMove = 0;
+ // private Boolean threefold;
 
   /**
    * Constructor that takes a map of starting positions (allows arbitrary game
@@ -161,7 +170,7 @@ public class Board {
     if (!p.getValidMoves(this).contains(dest)) {
       throw new InvalidMoveException(dest);
     }
-
+   
     // Promotions
     if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(prmtPiece);
@@ -206,7 +215,8 @@ public class Board {
       throws InvalidMoveException {
 
     Piece out = null;
-
+    
+    
     // If there's no piece at start or the piece at start can't move to end,
     // throw an exception
     if (!places.containsKey(start)) {
@@ -217,10 +227,43 @@ public class Board {
       throw new InvalidMoveException(dest);
     }
 
+    // Castling
+    if (p.type().equals("K") && Math.abs(dest.col() - start.col()) == 2) {
+      Piece rook;
+      Position rookDest;
+      Position rookStart;
+      try {
+        if (dest.col() - start.col() == 2) {
+          rookStart = new Position(8, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(6, dest.row());
+        } else {
+         //dest.col() - start.col() == -2
+          rookStart = new Position(1, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(4, dest.row()); 
+        }
+        rook.move(rookDest);
+        places.put(rookDest, rook);
+        places.remove(rookStart);
+      } catch (PositionException pe) {
+        // Something wrong with the rook
+        System.out.println("ERROR: Invalid Castle!");
+      }
+    }
+
+    
     // Promotions
     if (!usrQuery && p.type().equals("p")
         && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(players[p.color()].promote(start));
+    }
+    
+    // 50 move stalemate Rule
+    if (p.type().equals("p")) {
+      fiftyMove = 0;
+    } else {
+      fiftyMove+=1;
     }
 
     // If there's a piece at the destination, it will get taken. Send it to a
@@ -234,6 +277,22 @@ public class Board {
         endPiece.move(new BankPosition());
       }
       places.remove(dest);
+      fiftyMove = 0;
+    }
+    
+    // If the piece is a pawn, and en-passant is an option, and the pawn is moving to the left or right column,
+    // this indicates that the player, in fact, does want to perform en-passant
+    if (passant != null 
+        && dest.col() != start.col() && p.type().equals("p")
+        && !places.containsKey(dest)) {
+      out = new Pawn(new BankPosition(), passant.color(), true);
+      places.remove(passant.position());
+    }
+    
+    if (p.type().equals("p") && (start.row() == dest.row() - 2 || start.row() == dest.row() + 2)) {
+      passant = p;
+    } else {
+      passant = null;
     }
 
     // Process the move by updating the piece's internal position and the
@@ -242,6 +301,10 @@ public class Board {
     places.put(dest, p);
     places.remove(start);
     return out;
+  }
+  
+  public Piece getPassant() {
+    return passant;
   }
 
   /**
@@ -363,9 +426,11 @@ public class Board {
     boolean hasMoves = false;
     Map<Position, Set<Position>> map = getValidMoves(color);
     
+    
     for (Position p : map.keySet()) {
       if (!map.get(p).isEmpty()) {
         hasMoves = true;
+        
         break;
       }
     }
@@ -373,6 +438,25 @@ public class Board {
     if (!hasMoves) {
       return inCheck ? 1 : 2;
     }
+    
+    if (fiftyMove >= 50) {
+      
+      return 2;
+    }
+    
+    Collection<Piece> pieces = places.values();
+    ArrayList<String> pieceTypes = new ArrayList<String>();
+    for (Piece piece : pieces) {
+      pieceTypes.add(piece.type());
+    }
+    if (pieces.size() <= 3) {
+      if (pieces.size() == 2 || 
+          pieceTypes.contains("b") ||
+          pieceTypes.contains("k")) {
+        System.out.println("hi");
+          return 2;
+        }
+      }
     
     return 0;
     
@@ -414,6 +498,22 @@ public class Board {
     if (check(color)) {
       return false;
     }
+    
+    Collection<Piece> pieces = places.values();
+    // Stalemate by insufficient checkmate material
+    
+    //K vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K","K"))) {
+      return true;
+    }
+    //K + k vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K","K","k"))) {
+      return true;
+    }
+    //K + b vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K", "b", "K"))) {
+      return true;
+    }
 
     for (Position p : map.keySet()) {
       if (!map.get(p).isEmpty()) {
@@ -421,6 +521,20 @@ public class Board {
       }
     }
 
+    return true;
+  }
+  
+  private boolean checkStale(Collection<Piece> piecesLeft, ArrayList<String> staleCond) {
+    if (staleCond.size() != piecesLeft.size()) {
+      return false;
+    }
+    for(Piece piece : piecesLeft) {
+      System.out.println("Piece= " + piece.type());
+      System.out.println(staleCond.contains(piece.type()));
+      if (!staleCond.contains(piece.type())) {
+        return false;
+      }
+    }
     return true;
   }
 

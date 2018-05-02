@@ -6,19 +6,36 @@
 //need to not be able to make a move unless it is the player's turn -> boolean
 
 function initializeBank() {
+	var chooseArray = [];
 	if (black) {
-		const chooseArray = ['&#9823','&#9820','&#9822','&#9821','&#9819'];
-		var col = "";
-		for (var c = 0; c < 5; c++) {
-			col += "<td id='" + c + "''><p class='count'>0</p><p class='piece'>" + chooseArray[c] + "</p></td>";
-		}
-		$("#bank").append("<tr>" + col + "</tr>");
+		chooseArray = ['&#9823','&#9820','&#9822','&#9821','&#9819'];
 	} else {
-		const chooseArray = ['&#9817','&#9814','&#9816','&#9815','&#9813'];
-		var col = "";
-		for (var c = 0; c < 5; c++) {
-			col += "<td id='" + c + "''><p class='count'>0</p><p class='piece'>" + chooseArray[c] + "</p></td>";
-		}
-		$("#bank").append("<tr>" + col + "</tr>");
+		chooseArray = ['&#9817','&#9814','&#9816','&#9815','&#9813'];
 	}
+	var col = "";
+	for (var c = 0; c < 5; c++) {
+		col += "<td id='" + c + "' class='bughousePiece'><p id='" + c + "' class='bughousePieceCount'>0</p>" + chooseArray[c] + "</td>";
+	}
+	$("#bank").append("<tr>" + col + "</tr>");
 }
+
+
+$("#bank").on("click", "td", function(e){
+	var currCountId = "p#" + e.target.id + ".bughousePieceCount";
+    var pieceCountString = $(currCountId).html(); // gets curr piece count
+    var pieceCount = parseInt(pieceCountString);
+    console.log(pieceCount);
+
+    var currCount = parseInt($(currCountId).html())
+    var newCount = currCount + 1;
+
+    $(currCountId).html(newCount.toString());
+
+
+    if (myTurn && pieceCount != 0) {
+
+    } else if (pieceCount == 0) {
+
+    }
+
+});

@@ -16,6 +16,7 @@ public class Rook implements Piece {
 
   private Position position;
   private int color;
+  private boolean hasMoved;
 
   /**
    * Public constructor to be called at board construction.
@@ -123,6 +124,15 @@ public class Rook implements Piece {
   @Override
   public void move(Position dest) {
     position = dest;
+    hasMoved = true;
+  }
+  
+  /**
+   * Gets whether or not the rook has moved (for castling purposes)
+   * @return whether or not the rook moved
+   */
+  public boolean moveStatus() {
+    return hasMoved;
   }
 
   @Override
