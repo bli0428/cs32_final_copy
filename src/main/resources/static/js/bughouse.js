@@ -5,7 +5,7 @@
 
 //need to not be able to make a move unless it is the player's turn -> boolean
 
-function initializeBank() {
+function initializeBank(black) {
 	var chooseArray = [];
 	if (black) {
 		chooseArray = ['&#9823','&#9820','&#9822','&#9821','&#9819'];

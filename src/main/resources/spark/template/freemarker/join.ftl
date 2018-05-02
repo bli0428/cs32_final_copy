@@ -9,6 +9,6 @@ ${users}
 <#include "main.ftl">
 <script>
 $(document).ready(function() {
-  setup();
+  setupMenu();
 });
 </script>

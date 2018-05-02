@@ -5,7 +5,9 @@ import java.util.Set;
 import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.InvalidMoveException;
 import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.positions.BankPosition;
 import edu.brown.cs.group.positions.Position;
+import edu.brown.cs.group.positions.PositionException;
 
 /**
  * Class representing a game of Bughouse.
@@ -37,14 +39,21 @@ public class BughouseGame implements Game {
    * @param b1
    * @param b2
    */
-  public BughouseGame(Player p0, Player p1, Player p2, Player p3, Board b1,
-      Board b2) {
+  public BughouseGame(Player p0, Player p1, Player p2, Player p3) {
+    try {
+      board1 = new Board(p0, p2);
+      board2 = new Board(p3, p1);
+    } catch (PositionException e) {
+      // Shouldn't get here
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
     this.p0 = p0;
     this.p1 = p1;
     this.p2 = p2;
     this.p3 = p3;
-    this.board1 = b1;
-    this.board2 = b2;
+
     p0.setBoard(board1);
     p2.setBoard(board1);
     p1.setBoard(board2);
@@ -93,7 +102,12 @@ public class BughouseGame implements Game {
         }
         Move m = teams[turn][b].move();
         try {
-          Piece p = boards[b].processMove(m.start(), m.end(), false);
+          Piece p;
+          if (m.start() instanceof BankPosition) {
+            p = boards[b].processPlace(m.start(), m.end(), m.getPiece());
+          } else {
+            p = boards[b].processMove(m.start(), m.end(), false);
+          }
           turn = Math.abs(turn - 1);
           if (p != null) {
             teams[turn][Math.abs(b - 1)].acceptPiece(p);
@@ -117,8 +131,8 @@ public class BughouseGame implements Game {
     Thread b0 = new Thread(new SubGame(0));
     Thread b1 = new Thread(new SubGame(1));
 
-    b0.run();
-    b1.run();
+    b0.start();
+    b1.start();
   }
 
   @Override
@@ -126,7 +140,7 @@ public class BughouseGame implements Game {
     if (player % 2 == 0) {
       return boards[0].getValidMoves(player / 2).get(pos);
     } else {
-      return boards[0].getValidMoves(player % 3).get(pos);
+      return boards[1].getValidMoves(player % 3).get(pos);
     }
   }
 

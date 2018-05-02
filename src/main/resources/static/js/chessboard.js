@@ -1,17 +1,14 @@
 
 var BOARD_DIM = 8; // dimesnsion of the chess board
-var black = false; // boolean indicating whether player is black or white
+//var black = false; // boolean indicating whether player is black or white
 var validMoveFunctionality = true; // boolean indicating whether or not to display valid moves
 
 const PLAYER_NUM = 0; // the id number of the session/player
 
 $(document).ready(() => {
-    initializeBoard();
-    initializeBank();
-    printTurn(myTurn);
-
-    //$("#boardHolder").append("<p>8\r\n7\r\n6\r\n5\r\n4\r\n3\r\n2\r\n1</p>");
-
+    //initializeBoard();
+    //initializeBank();
+    //printTurn(myTurn);
 });
 
 function getColor(row, col) {
@@ -26,7 +23,7 @@ function getColor(row, col) {
     }
 }
 
-function initializeBoard() {
+function initializeBoard(black) {
 
     if (black) {
         for (var r = BOARD_DIM - 1; r >= 0; r--) {
@@ -47,7 +44,7 @@ function initializeBoard() {
             $("#chessboard").append("<tr>" + col + "</tr>");
         }
     }
-    
+
     $('#0-0').html('&#9820');
     $('#0-1').html('&#9822');
     $('#0-2').html('&#9821');
@@ -88,7 +85,7 @@ function initializeBoard() {
         currPieces = ["0-0", "0-1", "0-2", "0-3", "0-4", "0-5", "0-6", "0-7",
         "1-0", "1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "1-7"];
     } else {
-        currPieces = ["7-0", "7-1", "7-2", "7-3", "7-4", "7-5", "7-6", "7-7", 
+        currPieces = ["7-0", "7-1", "7-2", "7-3", "7-4", "7-5", "7-6", "7-7",
         "6-0", "6-1", "6-2", "6-3", "6-4", "6-5", "6-6", "6-7"];
     }
 
@@ -102,7 +99,7 @@ function printGameOver(winner){
         $("#message").html("It's a draw!");
     } else {
         $("#message").html("Game Over! " + winner + " is the winner!");
-    }   
+    }
 }
 
 function printTurn(myTurn) {
@@ -154,6 +151,3 @@ function convertBackToFrontCoordinates(stringCoordinates) {
 //         validMoveFunctionality = true;
 //     }
 // }
-
-
-

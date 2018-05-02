@@ -22,15 +22,17 @@ public class ABCutoffAI implements Player {
   private Set<Piece> bank;
   private Board board;
   private int color;
-  private final int cutoff = 6;
+
+  private final int cutoff = 4;
 
   private int nodesSearched = 0;
   private long startTime;
   private long endTime;
   private int depth;
   private int numRepeat = 0;
+
   private int trimmed = 0;
-  
+
   private Set<Board> visitedBoards = new HashSet<>();
 
   /**
@@ -49,9 +51,11 @@ public class ABCutoffAI implements Player {
   private void printBench() {
     endTime = System.nanoTime();
     System.out.println(String.format(
-        "%d nodes searched in depth %d in %f seconds with %d boards repeated, %d boards trimmed", 
-        nodesSearched, depth, (endTime - startTime)/1000000000.0, numRepeat, trimmed));
-    
+
+        "%d nodes searched in depth %d in %f seconds with %d boards repeated, %d boards trimmed",
+        nodesSearched, depth, (endTime - startTime) / 1000000000.0, numRepeat,
+        trimmed));
+
     startTime = System.nanoTime();
   }
 
@@ -90,7 +94,7 @@ public class ABCutoffAI implements Player {
 
         try {
           newBoard.processMove(start, end, promote(end));
-          
+
         } catch (InvalidMoveException e) {
 
           e.printStackTrace();
@@ -98,16 +102,16 @@ public class ABCutoffAI implements Player {
         double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
             color);
         if (temp > v) {
-//          System.out.println("hi");
-//          System.out.println(temp);
-//          System.out.println(v);
+          // System.out.println("hi");
+          // System.out.println(temp);
+          // System.out.println(v);
           bestMove = tempMove;
           v = temp;
           // System.out.println(String.format("new best move: %s with value %f",
           // bestMove.toString(), v));
         }
         if (v >= b) {
-          trimmed ++;
+          trimmed++;
           new Move(start, end);
         }
         a = Math.max(a, temp);
@@ -121,8 +125,8 @@ public class ABCutoffAI implements Player {
   private double alphaBetaCutoffMax(Board tempBoard, int ply, double a,
       double b, Heuristic heur, int currColor) {
 
-    nodesSearched ++;
-    
+    nodesSearched++;
+
     if (visitedBoards.contains(tempBoard)) {
       numRepeat++;
     }
@@ -156,7 +160,7 @@ public class ABCutoffAI implements Player {
     for (Position start : validMoves.keySet()) {
       for (Position end : validMoves.get(start)) {
         Board newBoard = new Board(tempBoard);
-        
+
         try {
           newBoard.processMove(start, end, new Queen(end, currColor));
         } catch (InvalidMoveException e) {
@@ -166,7 +170,7 @@ public class ABCutoffAI implements Player {
             Math.abs(currColor - 1)));
         if (v >= b) {
           // System.out.println("returning from cutoffmax early" + v);
-          trimmed ++;
+          trimmed++;
           return v;
         }
         a = Math.max(a, v);
@@ -178,14 +182,14 @@ public class ABCutoffAI implements Player {
 
   private double alphaBetaCutoffMin(Board tempBoard, int ply, double a,
       double b, Heuristic heur, int currColor) {
-    
-    nodesSearched ++;
-    
+
+    nodesSearched++;
+
     if (visitedBoards.contains(tempBoard)) {
       numRepeat++;
     }
     visitedBoards.add(tempBoard);
-    
+
     double v = Double.POSITIVE_INFINITY;
 
     int gameOver = tempBoard.gameOver(color);
@@ -229,8 +233,8 @@ public class ABCutoffAI implements Player {
             Math.abs(currColor - 1)));
         if (v <= a) {
           // System.out.println("returning from cutoffmin early" + v);
-//          System.out.println("trimmed 3");
-          trimmed ++;
+          // System.out.println("trimmed 3");
+          trimmed++;
           return v;
         }
         b = Math.min(b, v);
@@ -252,7 +256,7 @@ public class ABCutoffAI implements Player {
     for (int i = 1; i < 4; i++) {
       result = alphaBetaCutoff(i, new VersionTwoHeuristic());
     }
-    
+
     return result;
   }
 
