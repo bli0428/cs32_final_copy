@@ -148,7 +148,6 @@ function setPromotionPiece(piece, coordinates) {
 
 
 function checkCastling(start, end, king) {
-
     if (king === "♔" || king === "♚") {
         if (getRow(start) === getRow(end)) {
             var kingRow = getRow(start);
