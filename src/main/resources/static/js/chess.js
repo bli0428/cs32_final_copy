@@ -32,7 +32,7 @@ function movePiece(start, end) {
         removePieceFromCurrPieces(start);
         currPieces.push(end);
 
-        checkCastleing(start, end, startPiece);
+        checkCastling(start, end, startPiece);
 
         var move = [start, end];
         new_move(move);
@@ -136,7 +136,7 @@ function getPromotionPiece() {
 }
 
 
-function checkCastleing(start, end, king) {
+function checkCastling(start, end, king) {
     if (king === '&#9818' || king ==== '&#9812') {
         if (getRow(start) === getRow(end)) {
             var kingRow = getRow(start);
