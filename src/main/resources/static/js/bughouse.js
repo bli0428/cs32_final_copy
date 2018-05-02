@@ -14,7 +14,7 @@ function initializeBank(black) {
 	}
 	var col = "";
 	for (var c = 0; c < 5; c++) {
-		col += "<td id='" + c + "' class='bughousePiece'>" + chooseArray[c] + "<span id='" + c + "' class='badge'>0</span></td>";
+		col += "<td id='" + c + "' class='bughousePiece'>" + chooseArray[c] + "<span id='" + c + "' class=' badge badge-pill badge-primary'>0</span></td>";
 	}
 	$("#bank").append("<tr>" + col + "</tr>");
 }
