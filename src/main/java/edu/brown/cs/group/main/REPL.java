@@ -123,7 +123,7 @@ public class REPL {
         }
       } else if (parsed.length == 4) {
         if (user != null) {
-          if (dbm.changeUsername(parsed[1], parsed[2], parsed[3])) {
+          if (dbm.changeUsername(parsed[1], parsed[2], parsed[3]) == null) {
             System.out.println("username set to \"" + parsed[3] + "\"");
           } else {
             Handling.error("failed to update username");

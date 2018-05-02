@@ -183,7 +183,9 @@ public final class GUI {
   private static class ChessHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("title", "CHESS");
+
+      Map<String, Object> variables = ImmutableMap.of("title", "CHESS",
+          "gameId", 99);
       return new ModelAndView(variables, "board.ftl");
     }
   }
@@ -288,9 +290,10 @@ public final class GUI {
             "Create account", "message", "Passwords don't match.");
         return new ModelAndView(variables, "newaccount.ftl");
       }
-      if (!repl.getDbm().addUser(username, password)) {
+      String message = repl.getDbm().addUser(username, password);
+      if (message != null) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Create account", "message", "Invalid username or password.");
+            "Create account", "message", message);
         return new ModelAndView(variables, "newaccount.ftl");
       }
       Map<String, Object> variables = ImmutableMap.of("title", "Login",
@@ -371,9 +374,10 @@ public final class GUI {
       }
 
       String newUsername = qm.value("newusername");
-      if (!repl.getDbm().changeUsername(currUsername, password, newUsername)) {
+      String message = repl.getDbm().changeUsername(currUsername, password, newUsername);
+      if (message != null) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Change password", "message", "Failed to change username.");
+            "Change password", "message", message);
         return new ModelAndView(variables, "changeusername.ftl");
       }
       Map<String, Object> variables = ImmutableMap.of("title", "Home",
