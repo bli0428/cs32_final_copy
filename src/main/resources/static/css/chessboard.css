@@ -12,10 +12,9 @@ canvas {
 }
 
 table#chessboard {
-  border: 30px solid #655232; 
   margin: auto;
   table-layout: fixed;
-  width: 100px;
+  width: 120px;
 }
 
 #boardHolder {
@@ -150,6 +149,8 @@ ul#promotionMenu li.promoteOption:hover {
   white-space: pre-line;
   float: left;
 }
+
+
 
 
 
