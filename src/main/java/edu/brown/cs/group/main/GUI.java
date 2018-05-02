@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,8 +49,9 @@ import spark.template.freemarker.FreeMarkerEngine;
 public final class GUI {
 	private static final Gson GSON = new Gson();
 	private static REPL repl;
-	private static ConcurrentHashMap<String, User> sessions;
-	private static GameList gameList;
+	public final static ConcurrentHashMap<String, User> SESSIONS = new ConcurrentHashMap<>();
+	public final static GameList GAME_LIST = new GameList();
+	public final static ConcurrentHashMap<Integer, List<org.eclipse.jetty.websocket.api.Session>> GAME_ID_TO_SESSIONS = new ConcurrentHashMap<>();
 	private static Game game;
 
 	/**
@@ -59,8 +62,6 @@ public final class GUI {
 	 */
 	public GUI(REPL repl) {
 		this.repl = repl;
-		sessions = new ConcurrentHashMap<>();
-		gameList = new GameList();
 	}
 
 	/**
@@ -95,8 +96,11 @@ public final class GUI {
 		FreeMarkerEngine freeMarker = createEngine();
 		
 		Spark.webSocket("/play", ChessWebSocket.class);
+		Spark.webSocket("/join", JoinWebSocket.class);
 
 		// Setup Spark Routes
+		Spark.post("/getUser", new GetUserHandler());
+		Spark.post("/getIp", new GetIpHandler());
 		Spark.get("/home", new HomeFrontHandler(), freeMarker);
 		Spark.get("/login", new LoginFrontPageHandler(), freeMarker);
 		Spark.post("/loginresults", new LoginResultsHandler(), freeMarker);
@@ -116,19 +120,35 @@ public final class GUI {
 		
 		Spark.get("/chess", new ChessHandler(), freeMarker);
 		Spark.post("/chess", new MoveHandler());
-		
-		
 	}
+	
+	private static class GetIpHandler implements Route {
+    @Override
+    public String handle(Request req, Response res) {
+      String ip;
+      try {
+        ip = InetAddress.getLocalHost().getHostAddress();
+        System.out.println(ip);
+        Map<String, Object> variables = ImmutableMap.of("ip", ip);
+        return GSON.toJson(variables);
+      } catch (UnknownHostException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      return null;
+    }
+
+  } 
 	
 	private static class HomeFrontHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      User u = sessions.get(req.session().id());
+      User u = SESSIONS.get(req.session().id());
       if (u == null) {
         res.redirect("/login");
       }
       Map<String, Object> variables = ImmutableMap.of("title", "Home", "content",
-          "<p>Welcome " + u.getUsername(repl.getDbm()) + ".</p>" + "<div id=\"menu\">" + gameList.printListHtml() + "</div>");
+          "<p>Welcome " + u.getUsername(repl.getDbm()) + ".</p>" + "<div id=\"menu\">" + GAME_LIST.printListHtml() + "</div>");
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -196,7 +216,7 @@ public final class GUI {
 			User user = repl.getUser();
 
 			if (user != null) {
-			  sessions.put(req.session(true).id(), user);
+			  SESSIONS.put(req.session(true).id(), user);
 			  res.redirect("/home");
 			} else {
 				Map<String, Object> variables = ImmutableMap.of("title", "Login",
@@ -340,13 +360,15 @@ public final class GUI {
       QueryParamsMap qm = req.queryMap();
       String gameType = qm.value("gameType");
       
+      int gameId;
       if (gameType.equals("bughouse")) {
-        gameList.addGame(4);
+        gameId = GAME_LIST.addGame(4);
       } else {
-        gameList.addGame(2);
+        gameId = GAME_LIST.addGame(2);
       }
+      GAME_ID_TO_SESSIONS.put(gameId, new ArrayList<>());
       
-      Map<String, Object> variables = ImmutableMap.of("games", gameList.printListHtml());
+      Map<String, Object> variables = ImmutableMap.of("games", GAME_LIST.printListHtml());
       return GSON.toJson(variables);
     }
 	}
@@ -355,22 +377,39 @@ public final class GUI {
     @Override
     public ModelAndView handle(Request request, Response response)
         throws SQLException, UnsupportedEncodingException {
-      User u = sessions.get(request.session().id());
+      User u = SESSIONS.get(request.session().id());
       if (u == null) {
         response.redirect("/login");
       }
       String gameId = java.net.URLDecoder.decode(request.params(":something"),
           "UTF-8");
-      GameList l = gameList;
-      MenuGame game = gameList.getGame(Integer.parseInt(gameId));
+      MenuGame game = GAME_LIST.getGame(Integer.parseInt(gameId));
       if (game.getCurrPlayers().size() == game.getNumPlayers()) {
         response.redirect("/home");
       }
       game.addUser(u);
-      Map<String, Object> variables = ImmutableMap.of("title", "Join game", "gameId", gameId);
+      
+      String html = "<ul>";
+      for (User curr : game.getCurrPlayers()) {
+        html += "<li>" + curr.getUsername(repl.getDbm()) + "</li>";
+      }
+      html += "</ul>";
+      
+      Map<String, Object> variables = ImmutableMap.of("title", "Join game", "gameId", gameId, "users", html);
       return new ModelAndView(variables, "join.ftl");
     }
   }
+	
+	 private static class GetUserHandler implements Route {
+	    @Override
+	    public String handle(Request req, Response res) {
+	      String sessionId = req.session().id();
+	      User u = SESSIONS.get(sessionId);
+	      
+	      Map<String, Object> variables = ImmutableMap.of("username", u.getUsername(repl.getDbm()), "session", sessionId);
+	      return GSON.toJson(variables);
+	    }
+	  }
 
 	/**
 	 * Handles "radius" commands via the GUI and displays the results.
@@ -381,7 +420,7 @@ public final class GUI {
 		@Override
 		public ModelAndView handle(Request req, Response res) {
 			repl.processCommand("logout");
-			sessions.remove(req.session().id());
+			SESSIONS.remove(req.session().id());
 			Map<String, Object> variables = ImmutableMap.of("title", "Log in", "message", "");
 			return new ModelAndView(variables, "login.ftl");
 		}
