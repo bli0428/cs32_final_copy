@@ -86,12 +86,12 @@ public class REPL {
         Board b1 = new Board(temp, pl1, pl2);
 
         // ChessGame game = new ChessGame(pl1, pl2, b1);
-        ChessGame game = new ChessGame(new ABCutoffAIV2(6), new ReplPlayer());
+        ChessGame game = new ChessGame(new ABCutoffAIV2(7), new ReplPlayer());
         // ChessGame game = new ChessGame(new ReplPlayer(), new ReplPlayer());
-
         game.play();
-      } catch (PositionException pe) {
-        pe.printStackTrace();
+      } catch (PositionException e) {
+        e.printStackTrace();
+
       }
     } else if (parsed[0].equals("new")) {
       if (parsed.length == 3) {

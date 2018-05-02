@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.brown.cs.group.games.Player;
+import edu.brown.cs.group.games.Tables;
 import edu.brown.cs.group.positions.BankPosition;
 import edu.brown.cs.group.positions.Position;
 import edu.brown.cs.group.positions.PositionException;
@@ -170,6 +171,31 @@ public class Board {
       throw new InvalidMoveException(dest);
     }
 
+    // Castling
+    if (p.type().equals("K") && Math.abs(dest.col() - start.col()) == 2) {
+      Piece rook;
+      Position rookDest;
+      Position rookStart;
+      try {
+        if (dest.col() - start.col() == 2) {
+          rookStart = new Position(8, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(6, dest.row());
+        } else {
+          // dest.col() - start.col() == -2
+          rookStart = new Position(1, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(4, dest.row());
+        }
+        rook.move(rookDest);
+        places.put(rookDest, rook);
+        places.remove(rookStart);
+      } catch (PositionException pe) {
+        // Something wrong with the rook
+        System.out.println("ERROR: Invalid Castle!");
+      }
+    }
+
     // Promotions
     if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(prmtPiece);
@@ -186,6 +212,22 @@ public class Board {
         endPiece.move(new BankPosition());
       }
       places.remove(dest);
+    }
+
+    // If the piece is a pawn, and en-passant is an option, and the pawn is
+    // moving to the left or right column,
+    // this indicates that the player, in fact, does want to perform en-passant
+    if (passant != null && dest.col() != start.col() && p.type().equals("p")
+        && !places.containsKey(dest)) {
+      out = new Pawn(new BankPosition(), passant.color(), true);
+      places.remove(passant.position());
+    }
+
+    if (p.type().equals("p")
+        && (start.row() == dest.row() - 2 || start.row() == dest.row() + 2)) {
+      passant = p;
+    } else {
+      passant = null;
     }
 
     // Process the move by updating the piece's internal position and the
@@ -465,13 +507,99 @@ public class Board {
    * @return true if the king is in check, false otherwise
    */
   public boolean check(int color) {
-    Set<Position> threats = threatened(Math.abs(color - 1));
-    for (Position p : threats) {
-      Piece k = places.get(p);
-      if (k != null && k.type().equals("K") && k.color() == color) {
-        // System.out.println(p.col() + "," + p.row());
-        return true;
+    for (Position p : places.keySet()) {
+      if (places.get(p).type().equals("K") && places.get(p).color() == color) {
+        return isAttacked(Math.abs(color - 1), p);
       }
+    }
+    return false;
+  }
+
+  /**
+   * Checks whether a given position is attacked by the given color
+   * 
+   * @param color
+   *          The attacking color
+   * @param pos
+   *          The Position that is attacked
+   * @return
+   */
+  private boolean isAttacked(int color, Position pos) {
+    int posCol = pos.col();
+    int posRow = pos.row();
+    int attackedIndex = (posRow - 1) * 16 + (posCol - 1);
+
+    // finds pieces of the right color.
+    for (Position attackerPos : places.keySet()) {
+      Piece attacker = places.get(attackerPos);
+      if (attacker.color() == color) {
+        String type = attacker.type().equals("pp")
+            ? ((PromotedPawn) attacker).innerType()
+            : attacker.type();
+        int attackerIndex = (attackerPos.row() - 1) * 16
+            + (attackerPos.col() - 1);
+        int canAttack = Tables.ATTACK_ARRAY[attackedIndex - attackerIndex
+            + 128];
+        int attackDelta = Tables.DELTA_ARRAY[attackedIndex - attackerIndex
+            + 128];
+        switch (type) {
+        case "K":
+          if (canAttack == Tables.ATTACK_KQR || canAttack == Tables.ATTACK_KQBbP
+              || canAttack == Tables.ATTACK_KQBwP) {
+            if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+              return true;
+            }
+          }
+          break;
+        case "q":
+          if (canAttack >= Tables.ATTACK_KQR && canAttack <= Tables.ATTACK_QB) {
+            if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+              return true;
+            }
+          }
+          break;
+        case "r":
+          if (canAttack == Tables.ATTACK_KQR || canAttack == Tables.ATTACK_QR) {
+            if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+              return true;
+            }
+          }
+          break;
+        case "k":
+          if (canAttack == Tables.ATTACK_N) {
+            if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+              return true;
+            }
+          }
+          break;
+        case "p":
+          if ((canAttack == Tables.ATTACK_KQBbP && color == 1)
+              || (canAttack == Tables.ATTACK_KQBwP && color == 0)) {
+            if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+              return true;
+            }
+          }
+
+        }
+      }
+    }
+    return false;
+
+  }
+
+  private boolean isBlocked(int start, int end, int delta) {
+    for (int i = start; i != end; i += delta) {
+      int posCol = (i % 16) + 1;
+      int posRow = (i / 16) + 1;
+      try {
+        if (places.containsKey(new Position(posCol, posRow))) {
+          return true;
+        }
+      } catch (PositionException e) {
+        System.err.println("probably indices are not right");
+        e.printStackTrace();
+      }
+
     }
     return false;
   }
