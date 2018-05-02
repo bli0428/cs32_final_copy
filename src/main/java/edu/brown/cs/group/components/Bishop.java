@@ -154,7 +154,7 @@ public class Bishop implements Piece {
       }
     }
 
-    for (int i = position.col() + 1, j = position.row() + 1; i > 0
+    for (int i = position.col() - 1, j = position.row() + 1; i > 0
         && j <= Position.BOARD_SIZE; i--, j++) {
       try {
         Position m = new Position(i, j);
@@ -170,7 +170,7 @@ public class Bishop implements Piece {
     }
 
     for (int i = position.col() + 1, j = position.row()
-        + 1; i <= Position.BOARD_SIZE && j > 0; i++, j--) {
+        - 1; i <= Position.BOARD_SIZE && j > 0; i++, j--) {
       try {
         Position m = new Position(i, j);
         if (!board.places().containsKey(m)) {
@@ -184,7 +184,7 @@ public class Bishop implements Piece {
       }
     }
 
-    for (int i = position.col() + 1, j = position.row() + 1; i > 0
+    for (int i = position.col() - 1, j = position.row() - 1; i > 0
         && j > 0; i--, j--) {
       try {
         Position m = new Position(i, j);
