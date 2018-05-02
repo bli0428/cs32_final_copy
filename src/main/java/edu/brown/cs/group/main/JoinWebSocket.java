@@ -30,7 +30,7 @@ public class JoinWebSocket {
   private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, UPDATE, JOIN_USER
+    CONNECT, UPDATE, JOIN_USER, START_CHESS_GAME, START_BUGHOUSE_GAME
   }
 
   @OnWebSocketConnect
@@ -86,6 +86,24 @@ public class JoinWebSocket {
       List<Session> sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
       for (Session s : sessions) {
         s.getRemote().sendString(GSON.toJson(toSend));
+      }
+      
+      if (g.getGameType().equals("Chess") && g.getCurrPlayers().size() == 2) {
+        toSend.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
+        toSend.add("payload", payload);
+
+        for (Session s : sessions) {
+          s.getRemote().sendString(GSON.toJson(toSend));
+        }
+        GUI.GAME_LIST.removeGame(g);
+      } else if (g.getGameType().equals("Bughouse") && g.getCurrPlayers().size() == 4) {
+        toSend.addProperty("type", MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
+        toSend.add("payload", payload);
+
+        for (Session s : sessions) {
+          s.getRemote().sendString(GSON.toJson(toSend));
+        }
+        GUI.GAME_LIST.removeGame(g);
       }
     }
 

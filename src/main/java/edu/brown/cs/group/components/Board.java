@@ -1,5 +1,9 @@
 package edu.brown.cs.group.components;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,6 +30,9 @@ public class Board {
   private Player[] players;
 
   private Piece passant;
+  
+  private int fiftyMove = 0;
+ // private Boolean threefold;
 
   /**
    * Constructor that takes a map of starting positions (allows arbitrary game
@@ -249,6 +256,13 @@ public class Board {
         && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(players[p.color()].promote(start));
     }
+    
+    // 50 move stalemate Rule
+    if (p.type().equals("p")) {
+      fiftyMove = 0;
+    } else {
+      fiftyMove+=1;
+    }
 
     // If there's a piece at the destination, it will get taken. Send it to a
     // bank.
@@ -261,6 +275,7 @@ public class Board {
         endPiece.move(new BankPosition());
       }
       places.remove(dest);
+      fiftyMove = 0;
     }
 
     // If the piece is a pawn, and en-passant is an option, and the pawn is
@@ -484,7 +499,28 @@ public class Board {
     if (!hasMoves) {
       return inCheck ? 1 : 2;
     }
+<<<<<<< HEAD
 
+=======
+    
+    if (fiftyMove >= 50) {
+      return 2;
+    }
+    
+    Collection<Piece> pieces = places.values();
+    ArrayList<String> pieceTypes = new ArrayList<String>();
+    for (Piece piece : pieces) {
+      pieceTypes.add(piece.type());
+    }
+    if (pieces.size() <= 3) {
+      if (pieces.size() == 2 || 
+          pieceTypes.contains("b") ||
+          pieceTypes.contains("k")) {
+          return 2;
+        }
+      }
+    
+>>>>>>> 29e60295fb97152a72a3bafed7abc325428725e1
     return 0;
 
   }
@@ -525,6 +561,22 @@ public class Board {
     if (check(color)) {
       return false;
     }
+    
+    Collection<Piece> pieces = places.values();
+    // Stalemate by insufficient checkmate material
+    
+    //K vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K","K"))) {
+      return true;
+    }
+    //K + k vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K","K","k"))) {
+      return true;
+    }
+    //K + b vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K", "b", "K"))) {
+      return true;
+    }
 
     for (Position p : map.keySet()) {
       if (!map.get(p).isEmpty()) {
@@ -532,6 +584,20 @@ public class Board {
       }
     }
 
+    return true;
+  }
+  
+  private boolean checkStale(Collection<Piece> piecesLeft, ArrayList<String> staleCond) {
+    if (staleCond.size() != piecesLeft.size()) {
+      return false;
+    }
+    for(Piece piece : piecesLeft) {
+      System.out.println("Piece= " + piece.type());
+      System.out.println(staleCond.contains(piece.type()));
+      if (!staleCond.contains(piece.type())) {
+        return false;
+      }
+    }
     return true;
   }
 

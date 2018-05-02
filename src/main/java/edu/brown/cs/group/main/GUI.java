@@ -114,6 +114,9 @@ public final class GUI {
 
     Spark.get("/chess", new ChessHandler(), freeMarker);
     Spark.post("/chess", new MoveHandler());
+
+    Spark.post("/startgame", new StartGameHandler(), freeMarker);
+    Spark.get("/chessgame/:something", new ChessGameHandler(), freeMarker);
   }
 
   private static class GetIpHandler implements Route {
@@ -147,6 +150,33 @@ public final class GUI {
           "content", "<p>Welcome " + u.getUsername(repl.getDbm()) + ".</p>"
               + "<div id=\"menu\">" + GAME_LIST.printListHtml() + "</div>");
       return new ModelAndView(variables, "home.ftl");
+    }
+  }
+
+  private static class StartGameHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+      int gameId = Integer.parseInt(qm.value("gameId"));
+      res.redirect("/chessgame/:" + gameId);
+      System.out.println("reached");
+      return null;
+    }
+  }
+
+  public static class ChessGameHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response)
+        throws SQLException, UnsupportedEncodingException {
+      User u = SESSIONS.get(request.session().id());
+      if (u == null) {
+        response.redirect("/login");
+      }
+      String gameId = java.net.URLDecoder.decode(request.params(":something"),
+          "UTF-8");
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "CHESS GAME " + gameId);
+      return new ModelAndView(variables, "board.ftl");
     }
   }
 
