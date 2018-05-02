@@ -506,26 +506,26 @@ public class Board {
    *          0 for white, 1 for black
    * @return true if the king is in check, false otherwise
    */
-//  public boolean check(int color) {
-//    for (Position p : places.keySet()) {
-//      if (places.get(p).type().equals("K") && places.get(p).color() == color) {
-//        return isAttacked(Math.abs(color - 1), p);
-//      }
-//    }
-//    return false;
-//  }
-  
   public boolean check(int color) {
-    Set<Position> threats = threatened(Math.abs(color - 1));
-    for (Position p : threats) {
-      Piece k = places.get(p);
-      if (k != null && k.type().equals("K") && k.color() == color) {
-        // System.out.println(p.col() + "," + p.row());
-        return true;
+    for (Position p : places.keySet()) {
+      if (places.get(p).type().equals("K") && places.get(p).color() == color) {
+        return isAttacked(Math.abs(color - 1), p);
       }
     }
     return false;
   }
+  
+//  public boolean check(int color) {
+//    Set<Position> threats = threatened(Math.abs(color - 1));
+//    for (Position p : threats) {
+//      Piece k = places.get(p);
+//      if (k != null && k.type().equals("K") && k.color() == color) {
+//        // System.out.println(p.col() + "," + p.row());
+//        return true;
+//      }
+//    }
+//    return false;
+//  }
 
   /**
    * Checks whether a given position is attacked by the given color
@@ -555,6 +555,13 @@ public class Board {
         int attackDelta = Tables.DELTA_ARRAY[attackedIndex - attackerIndex
             + 128];
         switch (type) {
+        case "b":
+          if (canAttack == Tables.ATTACK_KQBbP || canAttack == Tables.ATTACK_KQBwP || canAttack == Tables.ATTACK_QB) {
+            if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+              return true;
+            }
+          }
+          break;
         case "K":
           if (canAttack == Tables.ATTACK_KQR || canAttack == Tables.ATTACK_KQBbP
               || canAttack == Tables.ATTACK_KQBwP) {
@@ -600,7 +607,7 @@ public class Board {
   }
 
   private boolean isBlocked(int start, int end, int delta) {
-    for (int i = start; i != end; i += delta) {
+    for (int i = start + delta; i != end; i += delta) {
       int posCol = (i % 16) + 1;
       int posRow = (i / 16) + 1;
       try {
