@@ -154,7 +154,7 @@ public class Bishop implements Piece {
       }
     }
 
-    for (int i = position.col() + 1, j = position.row() + 1; i > 0
+    for (int i = position.col() - 1, j = position.row() + 1; i > 0
         && j <= Position.BOARD_SIZE; i--, j++) {
       try {
         Position m = new Position(i, j);
