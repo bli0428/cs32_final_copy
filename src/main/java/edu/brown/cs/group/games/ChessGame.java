@@ -36,10 +36,16 @@ public class ChessGame implements Game {
    * @throws PositionException
    *           if something is wrong with the Board constructor
    */
-  public ChessGame(Player p1, Player p2) throws PositionException {
+  public ChessGame(Player p1, Player p2) {
     this.p1 = p1;
     this.p2 = p2;
-    this.board = new Board(p1, p2);
+    try {
+      this.board = new Board(p1, p2);
+    } catch (PositionException e) {
+      // No
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     p2.setBoard(board);
     p1.setBoard(board);
     p1.setColor(0);
@@ -74,10 +80,44 @@ public class ChessGame implements Game {
           System.out.println(p.col() + "," + p.row());
         }
         System.out.println("Game over, " + t + " wins!");
+        for (Session session : ChessWebSocket.games.keySet()) {
+          if (ChessWebSocket.games.get(session) == this) {
+            JsonObject message = new JsonObject();
+            message.addProperty("type",
+                ChessWebSocket.MESSAGE_TYPE.GAMEOVER.ordinal());
+            JsonObject payload = new JsonObject();
+            payload.addProperty("winner", t);
+            message.add("payload", payload);
+            try {
+              session.getRemote()
+                  .sendString(ChessWebSocket.GSON.toJson(message));
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
+        }
         break;
       }
       if (gameOver == 2) {
         System.out.println("Game over, it's a draw!");
+        for (Session session : ChessWebSocket.games.keySet()) {
+          if (ChessWebSocket.games.get(session) == this) {
+            JsonObject message = new JsonObject();
+            message.addProperty("type",
+                ChessWebSocket.MESSAGE_TYPE.GAMEOVER.ordinal());
+            JsonObject payload = new JsonObject();
+            payload.addProperty("winner", "draw");
+            message.add("payload", payload);
+            try {
+              session.getRemote()
+                  .sendString(ChessWebSocket.GSON.toJson(message));
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          }
+        }
         break;
       }
       Move m;
@@ -114,18 +154,19 @@ public class ChessGame implements Game {
         e.printStackTrace();
       }
       System.out.println("here!");
-      
+
       // Extra gameover check to deal with the 1 turn delay for stalemate
-//      gameOver = board.gameOver(turn);
-//      if (gameOver == 2) {
-//        System.out.println("Game over, it's a draw!");
-//        break;
-//      }
+      // gameOver = board.gameOver(turn);
+      // if (gameOver == 2) {
+      // System.out.println("Game over, it's a draw!");
+      // break;
+      // }
     }
   }
 
   @Override
   public Set<Position> moves(int player, Position pos) {
+    System.out.println(player + " " + pos.numString());
     return board.getValidMoves(player).get(pos);
   }
 }

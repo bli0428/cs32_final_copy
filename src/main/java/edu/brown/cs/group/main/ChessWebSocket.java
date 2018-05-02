@@ -17,12 +17,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import edu.brown.cs.group.games.ABCutoffAI;
-import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
 import edu.brown.cs.group.games.Game;
 import edu.brown.cs.group.games.Move;
 import edu.brown.cs.group.games.Player;
+import edu.brown.cs.group.games.WrapperGame;
 import edu.brown.cs.group.positions.Position;
 import edu.brown.cs.group.positions.PositionException;
 
@@ -33,12 +32,15 @@ public class ChessWebSocket {
   public static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
   public static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();
   public static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
+  public static final Map<Integer, WrapperGame> lobbies = new ConcurrentHashMap<Integer, WrapperGame>();
   private static int nextId = 0;
-  private static int nextGame = 0;
+  // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY
   }
+
+  private static final boolean[] WB = { false, true, false, true };
 
   @OnWebSocketConnect
   public void connected(Session session) throws IOException {
@@ -58,19 +60,14 @@ public class ChessWebSocket {
 
     ////////////////////
     // TODO: Replace this:
-    GUIPlayer p = new GUIPlayer();
-    playerSession.put(session, p);
-    try {
-      ChessGame g = new ChessGame(p, new ABCutoffAI());
-      playerNum.put(p, 0);
-      games.put(session, g);
-      Thread t = new Thread((() -> g.play()));
-      t.start();
-      System.out.println("here");
-    } catch (PositionException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    // GUIPlayer p = new GUIPlayer();
+    // playerSession.put(session, p);
+    // ChessGame g = new ChessGame(p, new ABCutoffAI());
+    // playerNum.put(p, 0);
+    // games.put(session, g);
+    // Thread t = new Thread((() -> g.play()));
+    // t.start();
+    // System.out.println("here");
     ////////////////////
 
     nextId++;
@@ -126,6 +123,7 @@ public class ChessWebSocket {
             Integer.parseInt(p1[1]));
         Set<Position> moves = games.get(session)
             .moves(playerNum.get(playerSession.get(session)), start);
+        System.out.println(games.get(session));
         JsonArray outMoves = new JsonArray();
         for (Position p : moves) {
           outMoves.add(p.numString());
@@ -143,7 +141,25 @@ public class ChessWebSocket {
       }
 
     } else if (messageInt == MESSAGE_TYPE.CREATEGAME.ordinal()) {
-      nextGame++;
+      // nextGame++;
+    } else if (messageInt == MESSAGE_TYPE.JOINGAME.ordinal()) {
+      System.out.println("Joining game");
+      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+      int id = recievedPayload.get("id").getAsInt();
+      if (!lobbies.containsKey(id)) {
+        lobbies.put(id,
+            new WrapperGame(chessOrBug(JoinWebSocket.gameTypes.get(id))));
+      }
+      GUIPlayer p = new GUIPlayer();
+      playerSession.put(session, p);
+      int pid = lobbies.get(id).addPlayer(p);
+      playerNum.put(p, pid);
+      JsonObject msg = new JsonObject();
+      msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
+      JsonObject displayPayload = new JsonObject();
+      displayPayload.addProperty("color", WB[pid]);
+      msg.add("payload", displayPayload);
+      session.getRemote().sendString(GSON.toJson(msg));
     }
 
     // TODO: update payload needs to send if a piece was removed in the move
@@ -160,6 +176,16 @@ public class ChessWebSocket {
     // k.getRemote().sendString(GSON.toJson(toSend));
     // }
 
+  }
+
+  public boolean chessOrBug(String in) {
+    if (in.equals("Chess"))
+      return true;
+    if (in.equals("Bughouse")) {
+      return false;
+    }
+
+    return false;
   }
 
 }

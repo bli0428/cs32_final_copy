@@ -1,6 +1,14 @@
 package edu.brown.cs.group.games;
 
 public interface Tables {
+  public static final int ATTACK_NONE = 0;
+  public static final int ATTACK_KQR = 1;
+  public static final int ATTACK_QR = 2;
+  public static final int ATTACK_KQBwP = 3;
+  public static final int ATTACK_KQBbP = 4;
+  public static final int ATTACK_QB = 5;
+  public static final int ATTACK_N = 6;
+  
   public static final int[] ATTACK_ARRAY =
     {0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,2,0,0,0,     //0-19
      0,0,0,5,0,0,5,0,0,0,0,0,2,0,0,0,0,0,5,0,     //20-39

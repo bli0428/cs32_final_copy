@@ -81,6 +81,7 @@ function removePieceFromCurrPieces(id) {
 
 $("#chessboard").on("click", "td", function(e){
     var currId = e.target.id;
+    console.log(currId);
     if (myTurn) {
         if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
             $("#" + currPiece).toggleClass('selected');
@@ -147,11 +148,7 @@ function setPromotionPiece(piece, coordinates) {
 
 
 function checkCastling(start, end, king) {
-<<<<<<< HEAD
-    if (king === '&#9818' || king === '&#9812') {
-=======
     if (king === "♔" || king === "♚") {
->>>>>>> b3b89fe7ec15abf571d325d2138688be413de092
         if (getRow(start) === getRow(end)) {
             var kingRow = getRow(start);
             var kingCol = getCol(end);
