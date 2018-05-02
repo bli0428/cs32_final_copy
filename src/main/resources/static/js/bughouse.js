@@ -14,14 +14,14 @@ function initializeBank(black) {
 	}
 	var col = "";
 	for (var c = 0; c < 5; c++) {
-		col += "<td id='" + c + "' class='bughousePiece'><p id='" + c + "' class='bughousePieceCount'>0</p>" + chooseArray[c] + "</td>";
+		col += "<td id='" + c + "' class='bughousePiece'>" + chooseArray[c] + "<span id='" + c + "' class='badge'>0</span></td>";
 	}
 	$("#bank").append("<tr>" + col + "</tr>");
 }
 
 
 $("#bank").on("click", "td", function(e){
-	var currCountId = "p#" + e.target.id + ".bughousePieceCount";
+	var currCountId = "p#" + e.target.id + ".badge";
     var pieceCountString = $(currCountId).html(); // gets curr piece count
     var pieceCount = parseInt(pieceCountString);
     console.log(pieceCount);
