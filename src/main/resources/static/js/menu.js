@@ -2,7 +2,8 @@ const JOIN_MESSAGE_TYPE = {
   CONNECT: 0,
   UPDATE: 1,
   JOIN_USER: 2,
-  START_CHESS_GAME: 3
+  START_CHESS_GAME: 3,
+  START_BUGHOUSE_GAME: 4
 };
 
 let menuConn;
@@ -46,6 +47,9 @@ const setupMenu = () => {
         $("#users").html(data.payload.list);
         break;
       case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
+        $(location).attr('href', '/chessgame/' + $("#gameId").html());
+        break;
+      case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
         $(location).attr('href', '/chessgame/' + $("#gameId").html());
         break;
     }
