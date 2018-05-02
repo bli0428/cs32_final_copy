@@ -24,7 +24,7 @@ public class JoinWebSocket {
   public static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
 
-  public static final Map<Integer, Boolean> gameTypes = new ConcurrentHashMap<Integer, Boolean>();
+  public static final Map<Integer, String> gameTypes = new ConcurrentHashMap<Integer, String>();
 
   private static int nextId = 0;
   private static int nextGame = 0;
@@ -35,7 +35,7 @@ public class JoinWebSocket {
 
   @OnWebSocketConnect
   public void connected(Session session) throws IOException {
-    System.out.println("backend connect");
+    // System.out.println("backend connect");
     sessions.add(session);
 
     JsonObject payload = new JsonObject();
@@ -72,6 +72,7 @@ public class JoinWebSocket {
       System.out.println(receivedPayload.get("sparkSession").getAsString());
       int gameId = receivedPayload.get("gameId").getAsInt();
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
+      gameTypes.put(g.getId(), g.getGameType());
       System.out.println(menuGameToUsersHtml(g));
 
       GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
@@ -87,7 +88,7 @@ public class JoinWebSocket {
       for (Session s : sessions) {
         s.getRemote().sendString(GSON.toJson(toSend));
       }
-      
+
       if (g.getGameType().equals("Chess") && g.getCurrPlayers().size() == 2) {
         toSend.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
         toSend.add("payload", payload);
@@ -96,7 +97,8 @@ public class JoinWebSocket {
           s.getRemote().sendString(GSON.toJson(toSend));
         }
         GUI.GAME_LIST.removeGame(g);
-      } else if (g.getGameType().equals("Bughouse") && g.getCurrPlayers().size() == 4) {
+      } else if (g.getGameType().equals("Bughouse")
+          && g.getCurrPlayers().size() == 4) {
         toSend.addProperty("type", MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
         toSend.add("payload", payload);
 

@@ -17,8 +17,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import edu.brown.cs.group.games.ABCutoffAI;
-import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
 import edu.brown.cs.group.games.Game;
 import edu.brown.cs.group.games.Move;
@@ -60,14 +58,14 @@ public class ChessWebSocket {
 
     ////////////////////
     // TODO: Replace this:
-    GUIPlayer p = new GUIPlayer();
-    playerSession.put(session, p);
-    ChessGame g = new ChessGame(p, new ABCutoffAI());
-    playerNum.put(p, 0);
-    games.put(session, g);
-    Thread t = new Thread((() -> g.play()));
-    t.start();
-    System.out.println("here");
+    // GUIPlayer p = new GUIPlayer();
+    // playerSession.put(session, p);
+    // ChessGame g = new ChessGame(p, new ABCutoffAI());
+    // playerNum.put(p, 0);
+    // games.put(session, g);
+    // Thread t = new Thread((() -> g.play()));
+    // t.start();
+    // System.out.println("here");
     ////////////////////
 
     nextId++;
@@ -123,6 +121,7 @@ public class ChessWebSocket {
             Integer.parseInt(p1[1]));
         Set<Position> moves = games.get(session)
             .moves(playerNum.get(playerSession.get(session)), start);
+        System.out.println(games.get(session));
         JsonArray outMoves = new JsonArray();
         for (Position p : moves) {
           outMoves.add(p.numString());
@@ -142,11 +141,12 @@ public class ChessWebSocket {
     } else if (messageInt == MESSAGE_TYPE.CREATEGAME.ordinal()) {
       // nextGame++;
     } else if (messageInt == MESSAGE_TYPE.JOINGAME.ordinal()) {
+      System.out.println("Joining game");
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       int id = recievedPayload.get("id").getAsInt();
       if (!lobbies.containsKey(id)) {
         lobbies.put(id,
-            new WrapperGame(recievedPayload.get("type").getAsBoolean()));
+            new WrapperGame(chessOrBug(JoinWebSocket.gameTypes.get(id))));
       }
       GUIPlayer p = new GUIPlayer();
       playerSession.put(session, p);
@@ -168,6 +168,16 @@ public class ChessWebSocket {
     // k.getRemote().sendString(GSON.toJson(toSend));
     // }
 
+  }
+
+  public boolean chessOrBug(String in) {
+    if (in.equals("Chess"))
+      return true;
+    if (in.equals("Bughouse")) {
+      return false;
+    }
+
+    return false;
   }
 
 }

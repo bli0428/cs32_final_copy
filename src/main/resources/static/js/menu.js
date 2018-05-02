@@ -9,14 +9,15 @@ let menuConn;
 let myMenuId = -1;
 let ip;
 
-const setup = () => {
+const setupMenu = () => {
   const postParameters = {};
   $.post("/getIp", postParameters, responseJSON => {
 
     // Parse the JSON response into a JavaScript object.
     const responseObject = JSON.parse(responseJSON);
     ip = responseObject.ip;
-    menuConn = new WebSocket("ws://" + ip + ":4567/join");
+    //menuConn = new WebSocket("ws://" + ip + ":4567/join");
+    menuConn = new WebSocket("ws://localhost:4567/join");
 
 
   menuConn.onerror = err => {
@@ -45,7 +46,7 @@ const setup = () => {
         $("#users").html(data.payload.list);
         break;
       case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
-        $(location).attr('href', '/chessgame/:' + $("#gameId").html());
+        $(location).attr('href', '/chessgame/' + $("#gameId").html());
         break;
     }
   };

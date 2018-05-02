@@ -31,6 +31,18 @@ const setup_live_moves = () => {
         break;
       case MESSAGE_TYPE.CONNECT:
         myId = data.payload.id;
+        let payloadJoin = {
+          id: $("#gameId").html()
+        }
+        let msgJoin = {
+          type: MESSAGE_TYPE.JOINGAME,
+          payload: payloadJoin
+        }
+
+        console.log(msgJoin);
+
+        conn.send(JSON.stringify(msgJoin));
+
         //TODO: maybe need to know whether player is black or white
         break;
       case MESSAGE_TYPE.HIGHLIGHT:
@@ -137,5 +149,3 @@ const new_placement = placement => {
 
   conn.send(JSON.stringify(toSend));
 }
-
-

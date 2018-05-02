@@ -1,5 +1,7 @@
 <#assign content>
 
+<div id="gameId">${gameId}</div>
+
 <div id="messageHolder">
 	<p id="message"></p>
 </div>

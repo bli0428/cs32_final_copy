@@ -8,7 +8,7 @@ const PLAYER_NUM = 0; // the id number of the session/player
 $(document).ready(() => {
     initializeBoard();
     initializeBank();
-    printTurn(myTurn);
+    //printTurn(myTurn);
 });
 
 function getColor(row, col) {
@@ -122,7 +122,7 @@ function printGameOver(winner){
         $("#message").html("It's a draw!");
     } else {
         $("#message").html("Game Over! " + winner + " is the winner!");
-    }   
+    }
 }
 
 function printTurn(myTurn) {
@@ -174,6 +174,3 @@ function convertBackToFrontCoordinates(stringCoordinates) {
 //         validMoveFunctionality = true;
 //     }
 // }
-
-
-

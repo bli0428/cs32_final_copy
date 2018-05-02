@@ -144,18 +144,19 @@ public class ChessGame implements Game {
         e.printStackTrace();
       }
       System.out.println("here!");
-      
+
       // Extra gameover check to deal with the 1 turn delay for stalemate
-//      gameOver = board.gameOver(turn);
-//      if (gameOver == 2) {
-//        System.out.println("Game over, it's a draw!");
-//        break;
-//      }
+      // gameOver = board.gameOver(turn);
+      // if (gameOver == 2) {
+      // System.out.println("Game over, it's a draw!");
+      // break;
+      // }
     }
   }
 
   @Override
   public Set<Position> moves(int player, Position pos) {
+    System.out.println(player + " " + pos.numString());
     return board.getValidMoves(player).get(pos);
   }
 }

@@ -43,7 +43,8 @@ public class WrapperGame {
     }
     for (Player p : players) {
       for (Session s : ChessWebSocket.playerSession.keySet()) {
-        if (ChessWebSocket.playerSession.get(s) == p) {
+        if (ChessWebSocket.playerSession.get(s).equals(p)) {
+          System.out.println("added game");
           ChessWebSocket.games.put(s, g);
         }
       }

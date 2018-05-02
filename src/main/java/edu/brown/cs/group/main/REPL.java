@@ -7,14 +7,10 @@ import java.io.InputStreamReader;
 import edu.brown.cs.group.accounts.DatabaseManager;
 import edu.brown.cs.group.accounts.Protection;
 import edu.brown.cs.group.accounts.User;
-import edu.brown.cs.group.handling.Handling;
-
 import edu.brown.cs.group.games.ABCutoffAI;
 import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.ReplPlayer;
 import edu.brown.cs.group.handling.Handling;
-import edu.brown.cs.group.positions.PositionException;
-
 
 public class REPL {
   private Protection prot;
@@ -62,13 +58,12 @@ public class REPL {
         dbm = new DatabaseManager(parsed[1]);
       }
     } else if (parsed[0].equals("game")) {
-      try {
-      ChessGame game = new ChessGame(new ReplPlayer(), new ABCutoffAI()); //Change ReplPlayer back to ABCutoffAI
+      ChessGame game = new ChessGame(new ReplPlayer(), new ABCutoffAI()); // Change
+                                                                          // ReplPlayer
+                                                                          // back
+                                                                          // to
+                                                                          // ABCutoffAI
       game.play();
-      }
-      catch (PositionException e) {
-        e.printStackTrace();
-      }
     } else if (parsed[0].equals("new")) {
       if (parsed.length == 3) {
         dbm.addUser(parsed[1], parsed[2]);
@@ -78,7 +73,7 @@ public class REPL {
     } else if (parsed[0].equals("login")) {
       if (parsed.length == 3) {
         if (dbm != null) {
-        user = dbm.getUser(parsed[1], parsed[2]);
+          user = dbm.getUser(parsed[1], parsed[2]);
           if (user != null) {
             System.out.println("logged in as " + user.getUsername(dbm));
           }

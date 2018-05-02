@@ -175,7 +175,7 @@ public final class GUI {
       String gameId = java.net.URLDecoder.decode(request.params(":something"),
           "UTF-8");
       Map<String, Object> variables = ImmutableMap.of("title",
-          "CHESS GAME " + gameId);
+          "CHESS GAME " + gameId, "gameId", gameId);
       return new ModelAndView(variables, "board.ftl");
     }
   }
