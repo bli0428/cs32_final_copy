@@ -53,7 +53,9 @@ public class King implements Piece {
       start = 6;
       end = 7;
     }
-    if (!board.places().containsKey(rook) && 
+
+    if (!board.places().containsKey(rook) || 
+        !board.places().get(rook).type().equals("r") ||
         ((Rook)board.places().get(rook)).moveStatus()) {
       return false;
     }
