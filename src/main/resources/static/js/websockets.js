@@ -54,6 +54,10 @@ const setup_live_moves = () => {
         winner = data.payload.winner;
         printGameOver(winner);
         break;
+      case MESSAGE_TYPE.PROMOTE:
+        $(".modal").css("display", "block");
+        //TODO: popup menu and get user input
+        new_promotion(piece);
     }
   };
 }
@@ -88,6 +92,20 @@ const new_move = move => {
   conn.send(JSON.stringify(toSend));
 }
 
+
+const new_promotion = piece => {
+  var toSendPayload = {
+    id: myId,
+    piece: 1
+  }
+
+  var toSend = {
+    type: 1,
+    payload: toSendPayload
+  }
+
+  conn.send(JSON.stringify(toSend));
+}
 
 
 
