@@ -491,6 +491,7 @@ public class Board {
     for (Position p : map.keySet()) {
       if (!map.get(p).isEmpty()) {
         hasMoves = true;
+
         break;
       }
     }
@@ -500,6 +501,7 @@ public class Board {
     }
 
     if (fiftyMove >= 50) {
+
       return 2;
     }
 
@@ -509,10 +511,13 @@ public class Board {
       pieceTypes.add(piece.type());
     }
     if (pieces.size() <= 3) {
+
       if (pieces.size() == 2 || pieceTypes.contains("b")
           || pieceTypes.contains("k")) {
+        System.out.println("hi");
         return 2;
       }
+
     }
 
     return 0;
