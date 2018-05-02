@@ -12,7 +12,35 @@ var ChessBackground = {
       var piece = this.pieces[i];
       piece.image = new Image();
       piece.image.style.height = piece.height;
-      piece.image.src = this.pieceImage;
+      //pawn,
+      var images = ['http://i63.tinypic.com/hx0osh.png', 
+      'http://i65.tinypic.com/2a4py1g.png', 
+      'http://i63.tinypic.com/2dvkd3k.png',
+      'http://i66.tinypic.com/2q83sat.png',
+      'http://i63.tinypic.com/qxo0ow.png',
+      'http://i67.tinypic.com/inwbpg.png'];
+      if (i < 6) {
+          piece.image.src = images[0];
+      } else {
+          if (i < 9) {
+              piece.image.src = images[1];
+          } else {
+              if (i < 12) {
+                  piece.image.src = images[2];
+              } else {
+                  if (i < 14) {
+                      piece.image.src = images[3];
+                  } else {
+                      if (i < 15) {
+                          piece.image.src = images[4];
+                      } else {
+                          piece.image.src = images[5];
+                      }
+                  }
+              }
+          }
+      }
+      
       this.ctx.globalAlpha = piece.opacity;
       this.ctx.drawImage (piece.image, piece.x, piece.y, piece.width, piece.height);
     }
