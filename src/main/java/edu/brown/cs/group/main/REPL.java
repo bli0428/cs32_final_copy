@@ -7,11 +7,14 @@ import java.io.InputStreamReader;
 import edu.brown.cs.group.accounts.DatabaseManager;
 import edu.brown.cs.group.accounts.Protection;
 import edu.brown.cs.group.accounts.User;
+import edu.brown.cs.group.handling.Handling;
+
 import edu.brown.cs.group.games.ABCutoffAI;
 import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.ReplPlayer;
 import edu.brown.cs.group.handling.Handling;
 import edu.brown.cs.group.positions.PositionException;
+
 
 public class REPL {
   private Protection prot;
@@ -60,7 +63,7 @@ public class REPL {
       }
     } else if (parsed[0].equals("game")) {
       try {
-      ChessGame game = new ChessGame(new ReplPlayer(), new ABCutoffAI());
+      ChessGame game = new ChessGame(new ReplPlayer(), new ReplPlayer()); //Change ReplPlayer back to ABCutoffAI
       game.play();
       }
       catch (PositionException e) {

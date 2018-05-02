@@ -19,6 +19,7 @@ import org.eclipse.jetty.util.ConcurrentHashSet;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+
 import edu.brown.cs.group.accounts.GameList;
 import edu.brown.cs.group.accounts.MenuGame;
 import edu.brown.cs.group.accounts.User;
@@ -29,6 +30,7 @@ import edu.brown.cs.group.games.Game;
 import edu.brown.cs.group.positions.PositionException;
 import freemarker.template.Configuration;
 import spark.ExceptionHandler;
+
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -38,6 +40,7 @@ import spark.Session;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
+
 /**
  * A class that runs the GUI.
  *
