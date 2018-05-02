@@ -17,6 +17,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import edu.brown.cs.group.games.ABCutoffAI;
+import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
 import edu.brown.cs.group.games.Game;
 import edu.brown.cs.group.games.Move;
@@ -59,7 +61,7 @@ public class ChessWebSocket {
     session.getRemote().sendString(GSON.toJson(toSend));
 
     ////////////////////
-    // TODO: Replace this:
+    // // TODO: Replace this:
     // GUIPlayer p = new GUIPlayer();
     // playerSession.put(session, p);
     // ChessGame g = new ChessGame(p, new ABCutoffAI());
@@ -81,6 +83,7 @@ public class ChessWebSocket {
 
   @OnWebSocketMessage
   public void message(Session session, String message) throws IOException {
+
     System.out.println("in message");
     JsonObject received = GSON.fromJson(message, JsonObject.class);
 
@@ -146,20 +149,36 @@ public class ChessWebSocket {
       System.out.println("Joining game");
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       int id = recievedPayload.get("id").getAsInt();
-      if (!lobbies.containsKey(id)) {
+      if (!lobbies.containsKey(id) && id != 99) {
         lobbies.put(id,
             new WrapperGame(chessOrBug(JoinWebSocket.gameTypes.get(id))));
       }
+
       GUIPlayer p = new GUIPlayer();
       playerSession.put(session, p);
-      int pid = lobbies.get(id).addPlayer(p);
-      playerNum.put(p, pid);
-      JsonObject msg = new JsonObject();
-      msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
-      JsonObject displayPayload = new JsonObject();
-      displayPayload.addProperty("color", WB[pid]);
-      msg.add("payload", displayPayload);
-      session.getRemote().sendString(GSON.toJson(msg));
+      if (id == 99) {
+        ChessGame g = new ChessGame(p, new ABCutoffAI());
+        playerNum.put(p, 0);
+        games.put(session, g);
+        Thread t = new Thread((() -> g.play()));
+        t.start();
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
+        JsonObject displayPayload = new JsonObject();
+        displayPayload.addProperty("color", 0);
+        msg.add("payload", displayPayload);
+        session.getRemote().sendString(GSON.toJson(msg));
+      } else {
+        int pid = lobbies.get(id).addPlayer(p);
+        playerNum.put(p, pid);
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
+        JsonObject displayPayload = new JsonObject();
+        displayPayload.addProperty("color", WB[pid]);
+
+        msg.add("payload", displayPayload);
+        session.getRemote().sendString(GSON.toJson(msg));
+      }
     }
 
     // TODO: update payload needs to send if a piece was removed in the move
