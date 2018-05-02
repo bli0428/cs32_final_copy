@@ -23,6 +23,7 @@ import edu.brown.cs.group.games.GUIPlayer;
 import edu.brown.cs.group.games.Game;
 import edu.brown.cs.group.games.Move;
 import edu.brown.cs.group.games.Player;
+import edu.brown.cs.group.games.WrapperGame;
 import edu.brown.cs.group.positions.Position;
 import edu.brown.cs.group.positions.PositionException;
 
@@ -33,6 +34,7 @@ public class ChessWebSocket {
   public static final Map<Session, Game> games = new ConcurrentHashMap<Session, Game>();
   public static final Map<Player, Integer> playerNum = new ConcurrentHashMap<Player, Integer>();
   public static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
+  public static final Map<Integer, WrapperGame> lobbies = new ConcurrentHashMap<Integer, WrapperGame>();
   private static int nextId = 0;
   private static int nextGame = 0;
 
@@ -60,18 +62,12 @@ public class ChessWebSocket {
     // TODO: Replace this:
     GUIPlayer p = new GUIPlayer();
     playerSession.put(session, p);
-    try {
-      ChessGame g = new ChessGame(p, new ABCutoffAI());
-      playerNum.put(p, 0);
-      games.put(session, g);
-      Thread t = new Thread((() -> g.play()));
-      t.start();
-      System.out.println("here");
-    } catch (PositionException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    ////////////////////
+    ChessGame g = new ChessGame(p, new ABCutoffAI());
+    playerNum.put(p, 0);
+    games.put(session, g);
+    Thread t = new Thread((() -> g.play()));
+    t.start();
+    System.out.println("here");
 
     nextId++;
     System.out.println("here");

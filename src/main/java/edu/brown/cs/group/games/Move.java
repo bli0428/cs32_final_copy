@@ -1,9 +1,7 @@
 package edu.brown.cs.group.games;
 
-
 import edu.brown.cs.group.components.Piece;
 import edu.brown.cs.group.positions.BankPosition;
-
 import edu.brown.cs.group.positions.Position;
 
 /**
@@ -79,6 +77,10 @@ public class Move {
    */
   public Position end() {
     return end;
+  }
+
+  public Piece getPiece() {
+    return piece;
   }
 
 }

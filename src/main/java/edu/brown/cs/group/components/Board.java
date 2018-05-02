@@ -24,7 +24,7 @@ public class Board {
   private Map<Position, Piece> places;
 
   private Player[] players;
-  
+
   private Piece passant;
 
   /**
@@ -163,7 +163,7 @@ public class Board {
     if (!p.getValidMoves(this).contains(dest)) {
       throw new InvalidMoveException(dest);
     }
-   
+
     // Promotions
     if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(prmtPiece);
@@ -208,8 +208,7 @@ public class Board {
       throws InvalidMoveException {
 
     Piece out = null;
-    
-    
+
     // If there's no piece at start or the piece at start can't move to end,
     // throw an exception
     if (!places.containsKey(start)) {
@@ -231,10 +230,10 @@ public class Board {
           rook = places.get(rookStart);
           rookDest = new Position(6, dest.row());
         } else {
-         //dest.col() - start.col() == -2
+          // dest.col() - start.col() == -2
           rookStart = new Position(1, dest.row());
           rook = places.get(rookStart);
-          rookDest = new Position(4, dest.row()); 
+          rookDest = new Position(4, dest.row());
         }
         rook.move(rookDest);
         places.put(rookDest, rook);
@@ -245,7 +244,6 @@ public class Board {
       }
     }
 
-    
     // Promotions
     if (!usrQuery && p.type().equals("p")
         && (dest.row() == 8 || dest.row() == 1)) {
@@ -264,17 +262,18 @@ public class Board {
       }
       places.remove(dest);
     }
-    
-    // If the piece is a pawn, and en-passant is an option, and the pawn is moving to the left or right column,
+
+    // If the piece is a pawn, and en-passant is an option, and the pawn is
+    // moving to the left or right column,
     // this indicates that the player, in fact, does want to perform en-passant
-    if (passant != null 
-        && dest.col() != start.col() && p.type().equals("p")
+    if (passant != null && dest.col() != start.col() && p.type().equals("p")
         && !places.containsKey(dest)) {
       out = new Pawn(new BankPosition(), passant.color(), true);
       places.remove(passant.position());
     }
-    
-    if (p.type().equals("p") && (start.row() == dest.row() - 2 || start.row() == dest.row() + 2)) {
+
+    if (p.type().equals("p")
+        && (start.row() == dest.row() - 2 || start.row() == dest.row() + 2)) {
       passant = p;
     } else {
       passant = null;
@@ -287,9 +286,70 @@ public class Board {
     places.remove(start);
     return out;
   }
-  
+
+  /**
+   * Processes a place at dest.
+   *
+   * @param start
+   *          the start position
+   * @param dest
+   *          the end position
+   * @throws InvalidMoveException
+   *           if the start position or end position are invalid.
+   * @return a reference to the piece that was at dest, or null if there was
+   *         nothing there
+   */
+  public Piece processPlace(Position start, Position dest, Piece p)
+      throws InvalidMoveException {
+
+    assert start instanceof BankPosition;
+    assert placable().contains(dest);
+
+    Piece out = null;
+
+    // If there's no piece at start or the piece at start can't move to end,
+    // throw an exception
+    if (!places.containsKey(start)) {
+      throw new InvalidMoveException(dest);
+    }
+
+    // If the piece is a pawn, and en-passant is an option, and the pawn is
+    // moving to the left or right column,
+    // this indicates that the player, in fact, does want to perform en-passant
+    if (passant != null && dest.col() != start.col() && p.type().equals("p")
+        && !places.containsKey(dest)) {
+      out = new Pawn(new BankPosition(), passant.color(), true);
+      places.remove(passant.position());
+    }
+
+    // Process the move by updating the piece's internal position and the
+    // positions map.
+    p.move(dest);
+    places.put(dest, p);
+    places.remove(start);
+    return out;
+  }
+
   public Piece getPassant() {
     return passant;
+  }
+
+  public Set<Position> placable() {
+    Set<Position> out = new HashSet<Position>();
+    for (int i = 1; i <= 8; i++) {
+      for (int j = 1; j <= 8; j++) {
+        Position p;
+        try {
+          p = new Position(i, j);
+          if (!places.containsKey(p))
+            out.add(p);
+        } catch (PositionException e) {
+          // shouldn't get here
+          e.printStackTrace();
+        }
+      }
+    }
+    return out;
   }
 
   /**
@@ -506,11 +566,11 @@ public class Board {
     sb.append("\n");
     return sb.toString();
   }
-  
+
   public void print() {
     System.out.println(toString());
   }
-  
+
   @Override
   public boolean equals(Object o) {
     if (o instanceof Board) {
@@ -518,7 +578,7 @@ public class Board {
     }
     return false;
   }
-  
+
   @Override
   public int hashCode() {
     return toString().hashCode();

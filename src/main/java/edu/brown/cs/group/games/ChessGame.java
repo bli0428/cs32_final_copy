@@ -36,10 +36,16 @@ public class ChessGame implements Game {
    * @throws PositionException
    *           if something is wrong with the Board constructor
    */
-  public ChessGame(Player p1, Player p2) throws PositionException {
+  public ChessGame(Player p1, Player p2) {
     this.p1 = p1;
     this.p2 = p2;
-    this.board = new Board(p1, p2);
+    try {
+      this.board = new Board(p1, p2);
+    } catch (PositionException e) {
+      // No
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     p2.setBoard(board);
     p1.setBoard(board);
     p1.setColor(0);
