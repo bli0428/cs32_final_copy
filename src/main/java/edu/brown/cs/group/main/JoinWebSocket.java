@@ -1,11 +1,9 @@
 package edu.brown.cs.group.main;
 
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -16,25 +14,18 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import edu.brown.cs.group.accounts.MenuGame;
 import edu.brown.cs.group.accounts.User;
-import edu.brown.cs.group.games.ABCutoffAI;
-import edu.brown.cs.group.games.ChessGame;
-import edu.brown.cs.group.games.GUIPlayer;
-import edu.brown.cs.group.games.Game;
-import edu.brown.cs.group.games.Move;
-import edu.brown.cs.group.games.Player;
-import edu.brown.cs.group.positions.Position;
-import edu.brown.cs.group.positions.PositionException;
 
 @WebSocket
 public class JoinWebSocket {
   public static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
-  
+
+  public static final Map<Integer, Boolean> gameTypes = new ConcurrentHashMap<Integer, Boolean>();
+
   private static int nextId = 0;
   private static int nextGame = 0;
 
@@ -74,7 +65,7 @@ public class JoinWebSocket {
     if (messageInt == MESSAGE_TYPE.UPDATE.ordinal()) {
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
       // TODO: create payloads and add properties
-      
+
     } else if (messageInt == MESSAGE_TYPE.JOIN_USER.ordinal()) {
       System.out.println("in join user");
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
@@ -82,9 +73,9 @@ public class JoinWebSocket {
       int gameId = receivedPayload.get("gameId").getAsInt();
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
       System.out.println(menuGameToUsersHtml(g));
-      
+
       GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
-      
+
       JsonObject payload = new JsonObject();
       payload.addProperty("list", menuGameToUsersHtml(g));
 
@@ -99,7 +90,7 @@ public class JoinWebSocket {
     }
 
   }
-  
+
   private String menuGameToUsersHtml(MenuGame g) {
     List<User> users = g.getCurrPlayers();
     String html = "<ul>";
