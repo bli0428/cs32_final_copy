@@ -45,7 +45,7 @@ function moveOpponent(start, end) {
     $("#" + end).html(startPiece);
     if (currPieces.includes(end)) {
         removePieceFromCurrPieces(end);
-    }    
+    }
 }
 
 function getMoves(id) {
@@ -137,7 +137,7 @@ function getPromotionPiece() {
 
 
 function checkCastling(start, end, king) {
-    if (king === '&#9818' || king ==== '&#9812') {
+    if (king === '&#9818' || king === '&#9812') {
         if (getRow(start) === getRow(end)) {
             var kingRow = getRow(start);
             var kingCol = getCol(end);
