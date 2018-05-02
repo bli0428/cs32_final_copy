@@ -6,8 +6,8 @@ var validMoveFunctionality = true; // boolean indicating whether or not to displ
 const PLAYER_NUM = 0; // the id number of the session/player
 
 $(document).ready(() => {
-    initializeBoard();
-    initializeBank();
+    //initializeBoard();
+    //initializeBank();
     //printTurn(myTurn);
 });
 

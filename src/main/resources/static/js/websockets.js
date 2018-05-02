@@ -9,7 +9,8 @@ const MESSAGE_TYPE = {
   JOINGAME: 7,
   HIGHLIGHT: 8,
   TOHIGHLIGHT: 9,
-  TOPROMOTE: 10
+  TOPROMOTE: 10,
+  DISPLAY: 11
 };
 
 let conn;
@@ -71,6 +72,11 @@ const setup_live_moves = () => {
         var coordinates = convertBackToFrontCoordinates(data.payload.coordinates);
         promotePiece(coordinates);
         new_promotion(piece);
+        break;
+      case MESSAGE_TYPE.DISPLAY:
+        black = data.payload.color;
+        initializeBank();
+        initializeBoard();
     }
   };
 }

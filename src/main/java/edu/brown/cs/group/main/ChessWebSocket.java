@@ -37,8 +37,10 @@ public class ChessWebSocket {
   // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY
   }
+
+  private static final boolean[] WB = { false, true, false, true };
 
   @OnWebSocketConnect
   public void connected(Session session) throws IOException {
@@ -152,6 +154,12 @@ public class ChessWebSocket {
       playerSession.put(session, p);
       int pid = lobbies.get(id).addPlayer(p);
       playerNum.put(p, pid);
+      JsonObject msg = new JsonObject();
+      msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
+      JsonObject displayPayload = new JsonObject();
+      displayPayload.addProperty("color", WB[pid]);
+      msg.add("payload", displayPayload);
+      session.getRemote().sendString(GSON.toJson(msg));
     }
 
     // TODO: update payload needs to send if a piece was removed in the move
