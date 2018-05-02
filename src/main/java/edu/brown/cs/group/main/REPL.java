@@ -74,9 +74,13 @@ public class REPL {
       }
     } else if (parsed[0].equals("login")) {
       if (parsed.length == 3) {
+        if (dbm != null) {
         user = dbm.getUser(parsed[1], parsed[2]);
-        if (user != null) {
-          System.out.println("logged in as " + user.getUsername(dbm));
+          if (user != null) {
+            System.out.println("logged in as " + user.getUsername(dbm));
+          }
+        } else {
+          Handling.error("no input database");
         }
       }
     } else if (line.equals("logout")) {
