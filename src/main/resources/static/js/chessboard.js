@@ -1,6 +1,12 @@
 
+var BOARD_DIM = 8; // dimesnsion of the chess board
+var black = false; // boolean indicating whether player is black or white
+var validMoveFunctionality = true; // boolean indicating whether or not to display valid moves
+
+const PLAYER_NUM = 0; // the id number of the session/player
+
 $(document).ready(() => {
-    initializeBoard(black);
+    initializeBoard();
     initializeBank();
     printTurn(myTurn);
 });
@@ -17,7 +23,7 @@ function getColor(row, col) {
     }
 }
 
-function initializeBoard(black) {
+function initializeBoard() {
     for (var r = 0; r < BOARD_DIM; r++) {
         var col = "";
         for (var c = 0; c < BOARD_DIM; c++) {
@@ -127,6 +133,16 @@ function printTurn(myTurn) {
     }
 }
 
+function getRow(pos) {
+    var split = pos.split("-");
+    return parseInt(split[0]);
+}
+
+function getCol(pos) {
+    var split = pos.split("-");
+    return parseInt(split[1]);
+}
+
 
 function convertFrontToBackCoordinates(id) {
     var splitId = id.split("-");
@@ -143,4 +159,21 @@ function convertBackToFrontCoordinates(stringCoordinates) {
     var toReturn = row.toString() + "-" + col.toString();
     return toReturn;
 }
+
+
+
+
+// $("#moveToggle").on("click", function(){
+//     toggleMoveFunctionality();
+// });
+
+// function toggleMoveFunctionality() {
+//     if (validMoveFunctionality) {
+//         validMoveFunctionality = false;
+//     } else {
+//         validMoveFunctionality = true;
+//     }
+// }
+
+
 
