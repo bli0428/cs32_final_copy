@@ -36,7 +36,7 @@ public class ChessWebSocket {
   public static final Map<Session, GUIPlayer> playerSession = new ConcurrentHashMap<Session, GUIPlayer>();
   public static final Map<Integer, WrapperGame> lobbies = new ConcurrentHashMap<Integer, WrapperGame>();
   private static int nextId = 0;
-  private static int nextGame = 0;
+  // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
     CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT
@@ -68,6 +68,7 @@ public class ChessWebSocket {
     Thread t = new Thread((() -> g.play()));
     t.start();
     System.out.println("here");
+    ////////////////////
 
     nextId++;
     System.out.println("here");
@@ -139,7 +140,18 @@ public class ChessWebSocket {
       }
 
     } else if (messageInt == MESSAGE_TYPE.CREATEGAME.ordinal()) {
-      nextGame++;
+      // nextGame++;
+    } else if (messageInt == MESSAGE_TYPE.JOINGAME.ordinal()) {
+      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+      int id = recievedPayload.get("id").getAsInt();
+      if (!lobbies.containsKey(id)) {
+        lobbies.put(id,
+            new WrapperGame(recievedPayload.get("type").getAsBoolean()));
+      }
+      GUIPlayer p = new GUIPlayer();
+      playerSession.put(session, p);
+      int pid = lobbies.get(id).addPlayer(p);
+      playerNum.put(p, pid);
     }
 
     // TODO: update payload needs to send if a piece was removed in the move

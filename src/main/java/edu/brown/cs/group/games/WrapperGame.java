@@ -23,13 +23,14 @@ public class WrapperGame {
     }
   }
 
-  public synchronized void addPlayer(Player p) {
+  public synchronized int addPlayer(Player p) {
     if (players.size() == playerNum - 1) {
       players.add(p);
       startGame();
     } else if (players.size() < playerNum) {
       players.add(p);
     }
+    return players.size() - 1;
   }
 
   public void startGame() {
