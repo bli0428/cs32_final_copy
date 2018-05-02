@@ -1,5 +1,4 @@
 <#assign content>
-
 <h1> Log in </h1>
 <p>
 <form method="POST" action="/loginresults">
@@ -10,6 +9,5 @@
 </p>
 <p>${message}</p>
 <a href="/newaccount">Create account</a>
-
 </#assign>
 <#include "main.ftl">

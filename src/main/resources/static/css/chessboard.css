@@ -1,7 +1,15 @@
 body {
   background-color: #dcf2f2;
 }
-
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -9999;
+}
 
 table#chessboard {
   border: 2px solid #181818; 
