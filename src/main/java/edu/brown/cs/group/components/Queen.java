@@ -14,7 +14,7 @@ import edu.brown.cs.group.positions.PositionException;
  */
 public class Queen implements Piece {
 
-  private static final int VALUE = 9;
+  private static final int VALUE = 900;
 
   private Position position;
   private int color;

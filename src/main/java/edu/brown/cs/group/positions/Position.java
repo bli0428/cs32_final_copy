@@ -78,13 +78,18 @@ public class Position {
    *
    * @return a String representing this position on a chess board.
    */
+//  @Override
+//  public String toString() {
+//    if (col == 0) {
+//      return "Bank";
+//    }
+//    String abcdefgh = "abcdefgh";
+//    return abcdefgh.charAt(col - 1) + row + "";
+//  }
+  
   @Override
   public String toString() {
-    if (col == 0) {
-      return "Bank";
-    }
-    String abcdefgh = "abcdefgh";
-    return abcdefgh.charAt(col - 1) + row + "";
+    return numString();
   }
 
   /**

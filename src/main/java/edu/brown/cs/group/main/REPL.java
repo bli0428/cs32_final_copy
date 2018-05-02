@@ -3,16 +3,24 @@ package edu.brown.cs.group.main;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 import edu.brown.cs.group.accounts.DatabaseManager;
 import edu.brown.cs.group.accounts.Protection;
 import edu.brown.cs.group.accounts.User;
+import edu.brown.cs.group.components.Bishop;
+import edu.brown.cs.group.components.Board;
+import edu.brown.cs.group.components.King;
+import edu.brown.cs.group.components.Piece;
 import edu.brown.cs.group.handling.Handling;
 
 import edu.brown.cs.group.games.ABCutoffAI;
+import edu.brown.cs.group.games.ABCutoffAIV2;
 import edu.brown.cs.group.games.ChessGame;
+import edu.brown.cs.group.games.Player;
 import edu.brown.cs.group.games.ReplPlayer;
 import edu.brown.cs.group.handling.Handling;
+import edu.brown.cs.group.positions.Position;
 import edu.brown.cs.group.positions.PositionException;
 
 
@@ -63,7 +71,25 @@ public class REPL {
       }
     } else if (parsed[0].equals("game")) {
       try {
-      ChessGame game = new ChessGame(new ReplPlayer(), new ReplPlayer()); //Change ReplPlayer back to ABCutoffAI
+        Player pl1 = new ABCutoffAI();
+        Player pl2 = new ABCutoffAI();
+        HashMap<Position, Piece> temp = new HashMap<>();
+        Position p1 = new Position(2,8);
+        Piece k1 = new King(p1, 1);
+        temp.put(p1, k1);
+        
+        Position p2 = new Position(4,2);
+        Piece k2 = new King(p2, 0);
+        temp.put(p2, k2);
+        
+        Position p3 = new Position(4,5);
+        Piece bishop = new Bishop(p3, 0);
+        temp.put(p3, bishop);
+        Board b1 = new Board(temp, pl1, pl2);
+
+//        ChessGame game = new ChessGame(pl1, pl2, b1);
+      ChessGame game = new ChessGame(new ABCutoffAIV2(7), new ReplPlayer());
+//      ChessGame game = new ChessGame(new ReplPlayer(), new ReplPlayer());
       game.play();
       }
       catch (PositionException e) {

@@ -80,7 +80,7 @@ public class Knight implements Piece {
 
   @Override
   public int value() {
-    return 3;
+    return 320;
   }
 
   @Override

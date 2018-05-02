@@ -1,5 +1,9 @@
 package edu.brown.cs.group.components;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -7,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.brown.cs.group.games.Player;
+import edu.brown.cs.group.games.Tables;
 import edu.brown.cs.group.positions.BankPosition;
 import edu.brown.cs.group.positions.Position;
 import edu.brown.cs.group.positions.PositionException;
@@ -26,6 +31,9 @@ public class Board {
   private Player[] players;
   
   private Piece passant;
+  
+  private int fiftyMove = 0;
+ // private Boolean threefold;
 
   /**
    * Constructor that takes a map of starting positions (allows arbitrary game
@@ -164,6 +172,31 @@ public class Board {
       throw new InvalidMoveException(dest);
     }
    
+ // Castling
+    if (p.type().equals("K") && Math.abs(dest.col() - start.col()) == 2) {
+      Piece rook;
+      Position rookDest;
+      Position rookStart;
+      try {
+        if (dest.col() - start.col() == 2) {
+          rookStart = new Position(8, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(6, dest.row());
+        } else {
+         //dest.col() - start.col() == -2
+          rookStart = new Position(1, dest.row());
+          rook = places.get(rookStart);
+          rookDest = new Position(4, dest.row()); 
+        }
+        rook.move(rookDest);
+        places.put(rookDest, rook);
+        places.remove(rookStart);
+      } catch (PositionException pe) {
+        // Something wrong with the rook
+        System.out.println("ERROR: Invalid Castle!");
+      }
+    }
+    
     // Promotions
     if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(prmtPiece);
@@ -180,6 +213,22 @@ public class Board {
         endPiece.move(new BankPosition());
       }
       places.remove(dest);
+    }
+    
+    
+ // If the piece is a pawn, and en-passant is an option, and the pawn is moving to the left or right column,
+    // this indicates that the player, in fact, does want to perform en-passant
+    if (passant != null 
+        && dest.col() != start.col() && p.type().equals("p")
+        && !places.containsKey(dest)) {
+      out = new Pawn(new BankPosition(), passant.color(), true);
+      places.remove(passant.position());
+    }
+    
+    if (p.type().equals("p") && (start.row() == dest.row() - 2 || start.row() == dest.row() + 2)) {
+      passant = p;
+    } else {
+      passant = null;
     }
 
     // Process the move by updating the piece's internal position and the
@@ -251,6 +300,13 @@ public class Board {
         && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(players[p.color()].promote(start));
     }
+    
+    // 50 move stalemate Rule
+    if (p.type().equals("p")) {
+      fiftyMove = 0;
+    } else {
+      fiftyMove+=1;
+    }
 
     // If there's a piece at the destination, it will get taken. Send it to a
     // bank.
@@ -263,6 +319,7 @@ public class Board {
         endPiece.move(new BankPosition());
       }
       places.remove(dest);
+      fiftyMove = 0;
     }
     
     // If the piece is a pawn, and en-passant is an option, and the pawn is moving to the left or right column,
@@ -389,13 +446,92 @@ public class Board {
    * @return true if the king is in check, false otherwise
    */
   public boolean check(int color) {
-    Set<Position> threats = threatened(Math.abs(color - 1));
-    for (Position p : threats) {
-      Piece k = places.get(p);
-      if (k != null && k.type().equals("K") && k.color() == color) {
-        // System.out.println(p.col() + "," + p.row());
-        return true;
+    for (Position p : places.keySet()) {
+      if (places.get(p).type().equals("K") && places.get(p).color() == color) {
+        return isAttacked(Math.abs(color - 1), p);
       }
+    }
+    return false;
+  }
+  
+  /**
+   * Checks whether a given position is attacked by the given color
+   * @param color The attacking color
+   * @param pos The Position that is attacked
+   * @return
+   */
+  private boolean isAttacked(int color, Position pos) {
+    int posCol = pos.col();
+    int posRow = pos.row();
+    int attackedIndex = (posRow-1) * 16 + (posCol-1);
+    
+    
+    // finds pieces of the right color.
+    for (Position attackerPos : places.keySet()) {
+      Piece attacker = places.get(attackerPos);
+      if (attacker.color() == color) {
+        String type = attacker.type().equals("pp") ? ((PromotedPawn) attacker).innerType() : attacker.type();
+        int attackerIndex = (attackerPos.row()-1) * 16 + (attackerPos.col() - 1);
+        int canAttack = Tables.ATTACK_ARRAY[attackedIndex - attackerIndex + 128];
+        int attackDelta = Tables.DELTA_ARRAY[attackedIndex - attackerIndex + 128];
+        switch (type) {
+          case "K": 
+            if (canAttack == Tables.ATTACK_KQR || canAttack == Tables.ATTACK_KQBbP || canAttack == Tables.ATTACK_KQBwP) {
+             if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+               return true;
+             }
+            }
+            break;
+          case "q": 
+            if (canAttack >= Tables.ATTACK_KQR && canAttack <= Tables.ATTACK_QB) {
+              if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+                return true;
+              }
+             }
+            break;
+          case "r":
+            if (canAttack == Tables.ATTACK_KQR || canAttack == Tables.ATTACK_QR) {
+              if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+                return true;
+              }
+             }
+            break;
+          case "k":
+            if (canAttack == Tables.ATTACK_N) {
+              if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+                return true;
+              }
+             }
+            break;
+          case "p":
+            if ((canAttack == Tables.ATTACK_KQBbP && color == 1) || 
+                (canAttack == Tables.ATTACK_KQBwP && color == 0)) {
+              if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
+                return true;
+              }
+             }
+            
+        }
+      }
+    }
+    return false;
+    
+    
+  }
+  
+  private boolean isBlocked(int start, int end, int delta) {
+    for (int i = start; i != end; i += delta) {
+      int posCol = (i % 16) + 1;
+      int posRow = (i / 16) + 1;
+      try {
+        if (places.containsKey(new Position(posCol, posRow))) {
+          return true;
+        }
+      } catch (PositionException e) {
+        System.err.println("probably indices are not right");
+        e.printStackTrace();
+      }
+      
     }
     return false;
   }
@@ -411,9 +547,11 @@ public class Board {
     boolean hasMoves = false;
     Map<Position, Set<Position>> map = getValidMoves(color);
     
+    
     for (Position p : map.keySet()) {
       if (!map.get(p).isEmpty()) {
         hasMoves = true;
+        
         break;
       }
     }
@@ -421,6 +559,25 @@ public class Board {
     if (!hasMoves) {
       return inCheck ? 1 : 2;
     }
+    
+    if (fiftyMove >= 50) {
+      
+      return 2;
+    }
+    
+    Collection<Piece> pieces = places.values();
+    ArrayList<String> pieceTypes = new ArrayList<String>();
+    for (Piece piece : pieces) {
+      pieceTypes.add(piece.type());
+    }
+    if (pieces.size() <= 3) {
+      if (pieces.size() == 2 || 
+          pieceTypes.contains("b") ||
+          pieceTypes.contains("k")) {
+        System.out.println("hi");
+          return 2;
+        }
+      }
     
     return 0;
     
@@ -462,6 +619,22 @@ public class Board {
     if (check(color)) {
       return false;
     }
+    
+    Collection<Piece> pieces = places.values();
+    // Stalemate by insufficient checkmate material
+    
+    //K vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K","K"))) {
+      return true;
+    }
+    //K + k vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K","K","k"))) {
+      return true;
+    }
+    //K + b vs K
+    if (checkStale(pieces, (ArrayList<String>) Arrays.asList("K", "b", "K"))) {
+      return true;
+    }
 
     for (Position p : map.keySet()) {
       if (!map.get(p).isEmpty()) {
@@ -469,6 +642,20 @@ public class Board {
       }
     }
 
+    return true;
+  }
+  
+  private boolean checkStale(Collection<Piece> piecesLeft, ArrayList<String> staleCond) {
+    if (staleCond.size() != piecesLeft.size()) {
+      return false;
+    }
+    for(Piece piece : piecesLeft) {
+      System.out.println("Piece= " + piece.type());
+      System.out.println(staleCond.contains(piece.type()));
+      if (!staleCond.contains(piece.type())) {
+        return false;
+      }
+    }
     return true;
   }
 
