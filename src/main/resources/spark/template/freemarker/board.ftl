@@ -14,10 +14,10 @@
   <div class="modalContent">
   	<ul id="promotionMenu">
   		<li>Choose Promotion:</li>
-  		<li class="promoteOption">Rook</li>
-  		<li class="promoteOption">Queen</li>
-  		<li class="promoteOption">Knight</li>
-  		<li class="promoteOption">Bishop</li>
+  		<li id="rook" class="promoteOption">Rook</li>
+  		<li id="queen" class="promoteOption">Queen</li>
+  		<li id="knight" class="promoteOption">Knight</li>
+  		<li id="bishop" class="promoteOption">Bishop</li>
   	</ul>
   </div>
 </div>

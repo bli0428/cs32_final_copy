@@ -1,57 +1,54 @@
 
-var BOARD_DIM = 8;
 var validMoves = []; // the valid moves of the currPiece
 var currPiece = ""; // the selected piece to be moved
-var black = false; // boolean indicating whether player is black or white
-var currPieces = []; // an array of ids of the player's curr pieces
-var selected = false; // is there a current piece
-var myTurn = true; // boolean indicating whether or not it is my turn (assume I move first)
+var currPieces = []; // the player's curr pieces
+var selected = false; // boolean indicating if there is a current piece selected
 
-var winner = ""; // might not need winner variable
-
-const PLAYER_NUM = 0; // the id number of the session/player
-
-//TODO: attatch button functionality
-var validMoveFunctionality = true; // boolean indicating whether or not to display valid moves
+var myTurn = true; // boolean indicating whether or not it is my turn TODO: CHANGE (assume I move first)
 
 
 function movePiece(start, end) {
-    var startPiece = $("#" + start).text();
+    var startPiece = $("#" + start).text(); // piece to be moved
 
     if (validMoves.includes(end)) { // confirms that piece is being moved to a valid square
         $("#" + start).html("");
         $("#" + end).html(startPiece);
 
+        // unselect currPiece
         $("#" + start).toggleClass('selected');
+
+        // clear valid move squares
         if (validMoveFunctionality) {
             displayValidMoves();
         }
 
         currPiece = "";
         selected = false;
+
+        // update player's currPieces
         removePieceFromCurrPieces(start);
         currPieces.push(end);
 
         checkCastling(start, end, startPiece);
 
         var move = [start, end];
-        new_move(move);
+        new_move(move); // send the move to the backend
     }
 }
 
 function moveOpponent(start, end) {
-    var startPiece = $("#" + start).text();
+    var startPiece = $("#" + start).text(); // piece to be moved
     $("#" + start).html("");
     $("#" + end).html(startPiece);
-    if (currPieces.includes(end)) {
+    if (currPieces.includes(end)) { // removes curr player's piece from play if captured
         removePieceFromCurrPieces(end);
     }
+    checkCastling(start, end, startPiece);
 }
 
 function getMoves(id) {
     if (currPieces.includes(id)) {
-        console.log("currPiece includes id");
-        new_tohighlight(id);
+        new_tohighlight(id); // sends request to backend to get highlighted moves
     }
 }
 
@@ -62,13 +59,9 @@ function displayValidMoves() {
     }
 }
 
-//TODO: NEEED TO CHANGE CHESS LOGIC REMOVE PIECE IF PIECE IS IS IN SQUARE MOVED TO??
+
 function squareContainsPiece(id) {
-    if ($("#" + id).html() !=  "") {
-        return true;
-    } else {
-        return false;
-    }
+    return ($("#" + id).html() !==  "");
 }
 
 function validPiece(id) {
@@ -87,16 +80,9 @@ function removePieceFromCurrPieces(id) {
 }
 
 $("#chessboard").on("click", "td", function(e){
-
-
-    $(".modal").css("display", "block");
-    getPromotionPiece();
-
-    console.log(e.target.id);
     var currId = e.target.id;
     if (myTurn) {
         if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
-            console.log(1);
             $("#" + currPiece).toggleClass('selected');
             selected = false;
             currPiece = "";
@@ -104,13 +90,11 @@ $("#chessboard").on("click", "td", function(e){
                 displayValidMoves();  // clear the valid moves of the current piece
             }
         } else if (!selected && validPiece(currId)) { // first click
-            console.log(2);
             currPiece = currId;
             $("#" + currPiece).toggleClass('selected');
             getMoves(currPiece);
             selected = true;
         } else if (selected && validPiece(currId)) { // another square has been picked
-            console.log(3);
             $("#" + currPiece).toggleClass('selected');
             if (validMoveFunctionality) {
                 displayValidMoves(); // reset the previously selected valid moves
@@ -124,20 +108,50 @@ $("#chessboard").on("click", "td", function(e){
             printTurn(myTurn);
         }
 
-        //TODO: more cases
-}
+        //TODO: more cases???
+    }
 
 });
 
-function getPromotionPiece() {
-    $("#promotionMenu").on("click", "li", function(e){
-        console.log(e.target.id);
+function promotePiece(coordinates) {
+    $("#promotionMenu").on("click", ".promoteOption", function(e){
+        var piece = e.target.id;
+        $(".modal").css("display", "none");
+        setPromotionPiece(piece, coordinates);
     });
+}
+
+function setPromotionPiece(piece, coordinates) {
+    if (black) {
+        if (piece === "rook") {
+            $("#" + coordinates).html('&#9820');
+        } else if (piece === "queen") {
+            $("#" + coordinates).html('&#9819');
+        } else if (piece === "knight") {
+            $("#" + coordinates).html('&#9822');
+        } else if (piece === "bishop") {
+            $("#" + coordinates).html('&#9821');
+        }
+    } else {
+        if (piece === "rook") {
+            $("#" + coordinates).html('&#9814');
+        } else if (piece === "queen") {
+            $("#" + coordinates).html('&#9813');
+        } else if (piece === "knight") {
+            $("#" + coordinates).html('&#9816');
+        } else if (piece === "bishop") {
+            $("#" + coordinates).html('&#9815');
+        }
+    }
 }
 
 
 function checkCastling(start, end, king) {
+<<<<<<< HEAD
     if (king === '&#9818' || king === '&#9812') {
+=======
+    if (king === "♔" || king === "♚") {
+>>>>>>> b3b89fe7ec15abf571d325d2138688be413de092
         if (getRow(start) === getRow(end)) {
             var kingRow = getRow(start);
             var kingCol = getCol(end);
@@ -146,7 +160,7 @@ function checkCastling(start, end, king) {
             var newRookCoordinates = "";
             if (getCol(start) - getCol(end) === 2) {
                 rookCoordinates = kingRow.toString() + "-" + "0";
-                rook = $("#" + rookCoordinates).html();
+                rook = $("#" + rookCoordinates).text();
                 newRookCoordinates = kingRow.toString() + "-" + (kingCol + 1).toString();
                 $("#" + rookCoordinates).html("");
                 $("#" + newRookCoordinates).html(rook);
@@ -154,7 +168,7 @@ function checkCastling(start, end, king) {
                 currPieces.push(newRookCoordinates);
             } else if (getCol(start) - getCol(end) === -2) {
                 rookCoordinates = kingRow.toString() + "-" + "7";
-                rook = $("#" + rookCoordinates).html();
+                rook = $("#" + rookCoordinates).text();
                 newRookCoordinates = kingRow.toString() + "-" + (kingCol - 1).toString();
                 $("#" + rookCoordinates).html("");
                 $("#" + newRookCoordinates).html(rook);
@@ -165,30 +179,3 @@ function checkCastling(start, end, king) {
     }
 
 }
-
-
-function getRow(pos) {
-    var split = pos.split("-");
-    return parseInt(split[0]);
-}
-
-function getCol(pos) {
-    var split = pos.split("-");
-    return parseInt(split[1]);
-}
-
-
-
-
-
-// $("#moveToggle").on("click", function(){
-//     toggleMoveFunctionality();
-// });
-
-// function toggleMoveFunctionality() {
-//     if (validMoveFunctionality) {
-//         validMoveFunctionality = false;
-//     } else {
-//         validMoveFunctionality = true;
-//     }
-// }
