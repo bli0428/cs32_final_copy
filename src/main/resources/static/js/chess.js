@@ -81,6 +81,7 @@ function removePieceFromCurrPieces(id) {
 
 $("#chessboard").on("click", "td", function(e){
     var currId = e.target.id;
+    console.log(currId);
     if (myTurn) {
         if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
             $("#" + currPiece).toggleClass('selected');
