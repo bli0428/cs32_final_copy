@@ -16,6 +16,7 @@ public class King implements Piece {
 
   private Position position;
   private int color;
+  private boolean hasMoved;
 
   /**
    * Public constructor to be called at board construction.
@@ -38,6 +39,34 @@ public class King implements Piece {
   @Override
   public Position position() {
     return position;
+  }
+  
+  private boolean validCastle(Position rook, Board board) throws PositionException{
+    Set<Position> threats = board.threatened(Math.abs(color - 1));
+    int start;
+    int end;
+    if (rook.col() == 1) {
+      start = 3;
+      end = 4;
+    } else {
+      //rook.col() == 8
+      start = 6;
+      end = 7;
+    }
+
+    if (!board.places().containsKey(rook) || 
+        !board.places().get(rook).type().equals("r") ||
+        ((Rook)board.places().get(rook)).moveStatus()) {
+      return false;
+    }
+    for (int i = start; i <= end; i++) {
+      Position pos = new Position(i, position.row());
+      if (threats.contains(pos)
+          || board.places().containsKey(pos)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
@@ -65,6 +94,22 @@ public class King implements Piece {
         }
       }
     }
+
+    // Check castling
+    if (!hasMoved && !threats.contains(position)) {
+      try {
+        Position rRook = new Position(8, position.row());
+        Position lRook = new Position(1, position.row());
+        if (validCastle(rRook, board)) {
+            out.add(new Position(7, position.row()));
+        }
+        if (validCastle(lRook, board)) {
+            out.add(new Position(3, position.row()));
+        }
+      } catch (PositionException pe) {
+        
+      }
+    }
     return out;
   }
 
@@ -81,6 +126,7 @@ public class King implements Piece {
   @Override
   public void move(Position dest) {
     position = dest;
+    hasMoved = true;
   }
 
   @Override
@@ -107,6 +153,22 @@ public class King implements Piece {
       }
     }
     return out;
+  }
+  
+  @Override
+  public int hashCode() {
+    return type().hashCode();
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof King) {
+      return ((King) o).type().equals(type());
+    }
+    if (o instanceof PromotedPawn) {
+      return ((PromotedPawn) o).innerType().equals(type());
+    }
+    return false;
   }
 
 }

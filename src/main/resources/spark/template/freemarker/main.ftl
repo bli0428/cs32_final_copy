@@ -10,7 +10,6 @@
   </head>
   <body>
      ${content}
-
      <script src="/js/jquery-3.1.1.js"></script>
      <script src="/js/chess.js"></script>
      <script src="/js/chessboard.js"></script>

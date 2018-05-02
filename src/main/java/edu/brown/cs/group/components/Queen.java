@@ -18,6 +18,7 @@ public class Queen implements Piece {
 
   private Position position;
   private int color;
+  
 
   /**
    * Public constructor to be called at board construction.
@@ -320,6 +321,22 @@ public class Queen implements Piece {
     }
 
     return out;
+  }
+  
+  @Override
+  public int hashCode() {
+    return type().hashCode();
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Queen) {
+      return ((Queen) o).type().equals(type());
+    }
+    if (o instanceof PromotedPawn) {
+      return ((PromotedPawn) o).innerType().equals(type());
+    }
+    return false;
   }
 
 }
