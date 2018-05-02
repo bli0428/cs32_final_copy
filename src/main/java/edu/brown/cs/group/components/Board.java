@@ -426,9 +426,11 @@ public class Board {
     boolean hasMoves = false;
     Map<Position, Set<Position>> map = getValidMoves(color);
     
+    
     for (Position p : map.keySet()) {
       if (!map.get(p).isEmpty()) {
         hasMoves = true;
+        
         break;
       }
     }
@@ -438,6 +440,7 @@ public class Board {
     }
     
     if (fiftyMove >= 50) {
+      
       return 2;
     }
     
@@ -450,6 +453,7 @@ public class Board {
       if (pieces.size() == 2 || 
           pieceTypes.contains("b") ||
           pieceTypes.contains("k")) {
+        System.out.println("hi");
           return 2;
         }
       }

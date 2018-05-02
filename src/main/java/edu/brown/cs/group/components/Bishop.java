@@ -122,7 +122,7 @@ public class Bishop implements Piece {
 
   @Override
   public int value() {
-    return 3;
+    return 330;
   }
 
   @Override
