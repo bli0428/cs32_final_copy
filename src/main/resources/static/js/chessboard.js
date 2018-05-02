@@ -1,6 +1,6 @@
 
 var BOARD_DIM = 8; // dimesnsion of the chess board
-var black = false; // boolean indicating whether player is black or white
+//var black = false; // boolean indicating whether player is black or white
 var validMoveFunctionality = true; // boolean indicating whether or not to display valid moves
 
 const PLAYER_NUM = 0; // the id number of the session/player
@@ -23,7 +23,7 @@ function getColor(row, col) {
     }
 }
 
-function initializeBoard() {
+function initializeBoard(black) {
     for (var r = 0; r < BOARD_DIM; r++) {
         var col = "";
         for (var c = 0; c < BOARD_DIM; c++) {

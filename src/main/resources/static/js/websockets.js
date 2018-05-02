@@ -74,9 +74,8 @@ const setup_live_moves = () => {
         new_promotion(piece);
         break;
       case MESSAGE_TYPE.DISPLAY:
-        black = data.payload.color;
-        initializeBank();
-        initializeBoard();
+        initializeBank(data.payload.color);
+        initializeBoard(data.payload.color);
     }
   };
 }
