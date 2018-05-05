@@ -4,6 +4,7 @@
 <div id="users">
 ${users}
 </div>
+<button onclick="switchTeam()">Switch team</button>
 
 </#assign>
 <#include "main.ftl">

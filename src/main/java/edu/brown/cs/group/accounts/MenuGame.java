@@ -6,32 +6,49 @@ import java.util.List;
 public class MenuGame {
   private int id;
   private int numPlayers;
-  List<User> currPlayers = new ArrayList<>();
+  User[] currPlayers;
   
   public MenuGame(int id, int numPlayers) {
     this.id = id;
     this.numPlayers = numPlayers;
+    this.currPlayers = new User[numPlayers];
   }
   
   synchronized public boolean addUser(User u) {
-    if (currPlayers.size() < numPlayers) {
-      currPlayers.add(u);
-      return true;
-    } else {
-      return false;
+    for (int i = 0; i < currPlayers.length; i++) {
+      if (currPlayers[i] == null) {
+        currPlayers[i] = u;
+        return true;
+      }
     }
+    return false;
   }
   
   synchronized public void removeUser(User u) {
-    currPlayers.remove(u);
+    for (int i = 0; i < currPlayers.length; i++) {
+      if (currPlayers[i].equals(u)) {
+        currPlayers[i] = null;
+        return;
+      }
+    }
   }
   
   public int getId() {
     return id;
   }
   
-  public List<User> getCurrPlayers() {
+  public User[] getCurrPlayers() {
     return currPlayers;
+  }
+  
+  public int getCurrPlayersSize() {
+    int size = 0;
+    for (int i = 0; i < currPlayers.length; i++) {
+      if (currPlayers[i] != null) {
+        size++;
+      }
+    }
+    return size;
   }
   
   public int getNumPlayers() {

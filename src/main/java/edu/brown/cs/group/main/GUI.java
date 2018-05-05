@@ -420,14 +420,18 @@ public final class GUI {
       String gameId = java.net.URLDecoder.decode(request.params(":something"),
           "UTF-8");
       MenuGame game = GAME_LIST.getGame(Integer.parseInt(gameId));
-      if (game.getCurrPlayers().size() == game.getNumPlayers()) {
+      if (game.getCurrPlayersSize() == game.getNumPlayers()) {
         response.redirect("/home");
       }
       game.addUser(u);
 
       String html = "<ul>";
       for (User curr : game.getCurrPlayers()) {
-        html += "<li>" + curr.getUsername(repl.getDbm()) + "</li>";
+        if (curr == null) {
+          html += "<li>Waiting for player</li>";
+        } else {
+          html += "<li>" + curr.getUsername(repl.getDbm()) + "</li>";
+        }
       }
       html += "</ul>";
 
@@ -443,7 +447,7 @@ public final class GUI {
       String sessionId = req.session().id();
       User u = SESSIONS.get(sessionId);
 
-      Map<String, Object> variables = ImmutableMap.of("username",
+      Map<String, Object> variables = ImmutableMap.of("id", u.getUserId(), "username",
           u.getUsername(repl.getDbm()), "session", sessionId);
       return GSON.toJson(variables);
     }
