@@ -18,9 +18,12 @@ import com.google.gson.JsonObject;
 
 import edu.brown.cs.group.accounts.MenuGame;
 import edu.brown.cs.group.accounts.User;
+import edu.brown.cs.group.games.ABCutoffAIV2;
+import edu.brown.cs.group.games.WrapperGame;
 
 @WebSocket
 public class JoinWebSocket {
+
   public static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
 
@@ -90,20 +93,32 @@ public class JoinWebSocket {
       }
 
       if (g.getGameType().equals("Chess") && g.getCurrPlayersSize() == 2) {
-        toSend.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
-        toSend.add("payload", payload);
+        // toSend.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
+        // toSend.add("payload", payload);
 
         for (Session s : sessions) {
-          s.getRemote().sendString(GSON.toJson(toSend));
+          JsonObject toSendB = new JsonObject();
+          toSendB.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
+          JsonObject payloadB = new JsonObject();
+          payloadB.addProperty("gamePosition", sessions.indexOf(s));
+          toSendB.add("payload", payloadB);
+          s.getRemote().sendString(GSON.toJson(toSendB));
         }
         GUI.GAME_LIST.removeGame(g);
       } else if (g.getGameType().equals("Bughouse")
           && g.getCurrPlayersSize() == 4) {
-        toSend.addProperty("type", MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
-        toSend.add("payload", payload);
+        // toSend.addProperty("type",
+        // MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
+        // toSend.add("payload", payload);
 
         for (Session s : sessions) {
-          s.getRemote().sendString(GSON.toJson(toSend));
+          JsonObject toSendB = new JsonObject();
+          toSendB.addProperty("type",
+              MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
+          JsonObject payloadB = new JsonObject();
+          payloadB.addProperty("gamePosition", sessions.indexOf(s));
+          toSendB.add("payload", payloadB);
+          s.getRemote().sendString(GSON.toJson(toSendB));
         }
         GUI.GAME_LIST.removeGame(g);
       }
@@ -168,6 +183,13 @@ public class JoinWebSocket {
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
       g.addUser(new User(-1, "AI player"));
 
+      if (!ChessWebSocket.lobbies.keySet().contains(gameId)) {
+        ChessWebSocket.lobbies.put(gameId,
+            new WrapperGame(g.getGameType().equals("Chess")));
+      }
+
+      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAIV2(4));
+
       GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
 
       JsonObject payload = new JsonObject();
@@ -183,20 +205,27 @@ public class JoinWebSocket {
       }
 
       if (g.getGameType().equals("Chess") && g.getCurrPlayersSize() == 2) {
-        toSend.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
-        toSend.add("payload", payload);
 
         for (Session s : sessions) {
-          s.getRemote().sendString(GSON.toJson(toSend));
+          JsonObject toSendB = new JsonObject();
+          toSendB.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
+          JsonObject payloadB = new JsonObject();
+          payloadB.addProperty("gamePosition", sessions.indexOf(s));
+          toSendB.add("payload", payloadB);
+          s.getRemote().sendString(GSON.toJson(toSendB));
         }
         GUI.GAME_LIST.removeGame(g);
       } else if (g.getGameType().equals("Bughouse")
           && g.getCurrPlayersSize() == 4) {
-        toSend.addProperty("type", MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
-        toSend.add("payload", payload);
 
         for (Session s : sessions) {
-          s.getRemote().sendString(GSON.toJson(toSend));
+          JsonObject toSendB = new JsonObject();
+          toSendB.addProperty("type",
+              MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
+          JsonObject payloadB = new JsonObject();
+          payloadB.addProperty("gamePosition", sessions.indexOf(s));
+          toSendB.add("payload", payloadB);
+          s.getRemote().sendString(GSON.toJson(toSendB));
         }
         GUI.GAME_LIST.removeGame(g);
 
@@ -227,18 +256,29 @@ public class JoinWebSocket {
   }
 
   private String menuGameToUsersHtml(MenuGame g) {
-    User[] users = g.getCurrPlayers();
-    String html = "<ul>";
-    for (int i = 0; i < users.length; i++) {
-      if (users[i] == null) {
-        html += "<li>Waiting for player. <button onclick='addAI(" + i
-            + ")'>Add AI player</button></li>";
-      } else {
-        html += "<li>" + users[i].getUsername() + "</li>";
-      }
-    }
-    html += "</ul>";
-    return html;
-  }
+		User[] users = g.getCurrPlayers();
+		String html = "";
+		for (int i = 0; i < users.length; i++) {
+			html += "<div class='col' style='margin-top: 2%'><div class='card text-center'>"
+					+ "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>" + colorPicker(i) + "</h2>";
+			if (users[i] == null) {
+				html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
+						+ "onclick='addAI(" + i + ")'>Add AI Player</button>";
+			} else {
+				html += "<p class='card-text'>" + users[i].getUsername() + "</p><button class='btn btn-info'"
+						+ "onclick='switchTeam()'>Switch Team</button>";
+			}
+			html += "</div></div></div>";
+		}
+		return html;
+	}
+	
+	private String colorPicker(int i) {
+		if (i % 2 == 0) {
+			return "White";
+		} else {
+			return "Black";
+		}
+	}
 
 }
