@@ -128,6 +128,7 @@ public class GUIPlayer implements Player {
       if (ChessWebSocket.playerSession.get(s).equals(this)) {
         try {
           s.getRemote().sendString(ChessWebSocket.GSON.toJson(message));
+          System.out.println("Accepted " + p.type());
         } catch (IOException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
