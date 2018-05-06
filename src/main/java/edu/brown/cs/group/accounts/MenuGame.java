@@ -33,6 +33,15 @@ public class MenuGame {
     }
   }
   
+  synchronized public void removeUser(int userId) {
+    for (int i = 0; i < currPlayers.length; i++) {
+      if (currPlayers[i] != null && currPlayers[i].getUserId() == userId) {
+        currPlayers[i] = null;
+        return;
+      }
+    }
+  }
+  
   public int getId() {
     return id;
   }

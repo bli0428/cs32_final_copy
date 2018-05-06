@@ -83,7 +83,7 @@ public class DatabaseManager {
       rs.next();
       int id = rs.getInt(1);
 
-      users.put(id, new User(id));
+      users.put(id, new User(id, username));
       return null;
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -145,11 +145,12 @@ public class DatabaseManager {
   private void addAllCurrentUsers() {
     ResultSet rs;
     try {
-      prep = conn.prepareStatement("SELECT userid FROM accounts;");
+      prep = conn.prepareStatement("SELECT userid, username FROM accounts;");
       rs = prep.executeQuery();
       while (rs.next()) {
         int userid = rs.getInt(1);
-        users.put(userid, new User(userid));
+        String username = rs.getString(2);
+        users.put(userid, new User(userid, username));
       }
       rs.close();
     } catch (SQLException e) {
@@ -202,6 +203,7 @@ public class DatabaseManager {
       prep.setString(3, prot.hash(password, salt));
       prep.setInt(4, userId);
       prep.executeUpdate();
+      users.get(userId).setUsername(newUsername);
       return null;
     } catch (SQLException e) {
       // TODO Auto-generated catch block

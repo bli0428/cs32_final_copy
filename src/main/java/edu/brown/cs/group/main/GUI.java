@@ -429,7 +429,7 @@ public final class GUI {
         if (curr == null) {
           html += "<li>Waiting for player</li>";
         } else {
-          html += "<li>" + curr.getUsername(repl.getDbm()) + "</li>";
+          html += "<li>" + curr.getUsername() + "</li>";
         }
       }
       html += "</ul>";

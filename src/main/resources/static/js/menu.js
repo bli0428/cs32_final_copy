@@ -5,7 +5,8 @@ const JOIN_MESSAGE_TYPE = {
   START_CHESS_GAME: 3,
   START_BUGHOUSE_GAME: 4,
   SWITCH_TEAM: 5,
-  ADD_AI: 6
+  ADD_AI: 6,
+  LEAVE_GAME: 7
 };
 
 let menuConn;
@@ -90,6 +91,27 @@ function switchTeam() {
       payload: toSendPayload
     }
     menuConn.send(JSON.stringify(toSend));
+  });
+}
+
+function leaveGame() {
+  const postParameters = {};
+  $.post("/getUser", postParameters, responseJSON => {
+    // Parse the JSON response into a JavaScript object.
+    const responseObject = JSON.parse(responseJSON);
+    var toSendPayload = {
+      id: myId,
+      sparkSession: responseObject.session,
+      userId: responseObject.id,
+      gameId: $("#gameId").html()
+    }
+
+    var toSend = {
+      type: 7,
+      payload: toSendPayload
+    }
+    menuConn.send(JSON.stringify(toSend));
+    $(location).attr('href', '/home');
   });
 }
 
