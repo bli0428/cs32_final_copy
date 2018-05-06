@@ -68,9 +68,11 @@ const setup_live_moves = () => {
         $(".modal").css("display", "block");
         let position = convertBackToFrontCoordinates(data.payload.position);
         promotePiece(position);
+        myTurn = false;
+        printTurn(myTurn);
         break;
       case MESSAGE_TYPE.DISPLAY:
-        initializeBank(data.payload.color);
+        initializeBank(data.payload.color); //TODO: have backend pass what type of game so we know whether or not to initialize bank
         initializeBoard(data.payload.color);
         if (data.payload.color == 0) {
           myTurn = true;
@@ -79,7 +81,7 @@ const setup_live_moves = () => {
         break;
       case MESSAGE_TYPE.BANKADD:
         let pieceIndex = data.payload.idx;
-        updateBankIndex(pieceIndex);
+        updateBankIndex(pieceIndex, 1);
     }
   };
 }
@@ -87,6 +89,7 @@ const setup_live_moves = () => {
 //TODO: UPDATE myTurn and printTurn
 
 const new_tohighlight = currPiece => {
+  console.log("in new_tohighlight "+currPiece);
   let toSendPayload = {
     id: myId,
     piece: convertFrontToBackCoordinates(currPiece)

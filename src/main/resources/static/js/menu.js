@@ -24,17 +24,17 @@ const setupMenu = () => {
     menuConn = new WebSocket("ws://localhost:4567/join");
 
 
-  menuConn.onerror = err => {
-    console.log('Connection error:', err);
-  };
+    menuConn.onerror = err => {
+      console.log('Connection error:', err);
+    };
 
-  menuConn.onmessage = msg => {
-    const data = JSON.parse(msg.data);
-    switch (data.type) {
-      default:
+    menuConn.onmessage = msg => {
+      const data = JSON.parse(msg.data);
+      switch (data.type) {
+        default:
         console.log('Unknown message type!', data.type);
         break;
-      case JOIN_MESSAGE_TYPE.CONNECT:
+        case JOIN_MESSAGE_TYPE.CONNECT:
         myMenuId = data.payload.id;
         console.log("id" + myMenuId);
 
@@ -46,17 +46,17 @@ const setupMenu = () => {
           new_join_lobby(responseObject.session);
         });
         break;
-      case JOIN_MESSAGE_TYPE.UPDATE:
+        case JOIN_MESSAGE_TYPE.UPDATE:
         $("#users").html(data.payload.list);
         break;
-      case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
+        case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
         $(location).attr('href', '/chessgame/' + $("#gameId").html());
         break;
-      case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
+        case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
         $(location).attr('href', '/chessgame/' + $("#gameId").html());
         break;
-    }
-  };
+      }
+    };
   });
 }
 
@@ -143,3 +143,7 @@ function addGame(type) {
     // });
   });
 }
+
+
+
+

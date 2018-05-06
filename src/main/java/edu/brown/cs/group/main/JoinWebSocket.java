@@ -165,7 +165,7 @@ public class JoinWebSocket {
 			JsonObject receivedPayload = received.get("payload").getAsJsonObject();
 			int gameId = receivedPayload.get("gameId").getAsInt();
 			MenuGame g = GUI.GAME_LIST.getGame(gameId);
-			g.addUser(new User(-1, "AI player"));
+			g.addUser(new User(-1, "AI Player"));
 
 			GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
 
@@ -228,17 +228,26 @@ public class JoinWebSocket {
 		User[] users = g.getCurrPlayers();
 		String html = "";
 		for (int i = 0; i < users.length; i++) {
-			html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'>"
-					+ "<div class='card-body'>";
+			html += "<div class='col' style='margin-top: 2%'><div class='card text-center'>"
+					+ "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>" + colorPicker(i) + "</h2>";
 			if (users[i] == null) {
-				html += "Waiting for Player <button onclick='addAI(" + i
-						+ ")'>Add AI Player</button>";
+				html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
+						+ "onclick='addAI(" + i + ")'>Add AI Player</button>";
 			} else {
-				html += users[i].getUsername();
+				html += "<p class='card-text'>" + users[i].getUsername() + "</p><button class='btn btn-info'"
+						+ "onclick='switchTeam()'>Switch Team</button>";
 			}
 			html += "</div></div></div>";
 		}
 		return html;
+	}
+	
+	private String colorPicker(int i) {
+		if (i % 2 == 0) {
+			return "White";
+		} else {
+			return "Black";
+		}
 	}
 
 }

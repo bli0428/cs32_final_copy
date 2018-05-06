@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -383,19 +384,10 @@ public final class GUI {
 			}
 			game.addUser(u);
 
-			String html = "";
-			for (User curr : game.getCurrPlayers()) {
-				html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>";
-				if (curr == null) {
-					html += "Waiting for Player";
-				} else {
-					html += curr.getUsername();
-				}
-				html += "</div></div></div>";
-			}
+			User[] users = game.getCurrPlayers();
 
 			Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Join Game", "gameId", gameId, "users",
-					html);
+					"");
 			return new ModelAndView(variables, "join.ftl");
 		}
 	}
