@@ -57,7 +57,7 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.UPDATE:
         if (data.payload.moveFrom === "0,0") {
           let piece = data.payload.piece;
-          let color = data.payload.piece; // 0 for white, 1 for black
+          let color = data.payload.color; // 0 for white, 1 for black
           let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
           setPlacement(color, piece, moveTo);
         } else {
