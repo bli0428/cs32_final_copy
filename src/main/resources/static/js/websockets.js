@@ -55,18 +55,26 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
+        console.log(data.payload.moveFrom);
         if (data.payload.moveFrom === "0,0") {
+          console.log("placement");
           let piece = data.payload.piece;
-          let color = data.payload.piece; // 0 for white, 1 for black
+          let color = data.payload.color; // 0 for white, 1 for black
+          console.log("palcement color " + color);
+          console.log("piece " + piece);
+          
           let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
+          console.log("placement moveTo " + moveTo);
           setPlacement(color, piece, moveTo);
+
         } else {
+          console.log("move");
           let moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
           let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
           moveOpponent(moveFrom, moveTo);
         }
         myTurn = true;
-        printTurn(myTurn);  
+        printTurn(myTurn);
         break;
       case MESSAGE_TYPE.GAMEOVER:
         let winner = data.payload.winner;

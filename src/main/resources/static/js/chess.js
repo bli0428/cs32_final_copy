@@ -170,6 +170,8 @@ function setPlacement(black, piece, coordinates) {
             $("#" + coordinates).html('&#9822');
         } else if (piece == "b") {
             $("#" + coordinates).html('&#9821');
+        } else if (piece == "p") {
+            $("#" + coordinates).html('&#9823');
         }
     } else {
         if (piece == "r") {
@@ -180,6 +182,8 @@ function setPlacement(black, piece, coordinates) {
             $("#" + coordinates).html('&#9816');
         } else if (piece == "b") {
             $("#" + coordinates).html('&#9815');
+        } else if (piece == "p") {
+            $("#" + coordinates).html('&#9817');
         }
     }
 }
