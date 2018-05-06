@@ -36,7 +36,7 @@ public class GameList {
       MenuGame game = iter.next().getValue();
       html += "<li>";
       html += "Type: " + game.getGameType() + ", ";
-      html += "Players: " + game.getCurrPlayers().size();
+      html += "Players: " + game.getCurrPlayersSize();
       try {
         html += "<form method='GET' action='/joingame/" + java.net.URLEncoder.encode(game.getId() + "", "UTF-8") + "'><input type='submit' value='Join'></form>";
       } catch (UnsupportedEncodingException e) {
