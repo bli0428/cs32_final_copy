@@ -160,6 +160,31 @@ function setPromotionPiece(piece, coordinates) {
     }
 }
 
+function setPlacement(black, piece, coordinates) {
+    if (black) { // if true (black = 1)
+        if (piece == "r") {
+            $("#" + coordinates).html('&#9820');
+        } else if (piece == "q") {
+            $("#" + coordinates).html('&#9819');
+        } else if (piece == "k") {
+            $("#" + coordinates).html('&#9822');
+        } else if (piece == "b") {
+            $("#" + coordinates).html('&#9821');
+        }
+    } else {
+        if (piece == "r") {
+            $("#" + coordinates).html('&#9814');
+        } else if (piece == "q") {
+            $("#" + coordinates).html('&#9813');
+        } else if (piece == "k") {
+            $("#" + coordinates).html('&#9816');
+        } else if (piece == "b") {
+            $("#" + coordinates).html('&#9815');
+        }
+    }
+}
+
+
 
 function checkCastling(start, end, king) {
     if (king == "♔" || king == "♚") {
