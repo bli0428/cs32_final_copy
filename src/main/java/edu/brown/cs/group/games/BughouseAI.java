@@ -24,7 +24,7 @@ public class BughouseAI implements Player {
   private Board board;
   private int color;
   private int cutoff;
-  private Heuristic internalHeur;
+  private BughouseHeuristic internalHeur;
 
   private Map<Board, TranspositionMove> TT;
   private int TT_MAX_SIZE = 100000;
@@ -44,11 +44,12 @@ public class BughouseAI implements Player {
     this.cutoff = cutoff;
     bank = Collections.synchronizedSet(new HashSet<Piece>());
     TT = new HashMap<Board, TranspositionMove>();
+    
 
   }
 
   public void requestPiece(String type) {
-
+    internalHeur.addRequest(type);
   }
 
   private void startBench() {
@@ -185,6 +186,9 @@ public class BughouseAI implements Player {
     printBench();
     System.out.println(bestMove.toString());
     System.out.println(v);
+    if (board.places().get(bestMove.end()).type().equals(internalHeur.getRequest())) {
+      internalHeur.removeRequest("");
+    }
     return bestMove;
   }
 
@@ -497,6 +501,7 @@ public class BughouseAI implements Player {
   @Override
   public void setColor(int color) {
     this.color = color;
+    internalHeur = new BughouseHeuristic(color);
   }
 
   @Override

@@ -510,6 +510,7 @@ public class Board {
     }
 
     if (!bughouse) {
+//    if (false) {
       // Filters all valid moves for moves that would leave King in check.
       for (Position key : results.keySet()) {
 
@@ -718,6 +719,7 @@ public class Board {
    * @return 1 if in checkmate, 2 if in stalemate, 0 otherwise
    */
   public int gameOver(int color) {
+//      if (false) {
     if (!bughouse) {
       boolean inCheck = check(color);
       boolean hasMoves = false;
