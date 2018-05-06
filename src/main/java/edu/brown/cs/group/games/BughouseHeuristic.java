@@ -11,7 +11,7 @@ import edu.brown.cs.group.positions.Position;
 
 public class BughouseHeuristic implements Heuristic {
   private int pieceSquareValue;
-  private int[ requests;
+  private int[] requests;
   
   private int[][] pawnT = {
       {0,  0,  0,  0,  0,  0,  0,  0}, 
@@ -58,10 +58,32 @@ public class BughouseHeuristic implements Heuristic {
   };
   
   public BughouseHeuristic() {
-    requests = new ArrayList<String>();
+    requests = new int[]{0,0,0,0,0};
   }
   
   public void addRequest(String type) {
+    int index;
+    switch (type) {
+      case "q":
+        index = 0;
+        break;
+      case "r":
+        index = 1;
+        break;
+      case "b":
+        index = 2;
+        break;
+      case "k":
+        index = 3;
+        break;
+      case "p":
+        index = 4;
+        break;
+      default:
+        index = 0;
+        break;
+    }
+    
     
   }
   
