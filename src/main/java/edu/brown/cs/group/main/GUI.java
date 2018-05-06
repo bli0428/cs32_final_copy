@@ -113,10 +113,10 @@ public final class GUI {
     Spark.get("/joingame/:something", new JoinGameHandler(), freeMarker);
 
     Spark.get("/chess", new ChessHandler(), freeMarker);
-    Spark.post("/chess", new MoveHandler());
 
     Spark.post("/startgame", new StartGameHandler(), freeMarker);
-    Spark.get("/chessgame/:something", new ChessGameHandler(), freeMarker);
+    Spark.get("/chessgame/:something/:somethingElse", new ChessGameHandler(),
+        freeMarker);
   }
 
   private static class GetIpHandler implements Route {
@@ -146,9 +146,9 @@ public final class GUI {
         res.redirect("/login");
       }
 
-      Map<String, Object> variables = ImmutableMap.of("title", "Home",
-          "content", "<p>Welcome " + u.getUsername(repl.getDbm()) + ".</p>"
-              + "<div id=\"menu\">" + GAME_LIST.printListHtml() + "</div>");
+      Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home",
+          "user", u.getUsername(repl.getDbm()), "content",
+          GAME_LIST.printListHtml(), "message", "");
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -174,8 +174,11 @@ public final class GUI {
       }
       String gameId = java.net.URLDecoder.decode(request.params(":something"),
           "UTF-8");
+      String gamePosition = java.net.URLDecoder
+          .decode(request.params(":somethingElse"), "UTF-8");
       Map<String, Object> variables = ImmutableMap.of("title",
-          "CHESS GAME " + gameId, "gameId", gameId);
+          "CHESS GAME " + gameId, "gameId", gameId, "gamePosition",
+          gamePosition);
       return new ModelAndView(variables, "board.ftl");
     }
   }
@@ -183,34 +186,11 @@ public final class GUI {
   private static class ChessHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
+
       Map<String, Object> variables = ImmutableMap.of("title", "CHESS",
-          "gameId", 99);
+          "gameId", 99, "gamePosition", 0);
       return new ModelAndView(variables, "board.ftl");
     }
-  }
-
-  private static class MoveHandler implements Route {
-    @Override
-    public String handle(Request req, Response res) {
-      game.play();
-      QueryParamsMap qm = req.queryMap();
-      int row = Integer.parseInt(qm.value("row"));
-      int col = Integer.parseInt(qm.value("col"));
-
-      // TODO: get valid moves from row and col
-
-      // TODO: pass in which player's turn
-      // TODO: pass in list of valid moves
-
-      // hardcoded for testing
-      List<String> validMoves = new ArrayList<String>();
-      validMoves.add("5-4");
-      validMoves.add("4-4");
-
-      Map<String, Object> variables = ImmutableMap.of("validMoves", validMoves);
-      return GSON.toJson(variables);
-    }
-
   }
 
   /**
@@ -222,7 +202,7 @@ public final class GUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
 
-      Map<String, Object> variables = ImmutableMap.of("title", "Login",
+      Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Login",
           "message", "");
       return new ModelAndView(variables, "login.ftl");
     }
@@ -247,8 +227,8 @@ public final class GUI {
         SESSIONS.put(req.session(true).id(), user);
         res.redirect("/home");
       } else {
-        Map<String, Object> variables = ImmutableMap.of("title", "Login",
-            "message", "Invalid username or password.");
+        Map<String, Object> variables = ImmutableMap.of("title",
+            "Chess32: Login", "message", "Invalid username or password.");
         return new ModelAndView(variables, "login.ftl");
       }
 
@@ -265,8 +245,8 @@ public final class GUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
 
-      Map<String, Object> variables = ImmutableMap.of("title", "Create account",
-          "message", "");
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Chess32: Create Account", "message", "");
       return new ModelAndView(variables, "newaccount.ftl");
     }
   }
@@ -286,15 +266,16 @@ public final class GUI {
       String password2 = qm.value("password2");
       if (!password.equals(password2)) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Create account", "message", "Passwords don't match.");
+            "Chess32: Create Account", "message", "Passwords don't match.");
         return new ModelAndView(variables, "newaccount.ftl");
       }
-      if (!repl.getDbm().addUser(username, password)) {
+      String message = repl.getDbm().addUser(username, password);
+      if (message != null) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Create account", "message", "Invalid username or password.");
+            "Chess32: Create Account", "message", message);
         return new ModelAndView(variables, "newaccount.ftl");
       }
-      Map<String, Object> variables = ImmutableMap.of("title", "Login",
+      Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Login",
           "message", "New account created.");
       return new ModelAndView(variables, "login.ftl");
     }
@@ -310,7 +291,7 @@ public final class GUI {
     public ModelAndView handle(Request req, Response res) {
 
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Change password", "message", "");
+          "Chess32: Change Password", "message", "");
       return new ModelAndView(variables, "changepassword.ftl");
     }
   }
@@ -325,7 +306,8 @@ public final class GUI {
       String currPassword = qm.value("currpassword");
       if (repl.getDbm().getUser(username, currPassword) == null) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Change password", "message", "Invalid username or password.");
+            "Chess32: Change Password", "message",
+            "Invalid username or password.");
         return new ModelAndView(variables, "changepassword.ftl");
       }
 
@@ -333,16 +315,18 @@ public final class GUI {
       String newPassword2 = qm.value("newpassword2");
       if (!newPassword.equals(newPassword2)) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Change password", "message", "Passwords don't match.");
+            "Chess32: Change Password", "message", "Passwords don't match.");
         return new ModelAndView(variables, "changepassword.ftl");
       }
       if (!repl.getDbm().changePassword(username, currPassword, newPassword2)) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Change password", "message", "Failed to change password.");
+            "Chess32: Change Password", "message",
+            "Failed to change password.");
         return new ModelAndView(variables, "changepassword.ftl");
       }
-      Map<String, Object> variables = ImmutableMap.of("title", "Home",
-          "content", "<p>Password successfully updated.</p>");
+      Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home",
+          "user", username, "message", "Password successfully updated.",
+          "content", GAME_LIST.printListHtml());
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -352,7 +336,7 @@ public final class GUI {
     public ModelAndView handle(Request req, Response res) {
 
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Change password", "message", "");
+          "Chess32: Change Username", "message", "");
       return new ModelAndView(variables, "changeusername.ftl");
     }
   }
@@ -367,18 +351,22 @@ public final class GUI {
       String password = qm.value("password");
       if (repl.getDbm().getUser(currUsername, password) == null) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Change password", "message", "Invalid username or password.");
+            "Chess32: Change Username", "message",
+            "Invalid username or password.");
         return new ModelAndView(variables, "changeusername.ftl");
       }
 
       String newUsername = qm.value("newusername");
-      if (!repl.getDbm().changeUsername(currUsername, password, newUsername)) {
+      String message = repl.getDbm().changeUsername(currUsername, password,
+          newUsername);
+      if (message != null) {
         Map<String, Object> variables = ImmutableMap.of("title",
-            "Change password", "message", "Failed to change username.");
+            "Chess32: Change Password", "message", message);
         return new ModelAndView(variables, "changeusername.ftl");
       }
-      Map<String, Object> variables = ImmutableMap.of("title", "Home",
-          "content", "<p>Username successfully updated.</p>");
+      Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home",
+          "user", newUsername, "message", "Username successfully updated.",
+          "content", GAME_LIST.printListHtml());
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -417,19 +405,14 @@ public final class GUI {
       String gameId = java.net.URLDecoder.decode(request.params(":something"),
           "UTF-8");
       MenuGame game = GAME_LIST.getGame(Integer.parseInt(gameId));
-      if (game.getCurrPlayers().size() == game.getNumPlayers()) {
+      if (game.getCurrPlayersSize() == game.getNumPlayers()) {
         response.redirect("/home");
       }
       game.addUser(u);
 
-      String html = "<ul>";
-      for (User curr : game.getCurrPlayers()) {
-        html += "<li>" + curr.getUsername(repl.getDbm()) + "</li>";
-      }
-      html += "</ul>";
 
-      Map<String, Object> variables = ImmutableMap.of("title", "Join game",
-          "gameId", gameId, "users", html);
+      Map<String, Object> variables = ImmutableMap.of("title",
+          "Chess32: Join Game", "gameId", gameId, "users", "");
       return new ModelAndView(variables, "join.ftl");
     }
   }
@@ -440,8 +423,8 @@ public final class GUI {
       String sessionId = req.session().id();
       User u = SESSIONS.get(sessionId);
 
-      Map<String, Object> variables = ImmutableMap.of("username",
-          u.getUsername(repl.getDbm()), "session", sessionId);
+      Map<String, Object> variables = ImmutableMap.of("id", u.getUserId(),
+          "username", u.getUsername(repl.getDbm()), "session", sessionId);
       return GSON.toJson(variables);
     }
   }
@@ -456,7 +439,7 @@ public final class GUI {
     public ModelAndView handle(Request req, Response res) {
       repl.processCommand("logout");
       SESSIONS.remove(req.session().id());
-      Map<String, Object> variables = ImmutableMap.of("title", "Log in",
+      Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Login",
           "message", "");
       return new ModelAndView(variables, "login.ftl");
     }

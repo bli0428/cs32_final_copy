@@ -17,6 +17,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import edu.brown.cs.group.components.Bishop;
+import edu.brown.cs.group.components.Knight;
+import edu.brown.cs.group.components.Pawn;
+import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.components.Queen;
+import edu.brown.cs.group.components.Rook;
 import edu.brown.cs.group.games.ABCutoffAI;
 import edu.brown.cs.group.games.ABCutoffAIV2;
 import edu.brown.cs.group.games.ChessGame;
@@ -40,14 +46,14 @@ public class ChessWebSocket {
   // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD
   }
 
-  private static final boolean[] WB = { false, true, false, true };
+  private static final boolean[] WB = { false, true, true, false };
 
   @OnWebSocketConnect
   public void connected(Session session) throws IOException {
-    System.out.println("backend connect");
+    // System.out.println("backend connect");
     sessions.add(session);
 
     JsonObject payload = new JsonObject();
@@ -74,7 +80,7 @@ public class ChessWebSocket {
     ////////////////////
 
     nextId++;
-    System.out.println("here");
+    // System.out.println("here");
   }
 
   @OnWebSocketClose
@@ -85,14 +91,18 @@ public class ChessWebSocket {
   @OnWebSocketMessage
   public void message(Session session, String message) throws IOException {
 
-    System.out.println("in message");
+    // System.out.println("in message");
     JsonObject received = GSON.fromJson(message, JsonObject.class);
 
     int messageInt = received.get("type").getAsInt();
 
     if (messageInt == MESSAGE_TYPE.MOVE.ordinal()) { // regular move from one
+
+      // System.out.println("recieved move");
+
       // square to another
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+
       // TODO: create payloads and add properties
       GUIPlayer p = playerSession.get(session);
       String[] p1 = recievedPayload.get("moveFrom").getAsString().split(",");
@@ -103,7 +113,9 @@ public class ChessWebSocket {
         Position end = new Position(Integer.parseInt(p2[0]),
             Integer.parseInt(p2[1]));
         Move m = new Move(start, end);
+
         p.setMove(m);
+        // System.out.println("set move");
       } catch (PositionException pe) {
         pe.printStackTrace();
         // Shouldn't get here
@@ -115,10 +127,20 @@ public class ChessWebSocket {
       // onto the
       // board
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+      String type = bankIdx(recievedPayload.get("bankIndex").getAsInt());
+      String[] p = recievedPayload.get("moveTo").getAsString().split(",");
+      try {
+        Position pos = new Position(Integer.parseInt(p[0]),
+            Integer.parseInt(p[1]));
+        playerSession.get(session).place(type, pos);
+      } catch (NumberFormatException | PositionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       // TODO: create payloads and add properties
 
     } else if (messageInt == MESSAGE_TYPE.TOHIGHLIGHT.ordinal()) {
-      System.out.println("recieved tohighlight");
+      // System.out.println("recieved tohighlight");
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       String piece = recievedPayload.get("piece").getAsString();
       String[] p1 = piece.split(",");
@@ -129,8 +151,12 @@ public class ChessWebSocket {
             .moves(playerNum.get(playerSession.get(session)), start);
         System.out.println(games.get(session));
         JsonArray outMoves = new JsonArray();
-        for (Position p : moves) {
-          outMoves.add(p.numString());
+        try {
+          for (Position p : moves) {
+            outMoves.add(p.numString());
+          }
+        } catch (NullPointerException npe) {
+          npe.printStackTrace();
         }
         JsonObject payload = new JsonObject();
         payload.add("validMoves", outMoves);
@@ -153,6 +179,7 @@ public class ChessWebSocket {
       if (!lobbies.containsKey(id) && id != 99) {
         lobbies.put(id,
             new WrapperGame(chessOrBug(JoinWebSocket.gameTypes.get(id))));
+        // System.out.println(chessOrBug(JoinWebSocket.gameTypes.get(id)));
       }
 
       GUIPlayer p = new GUIPlayer();
@@ -170,7 +197,8 @@ public class ChessWebSocket {
         msg.add("payload", displayPayload);
         session.getRemote().sendString(GSON.toJson(msg));
       } else {
-        int pid = lobbies.get(id).addPlayer(p);
+        int pid = recievedPayload.get("gamePosition").getAsInt();
+        lobbies.get(id).addPlayer(p, pid);
         playerNum.put(p, pid);
         JsonObject msg = new JsonObject();
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
@@ -180,6 +208,21 @@ public class ChessWebSocket {
         msg.add("payload", displayPayload);
         session.getRemote().sendString(GSON.toJson(msg));
       }
+    } else if (messageInt == MESSAGE_TYPE.TOPROMOTE.ordinal()) {
+      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+      String[] p1 = recievedPayload.get("position").getAsString().split(",");
+      try {
+        System.out.println(recievedPayload.get("piece").getAsString());
+        Position pos = new Position(Integer.parseInt(p1[0]),
+            Integer.parseInt(p1[1]));
+        Piece p = getPromote(recievedPayload.get("piece").getAsString(),
+            playerSession.get(session).getColor(), pos); // TODO: Fix the 0
+        playerSession.get(session).setPromote(p);
+      } catch (NumberFormatException | PositionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
     }
 
     // TODO: update payload needs to send if a piece was removed in the move
@@ -198,14 +241,41 @@ public class ChessWebSocket {
 
   }
 
+  public Piece getPromote(String s, int color, Position pos) {
+    if (s.equals("queen")) {
+      return new Queen(pos, color);
+    } else if (s.equals("rook")) {
+      return new Rook(pos, color);
+    } else if (s.equals("knight")) {
+      return new Knight(pos, color);
+    } else if (s.equals("bishop")) {
+      return new Bishop(pos, color);
+    }
+    System.out.println("badbadbadbadbad");
+    return new Pawn(pos, color);
+  }
+
   public boolean chessOrBug(String in) {
     if (in.equals("Chess"))
       return true;
     if (in.equals("Bughouse")) {
       return false;
     }
-
     return false;
+  }
+
+  public String bankIdx(int i) {
+    if (i == 0)
+      return "p";
+    else if (i == 1)
+      return "r";
+    else if (i == 2)
+      return "k";
+    else if (i == 3)
+      return "b";
+    else if (i == 4)
+      return "q";
+    return "";
   }
 
 }

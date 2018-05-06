@@ -2,11 +2,21 @@ body {
   background-color: #dcf2f2;
 }
 
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -9999;
+}
+
 
 table#chessboard {
   margin: auto;
   table-layout: fixed;
-  width: 120px;
+  width: 140px;
 }
 
 #boardHolder {
@@ -51,13 +61,14 @@ table#bank {
   border: 2px solid #181818; 
   margin: auto;
   table-layout: fixed;
-  width: 100px;
+  width: 120px;
 }
 
 #bank tr td { 
-  width: 65px; 
-  height: 65px;
-  text-align: center;
+  width: 85px; 
+  height: 70px;
+  text-align: left;
+  padding: 10px;
   font-size: 40px;
 }
 
@@ -69,19 +80,6 @@ table#bank {
     text-align: center;
     margin: 0px auto;
 }   
-
-p.piece {
-  text-align: center;
-  margin: 0px;
-}
-
-p.bughousePieceCount {
-  font-size: 15px;
-  margin-left: 45px;
-  position: absolute;
-  margin-top: 0px;
-  margin-bottom: 40px;
-}
 
 #bank tr td:hover {
   background: #759259;
@@ -104,48 +102,45 @@ p#message {
 }
 
 
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.modalContent {
-    background-color: white;
-    margin: 200px auto;
-    border: 2px solid green;
-    width: 200px;
-}
-
-ul#promotionMenu {
-  list-style-type: none;
-  padding-left: 0px;
-  font-size: 20px;
-  text-align: center;
-  height: 140px;
-  margin: 5px;
-}
-
-ul#promotionMenu li.promoteOption:hover {
-    background-color: #ccc;
-}
-
-
-#boardHolder p {
-  margin: 0px;
-  white-space: pre-line;
-  float: left;
+span.badge {
+  font-size: 12px;
+  position: absolute;
 }
 
 
 
+/********************************************************/
 
+.saving span.load {
+  animation-name: blink;
+  animation-duration: 1.4s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
 
+.saving span.load:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.saving span.load:nth-child(3) {
+  animation-delay: .4s;
+}
+
+.saving span.load:nth-child(4) {
+  animation-delay: .6s;
+}
+
+@keyframes blink {
+  0% {
+    opacity: .2;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: .2;
+  }
+}
 
 /********************************************************/
 .colorgraph {

@@ -3,7 +3,10 @@ const JOIN_MESSAGE_TYPE = {
   UPDATE: 1,
   JOIN_USER: 2,
   START_CHESS_GAME: 3,
-  START_BUGHOUSE_GAME: 4
+  START_BUGHOUSE_GAME: 4,
+  SWITCH_TEAM: 5,
+  ADD_AI: 6,
+  LEAVE_GAME: 7
 };
 
 let menuConn;
@@ -21,17 +24,17 @@ const setupMenu = () => {
     menuConn = new WebSocket("ws://localhost:4567/join");
 
 
-  menuConn.onerror = err => {
-    console.log('Connection error:', err);
-  };
+    menuConn.onerror = err => {
+      console.log('Connection error:', err);
+    };
 
-  menuConn.onmessage = msg => {
-    const data = JSON.parse(msg.data);
-    switch (data.type) {
-      default:
+    menuConn.onmessage = msg => {
+      const data = JSON.parse(msg.data);
+      switch (data.type) {
+        default:
         console.log('Unknown message type!', data.type);
         break;
-      case JOIN_MESSAGE_TYPE.CONNECT:
+        case JOIN_MESSAGE_TYPE.CONNECT:
         myMenuId = data.payload.id;
         console.log("id" + myMenuId);
 
@@ -43,28 +46,83 @@ const setupMenu = () => {
           new_join_lobby(responseObject.session);
         });
         break;
-      case JOIN_MESSAGE_TYPE.UPDATE:
+        case JOIN_MESSAGE_TYPE.UPDATE:
         $("#users").html(data.payload.list);
         break;
       case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html());
+        $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
         break;
       case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html());
+        $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
         break;
+      }
+    };
+  });
+}
+
+function addAI(index) {
+  let toSendPayload = {
+    id: myId,
+    gameId: $("#gameId").html(),
+    index: index
+  }
+
+  let toSend = {
+    type: 6,
+    payload: toSendPayload
+  }
+  menuConn.send(JSON.stringify(toSend));
+}
+
+function switchTeam() {
+  const postParameters = {};
+  $.post("/getUser", postParameters, responseJSON => {
+    // Parse the JSON response into a JavaScript object.
+    const responseObject = JSON.parse(responseJSON);
+    let toSendPayload = {
+      id: myId,
+      sparkSession: responseObject.session,
+      userId: responseObject.id,
+      gameId: $("#gameId").html()
     }
-  };
+
+    let toSend = {
+      type: 5,
+      payload: toSendPayload
+    }
+    menuConn.send(JSON.stringify(toSend));
+  });
+}
+
+function leaveGame() {
+  const postParameters = {};
+  $.post("/getUser", postParameters, responseJSON => {
+    // Parse the JSON response into a JavaScript object.
+    const responseObject = JSON.parse(responseJSON);
+    let toSendPayload = {
+      id: myId,
+      sparkSession: responseObject.session,
+      userId: responseObject.id,
+      gameId: $("#gameId").html()
+    }
+
+    let toSend = {
+      type: 7,
+      payload: toSendPayload
+    }
+    menuConn.send(JSON.stringify(toSend));
+    $(location).attr('href', '/home');
   });
 }
 
 const new_join_lobby = sparkSession => {
-  var toSendPayload = {
+  let toSendPayload = {
     id: myId,
     sparkSession: sparkSession,
     gameId: $("#gameId").html()
   }
 
-  var toSend = {
+  let toSend = {
     type: 2,
     payload: toSendPayload
   }

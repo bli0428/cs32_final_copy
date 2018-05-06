@@ -24,13 +24,37 @@ public class WrapperGame {
   }
 
   public synchronized int addPlayer(Player p) {
-    if (players.size() == playerNum - 1) {
+    int out = players.size();
+    if (out == playerNum - 1) {
       players.add(p);
       startGame();
-    } else if (players.size() < playerNum) {
+    } else if (out < playerNum) {
       players.add(p);
     }
     return players.size() - 1;
+  }
+
+  public synchronized int addPlayer(Player p, int pos) {
+    while (players.size() < playerNum) {
+      players.add(null);
+    }
+    Player ai = players.get(pos);
+    players.set(pos, p);
+    for (int i = 0; i < playerNum; i++) {
+      if (players.get(i) == null) {
+        players.set(i, ai);
+        break;
+      }
+    }
+    boolean start = true;
+    for (int i = 0; i < playerNum; i++) {
+      if (players.get(i) == null) {
+        start = false;
+      }
+    }
+    if (start)
+      startGame();
+    return pos;
   }
 
   public void startGame() {
@@ -44,7 +68,7 @@ public class WrapperGame {
     for (Player p : players) {
       for (Session s : ChessWebSocket.playerSession.keySet()) {
         if (ChessWebSocket.playerSession.get(s).equals(p)) {
-          System.out.println("added game");
+          // System.out.println("added game");
           ChessWebSocket.games.put(s, g);
         }
       }

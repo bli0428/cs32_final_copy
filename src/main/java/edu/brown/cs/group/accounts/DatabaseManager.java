@@ -56,7 +56,7 @@ public class DatabaseManager {
     }
   }
 
-  public boolean addUser(String username, String password) {
+  public String addUser(String username, String password) {
     ResultSet rs;
     try {
       prep = conn.prepareStatement("SELECT * FROM accounts WHERE username=?");
@@ -64,7 +64,7 @@ public class DatabaseManager {
       rs = prep.executeQuery();
       if (rs.next()) {
         Handling.error("username is already taken.");
-        return false;
+        return "Username is already taken.";
       }
 
       String salt = prot.generateSalt();
@@ -83,13 +83,13 @@ public class DatabaseManager {
       rs.next();
       int id = rs.getInt(1);
 
-      users.put(id, new User(id));
-      return true;
+      users.put(id, new User(id, username));
+      return null;
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    return false;
+    return "Invalid username or password.";
   }
 
   public User getUser(String username, String password) {
@@ -145,11 +145,12 @@ public class DatabaseManager {
   private void addAllCurrentUsers() {
     ResultSet rs;
     try {
-      prep = conn.prepareStatement("SELECT userid FROM accounts;");
+      prep = conn.prepareStatement("SELECT userid, username FROM accounts;");
       rs = prep.executeQuery();
       while (rs.next()) {
         int userid = rs.getInt(1);
-        users.put(userid, new User(userid));
+        String username = rs.getString(2);
+        users.put(userid, new User(userid, username));
       }
       rs.close();
     } catch (SQLException e) {
@@ -172,19 +173,19 @@ public class DatabaseManager {
     return null;
   }
 
-  public boolean changeUsername(String currUsername, String password,
+  public String changeUsername(String currUsername, String password,
       String newUsername) {
     ResultSet rs;
     try {
       if (getUser(currUsername, password) == null) {
-        return false;
+        return "Invalid username or password.";
       }
       prep = conn.prepareStatement("SELECT * FROM accounts WHERE username=?");
       prep.setString(1, newUsername);
       rs = prep.executeQuery();
       if (rs.next()) {
         Handling.error("username is already taken.");
-        return false;
+        return "Username is already taken.";
       }
 
       prep = conn
@@ -202,12 +203,13 @@ public class DatabaseManager {
       prep.setString(3, prot.hash(password, salt));
       prep.setInt(4, userId);
       prep.executeUpdate();
-      return true;
+      users.get(userId).setUsername(newUsername);
+      return null;
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    return false;
+    return "Error changing username.";
   }
 
   public boolean changePassword(String username, String currPassword,
