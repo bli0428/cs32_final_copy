@@ -206,6 +206,7 @@ public class ChessWebSocket {
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       String[] p1 = recievedPayload.get("position").getAsString().split(",");
       try {
+        System.out.println(recievedPayload.get("piece").getAsString());
         Position pos = new Position(Integer.parseInt(p1[0]),
             Integer.parseInt(p1[1]));
         Piece p = getPromote(recievedPayload.get("piece").getAsString(),
@@ -244,6 +245,7 @@ public class ChessWebSocket {
     } else if (s == "bishop") {
       return new Bishop(pos, color);
     }
+    System.out.println("badbadbadbadbad");
     return new Pawn(pos, color);
   }
 

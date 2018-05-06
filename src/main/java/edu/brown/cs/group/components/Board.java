@@ -196,11 +196,6 @@ public class Board {
       }
     }
 
-    // Promotions
-    if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
-      p = new PromotedPawn(prmtPiece);
-    }
-
     // If there's a piece at the destination, it will get taken. Send it to a
     // bank.
     if (places.containsKey(dest)) {
@@ -235,6 +230,13 @@ public class Board {
     p.move(dest);
     places.put(dest, p);
     places.remove(start);
+
+    // Promotions
+    if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
+      p = new PromotedPawn(prmtPiece);
+      places.put(dest, p);
+    }
+
     return out;
   }
 
@@ -334,11 +336,11 @@ public class Board {
     p.move(dest);
     places.put(dest, p);
     places.remove(start);
-
     // Promotions
     if (!usrQuery && p.type().equals("p")
         && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(players[p.color()].promote(dest));
+      places.put(dest, p);
     }
 
     return out;
