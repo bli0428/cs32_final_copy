@@ -34,7 +34,8 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.CONNECT:
         myId = data.payload.id;
         let payloadJoin = {
-          id: $("#gameId").html()
+          id: $("#gameId").html(),
+          gamePosition: $("#gamePosition").html()
         }
         let msgJoin = {
           type: MESSAGE_TYPE.JOINGAME,
@@ -54,38 +55,45 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
-        let moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
-        let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
-        moveOpponent(moveFrom, moveTo);
+        if (data.payload.moveFrom === "0,0") {
+          let piece = data.payload.piece;
+          let color = data.payload.piece; // 0 for white, 1 for black
+          let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
+          setPlacement(color, piece, moveTo);
+        } else {
+          let moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
+          let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
+          moveOpponent(moveFrom, moveTo);
+        }
         myTurn = true;
-        printTurn(myTurn);
+        printTurn(myTurn);  
         break;
       case MESSAGE_TYPE.GAMEOVER:
         let winner = data.payload.winner;
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        $(".modal").css("display", "block");
+        $('#modal').modal({backdrop: 'static', keyboard: false});
         let position = convertBackToFrontCoordinates(data.payload.position);
-        let piece = promotePiece(position);
-        new_promotion(piece, data.payload.position);
+        promotePiece(position);
+        myTurn = false;
+        printTurn(myTurn);
         break;
       case MESSAGE_TYPE.DISPLAY:
-        initializeBank(data.payload.color);
+        initializeBank(data.payload.color); //TODO: have backend pass what type of game so we know whether or not to initialize bank
         initializeBoard(data.payload.color);
-        if (data.payload.color == 0) {
+        if (data.payload.color == 0) { // 0 = false
           myTurn = true;
         }
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.BANKADD:
         let pieceIndex = data.payload.idx;
-        updateBankIndex(pieceIndex);
+        updateBankIndex(pieceIndex, 1);
     }
   };
 }
 
-//TODO: UPDATE myTurn and printTurn
 
 const new_tohighlight = currPiece => {
   let toSendPayload = {
@@ -114,11 +122,13 @@ const new_move = move => {
   }
 
   conn.send(JSON.stringify(toSend));
-  console.log("Sent move");
 }
 
 
 const new_promotion = (piece, position) => {
+  console.log(piece);
+  console.log(position);
+
   let toSendPayload = {
     id: myId,
     piece: piece,

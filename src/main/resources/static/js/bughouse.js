@@ -1,9 +1,4 @@
-//some kind of conversion method to refer to players??
 
-
-//need to be able to click piece in bank and place it on board
-
-//need to not be able to make a move unless it is the player's turn -> boolean
 
 var bughouseSelected = false;
 var currBughousePiece = "";
@@ -30,16 +25,17 @@ $("#bank").on("click", "td", function(e){
     let pieceCount = parseInt(pieceCountString);
 
     if (myTurn) {
-    	if (pieceCount != 0) {
+    	if (pieceCount !== 0) {
     		let selectTd = $(".bughousePiece#" + chooseArrayId).html();
     		let selectedPiece = selectTd.split("<")[0];
-    		if (chooseArrayId === currBughousePiece) {
+    		if (bughouseSelected && chooseArrayId == currBughousePiece) {
     			$(".bughousePiece#" + chooseArrayId).toggleClass('selected');
+    			currBughousePiece = "";
     			bughouseSelected = false;
-    		}
-    		else if (selected && !bughouseSelected) {
+    		} else if (selected && !bughouseSelected) {
     			$("#" + currPiece).toggleClass('selected');
     			selected = false;
+    			currPiece = "";
     			$(".bughousePiece#" + chooseArrayId).toggleClass('selected');
     			currBughousePiece = chooseArrayId;
     			bughouseSelected = true;
@@ -60,6 +56,10 @@ $("#bank").on("click", "td", function(e){
     				currPieces.push(currId);
     				let placement = [chooseArrayId, currId];
     				new_placement(placement);
+    				updateBankIndex(chooseArrayId, -1);
+    				currBughousePiece = "";
+    				myTurn = false;
+    				printTurn(myTurn);
     			}
     		});
     	}
@@ -67,11 +67,11 @@ $("#bank").on("click", "td", function(e){
     }
 });
 
-function updateBankIndex(index) {
+function updateBankIndex(index, x) {
 	let countId = "span#" + index.toString() + ".badge";
 	let pieceCountString = $(countId).html(); // gets curr piece count
     let pieceCount = parseInt(pieceCountString);
-    let newPieceCount = pieceCount + 1;
+    let newPieceCount = pieceCount + x;
 	$(countId).html(newPieceCount.toString());
 }
 
