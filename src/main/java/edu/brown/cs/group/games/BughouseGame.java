@@ -124,10 +124,12 @@ public class BughouseGame implements Game {
           } else {
             p = boards[b].processMove(m.start(), m.end(), false);
           }
-          turn = Math.abs(turn - 1);
           if (p != null) {
-            prs[turn].acceptPiece(p);
+            teams[getTeam(turn, b)][Math.abs(b - 1)].acceptPiece(p);
+            System.out.println("sending " + p.type() + " to " + getTeam(turn, b)
+                + " " + Math.abs(b - 1));
           }
+          turn = Math.abs(turn - 1);
           // System.out.println("Moved from " + m.start().col() + ","
           // + m.start().row() + " to " + m.end().col() + "," + m.end().row());
           for (Session session : ChessWebSocket.games.keySet()) {
@@ -202,5 +204,17 @@ public class BughouseGame implements Game {
       System.out.println(player);
       return boards[1].getValidMoves(player % 3).get(pos);
     }
+  }
+
+  public int getTeam(int a, int b) {
+    if (a == 0 && b == 0)
+      return 0;
+    if (a == 1 && b == 0)
+      return 1;
+    if (a == 0 && b == 1)
+      return 1;
+    if (a == 1 && b == 1)
+      return 0;
+    return -1;
   }
 }

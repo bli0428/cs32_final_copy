@@ -15,6 +15,7 @@
 </nav>
 
 <div id="gameId">${gameId}</div>
+<div id="gamePosition">${gamePosition}</div>
 
 <div id="messageHolder">
 	<p id="message"></p>

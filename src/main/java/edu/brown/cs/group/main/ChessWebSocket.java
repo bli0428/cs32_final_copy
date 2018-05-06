@@ -150,8 +150,12 @@ public class ChessWebSocket {
             .moves(playerNum.get(playerSession.get(session)), start);
         System.out.println(games.get(session));
         JsonArray outMoves = new JsonArray();
-        for (Position p : moves) {
-          outMoves.add(p.numString());
+        try {
+          for (Position p : moves) {
+            outMoves.add(p.numString());
+          }
+        } catch (NullPointerException npe) {
+          npe.printStackTrace();
         }
         JsonObject payload = new JsonObject();
         payload.add("validMoves", outMoves);
@@ -192,7 +196,8 @@ public class ChessWebSocket {
         msg.add("payload", displayPayload);
         session.getRemote().sendString(GSON.toJson(msg));
       } else {
-        int pid = lobbies.get(id).addPlayer(p);
+        int pid = recievedPayload.get("gamePosition").getAsInt();
+        lobbies.get(id).addPlayer(p, pid);
         playerNum.put(p, pid);
         JsonObject msg = new JsonObject();
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
@@ -236,13 +241,13 @@ public class ChessWebSocket {
   }
 
   public Piece getPromote(String s, int color, Position pos) {
-    if (s == "queen") {
+    if (s.equals("queen")) {
       return new Queen(pos, color);
-    } else if (s == "rook") {
+    } else if (s.equals("rook")) {
       return new Rook(pos, color);
-    } else if (s == "knight") {
+    } else if (s.equals("knight")) {
       return new Knight(pos, color);
-    } else if (s == "bishop") {
+    } else if (s.equals("bishop")) {
       return new Bishop(pos, color);
     }
     System.out.println("badbadbadbadbad");

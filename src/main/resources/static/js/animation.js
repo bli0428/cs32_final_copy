@@ -89,5 +89,8 @@ var ChessBackground = {
 };
 
 $(document).ready(function(){
-  ChessBackground.initialize();
+  var canvasExists = document.getElementById("canvas");
+  if (canvasExists != null) {
+  	ChessBackground.initialize();
+  }
 });

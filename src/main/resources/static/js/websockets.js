@@ -34,7 +34,8 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.CONNECT:
         myId = data.payload.id;
         let payloadJoin = {
-          id: $("#gameId").html()
+          id: $("#gameId").html(),
+          gamePosition: $("#gamePosition").html()
         }
         let msgJoin = {
           type: MESSAGE_TYPE.JOINGAME,
@@ -67,8 +68,7 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.PROMOTE:
         $(".modal").css("display", "block");
         let position = convertBackToFrontCoordinates(data.payload.position);
-        let piece = promotePiece(position);
-        new_promotion(piece, data.payload.position);
+        promotePiece(position);
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBank(data.payload.color);
@@ -119,6 +119,9 @@ const new_move = move => {
 
 
 const new_promotion = (piece, position) => {
+  console.log(piece);
+  console.log(position);
+
   let toSendPayload = {
     id: myId,
     piece: piece,

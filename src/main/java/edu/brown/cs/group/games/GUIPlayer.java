@@ -122,7 +122,7 @@ public class GUIPlayer implements Player {
     JsonObject message = new JsonObject();
     message.addProperty("type", ChessWebSocket.MESSAGE_TYPE.BANKADD.ordinal());
     JsonObject payload = new JsonObject();
-    payload.addProperty("idx", bankIdx.get(p));
+    payload.addProperty("idx", bankIdx.get(p.type()));
     message.add("payload", payload);
     for (Session s : ChessWebSocket.playerSession.keySet()) {
       if (ChessWebSocket.playerSession.get(s).equals(this)) {

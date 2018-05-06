@@ -43,8 +43,8 @@ public class PromotedPawn implements Piece {
 
   @Override
   public String type() {
-    // return "pp";
-    return promotedPiece.type() + " p";
+    return "pp";
+    // return promotedPiece.type() + " p";
   }
 
   public String innerType() {

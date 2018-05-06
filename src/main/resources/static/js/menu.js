@@ -50,10 +50,10 @@ const setupMenu = () => {
         $("#users").html(data.payload.list);
         break;
       case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html());
+        $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
         break;
       case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html());
+        $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
         break;
     }
   };
@@ -61,13 +61,13 @@ const setupMenu = () => {
 }
 
 function addAI(index) {
-  var toSendPayload = {
+  let toSendPayload = {
     id: myId,
     gameId: $("#gameId").html(),
     index: index
   }
 
-  var toSend = {
+  let toSend = {
     type: 6,
     payload: toSendPayload
   }
@@ -79,14 +79,14 @@ function switchTeam() {
   $.post("/getUser", postParameters, responseJSON => {
     // Parse the JSON response into a JavaScript object.
     const responseObject = JSON.parse(responseJSON);
-    var toSendPayload = {
+    let toSendPayload = {
       id: myId,
       sparkSession: responseObject.session,
       userId: responseObject.id,
       gameId: $("#gameId").html()
     }
 
-    var toSend = {
+    let toSend = {
       type: 5,
       payload: toSendPayload
     }
@@ -99,14 +99,14 @@ function leaveGame() {
   $.post("/getUser", postParameters, responseJSON => {
     // Parse the JSON response into a JavaScript object.
     const responseObject = JSON.parse(responseJSON);
-    var toSendPayload = {
+    let toSendPayload = {
       id: myId,
       sparkSession: responseObject.session,
       userId: responseObject.id,
       gameId: $("#gameId").html()
     }
 
-    var toSend = {
+    let toSend = {
       type: 7,
       payload: toSendPayload
     }
@@ -116,13 +116,13 @@ function leaveGame() {
 }
 
 const new_join_lobby = sparkSession => {
-  var toSendPayload = {
+  let toSendPayload = {
     id: myId,
     sparkSession: sparkSession,
     gameId: $("#gameId").html()
   }
 
-  var toSend = {
+  let toSend = {
     type: 2,
     payload: toSendPayload
   }
