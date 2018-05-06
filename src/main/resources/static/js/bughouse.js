@@ -5,15 +5,18 @@
 
 //need to not be able to make a move unless it is the player's turn -> boolean
 
+var bughouseSelected = false;
+var currBughousePiece = "";
+
 function initializeBank(black) {
-	var chooseArray = [];
+	let chooseArray = [];
 	if (black) {
 		chooseArray = ['&#9823','&#9820','&#9822','&#9821','&#9819'];
 	} else {
 		chooseArray = ['&#9817','&#9814','&#9816','&#9815','&#9813'];
 	}
-	var col = "";
-	for (var c = 0; c < 5; c++) {
+	let col = "";
+	for (let c = 0; c < 5; c++) {
 		col += "<td id='" + c + "' class='bughousePiece'>" + chooseArray[c] + "<span id='" + c + "' class=' badge badge-pill badge-primary'>0</span></td>";
 	}
 	$("#bank").append("<tr>" + col + "</tr>");
@@ -21,21 +24,64 @@ function initializeBank(black) {
 
 
 $("#bank").on("click", "td", function(e){
-	var currCountId = "p#" + e.target.id + ".badge";
-    var pieceCountString = $(currCountId).html(); // gets curr piece count
-    var pieceCount = parseInt(pieceCountString);
-    console.log(pieceCount);
+	let chooseArrayId = e.target.id;
+	let currCountId = "span#" + chooseArrayId + ".badge";
+    let pieceCountString = $(currCountId).html(); // gets curr piece count
+    let pieceCount = parseInt(pieceCountString);
 
-    var currCount = parseInt($(currCountId).html())
-    var newCount = currCount + 1;
-
-    $(currCountId).html(newCount.toString());
-
-
-    if (myTurn && pieceCount != 0) {
-
-    } else if (pieceCount == 0) {
+    if (myTurn) {
+    	if (pieceCount != 0) {
+    		let selectTd = $(".bughousePiece#" + chooseArrayId).html();
+    		let selectedPiece = selectTd.split("<")[0];
+    		if (chooseArrayId === currBughousePiece) {
+    			$(".bughousePiece#" + chooseArrayId).toggleClass('selected');
+    			bughouseSelected = false;
+    		}
+    		else if (selected && !bughouseSelected) {
+    			$("#" + currPiece).toggleClass('selected');
+    			selected = false;
+    			$(".bughousePiece#" + chooseArrayId).toggleClass('selected');
+    			currBughousePiece = chooseArrayId;
+    			bughouseSelected = true;
+    		} else if (!selected && bughouseSelected) {
+    			$(".bughousePiece#" + currBughousePiece).toggleClass('selected');
+    			$(".bughousePiece#" + chooseArrayId).toggleClass('selected');
+    			currBughousePiece = chooseArrayId;
+    		} else if (!selected && !bughouseSelected) {
+    			$(".bughousePiece#" + chooseArrayId).toggleClass('selected');
+    			currBughousePiece = chooseArrayId;
+    			bughouseSelected = true;
+    		}
+    		$("#chessboard").on("click", "td", function(e){
+    			let currId = e.target.id;
+    			if (!squareContainsPiece(currId)) {
+    				$("#" + currId).html(selectedPiece);
+    				$(".bughousePiece#" + chooseArrayId).toggleClass('selected');
+    				currPieces.push(currId);
+    				let placement = [chooseArrayId, currId];
+    				new_placement(placement);
+    			}
+    		});
+    	}
 
     }
-
 });
+
+function updateBankIndex(index) {
+	let countId = "span#" + index.toString() + ".badge";
+	let pieceCountString = $(countId).html(); // gets curr piece count
+    let pieceCount = parseInt(pieceCountString);
+    let newPieceCount = pieceCount + 1;
+	$(countId).html(newPieceCount.toString());
+}
+
+
+
+
+
+
+
+
+
+
+

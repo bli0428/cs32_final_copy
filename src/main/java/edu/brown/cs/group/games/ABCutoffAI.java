@@ -281,4 +281,9 @@ public class ABCutoffAI implements Player {
     this.color = color;
   }
 
+  @Override
+  public int getColor() {
+    return color;
+  }
+
 }

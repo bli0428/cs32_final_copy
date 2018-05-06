@@ -33,13 +33,11 @@
 	<div id='users' class="row align-items-center" style="margin-top: 4%">
 		${users}
 	</div>
+
 </div>
 
 
 
-<div id="users">
-	${users}
-</div>
 <button onclick="switchTeam()">Switch team</button>
 <button onclick="leaveGame()">Leave game</button>
 

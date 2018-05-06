@@ -292,12 +292,6 @@ public class Board {
       }
     }
 
-    // Promotions
-    if (!usrQuery && p.type().equals("p")
-        && (dest.row() == 8 || dest.row() == 1)) {
-      p = new PromotedPawn(players[p.color()].promote(start));
-    }
-
     // 50 move stalemate Rule
     if (p.type().equals("p")) {
       fiftyMove = 0;
@@ -340,7 +334,15 @@ public class Board {
     p.move(dest);
     places.put(dest, p);
     places.remove(start);
+
+    // Promotions
+    if (!usrQuery && p.type().equals("p")
+        && (dest.row() == 8 || dest.row() == 1)) {
+      p = new PromotedPawn(players[p.color()].promote(dest));
+    }
+
     return out;
+
   }
 
   /**
@@ -514,18 +516,18 @@ public class Board {
     }
     return false;
   }
-  
-//  public boolean check(int color) {
-//    Set<Position> threats = threatened(Math.abs(color - 1));
-//    for (Position p : threats) {
-//      Piece k = places.get(p);
-//      if (k != null && k.type().equals("K") && k.color() == color) {
-//        // System.out.println(p.col() + "," + p.row());
-//        return true;
-//      }
-//    }
-//    return false;
-//  }
+
+  // public boolean check(int color) {
+  // Set<Position> threats = threatened(Math.abs(color - 1));
+  // for (Position p : threats) {
+  // Piece k = places.get(p);
+  // if (k != null && k.type().equals("K") && k.color() == color) {
+  // // System.out.println(p.col() + "," + p.row());
+  // return true;
+  // }
+  // }
+  // return false;
+  // }
 
   /**
    * Checks whether a given position is attacked by the given color
@@ -556,7 +558,9 @@ public class Board {
             + 128];
         switch (type) {
         case "b":
-          if (canAttack == Tables.ATTACK_KQBbP || canAttack == Tables.ATTACK_KQBwP || canAttack == Tables.ATTACK_QB) {
+          if (canAttack == Tables.ATTACK_KQBbP
+              || canAttack == Tables.ATTACK_KQBwP
+              || canAttack == Tables.ATTACK_QB) {
             if (!isBlocked(attackerIndex, attackedIndex, attackDelta)) {
               return true;
             }
