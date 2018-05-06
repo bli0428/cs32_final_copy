@@ -151,7 +151,7 @@ public class BughouseGame implements Game {
                 message.add("payload", payload);
                 session.getRemote()
                     .sendString(ChessWebSocket.GSON.toJson(message));
-                System.out.println("Sent move");
+                // System.out.println("Sent move");
                 break;
               }
             }
@@ -173,11 +173,11 @@ public class BughouseGame implements Game {
     if (a == 0 && b == 0)
       return 0;
     if (a == 1 && b == 0)
-      return 1;
+      return 2;
     if (a == 0 && b == 1)
       return 3;
     if (a == 1 && b == 1)
-      return 2;
+      return 1;
     return -1;
   }
 
@@ -196,8 +196,10 @@ public class BughouseGame implements Game {
   @Override
   public Set<Position> moves(int player, Position pos) {
     if (player % 2 == 0) {
+      System.out.println(player);
       return boards[0].getValidMoves(player / 2).get(pos);
     } else {
+      System.out.println(player);
       return boards[1].getValidMoves(player % 3).get(pos);
     }
   }

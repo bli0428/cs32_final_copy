@@ -24,10 +24,11 @@ public class WrapperGame {
   }
 
   public synchronized int addPlayer(Player p) {
-    if (players.size() == playerNum - 1) {
+    int out = players.size();
+    if (out == playerNum - 1) {
       players.add(p);
       startGame();
-    } else if (players.size() < playerNum) {
+    } else if (out < playerNum) {
       players.add(p);
     }
     return players.size() - 1;
@@ -44,7 +45,7 @@ public class WrapperGame {
     for (Player p : players) {
       for (Session s : ChessWebSocket.playerSession.keySet()) {
         if (ChessWebSocket.playerSession.get(s).equals(p)) {
-          System.out.println("added game");
+          // System.out.println("added game");
           ChessWebSocket.games.put(s, g);
         }
       }
