@@ -1,6 +1,6 @@
 var ChessBackground = {
-  pieceHeight: 400,
-  pieceWidth: 400,
+  pieceHeight: 300,
+  pieceWidth: 150,
   pieces: [],
   pieceImage: 'http://i63.tinypic.com/hx0osh.png',
   maxPieces: 15,
@@ -13,12 +13,12 @@ var ChessBackground = {
       piece.image = new Image();
       piece.image.style.height = piece.height;
       //pawn,
-      var images = ['http://i63.tinypic.com/hx0osh.png', 
-      'http://i65.tinypic.com/2a4py1g.png', 
-      'http://i63.tinypic.com/2dvkd3k.png',
-      'http://i66.tinypic.com/2q83sat.png',
-      'http://i63.tinypic.com/qxo0ow.png',
-      'http://i67.tinypic.com/inwbpg.png'];
+      var images = ['http://i63.tinypic.com/25f5cug.png', 
+      'http://i67.tinypic.com/bgprew.png', 
+      'http://i63.tinypic.com/esj8ms.png',
+      'http://i66.tinypic.com/30ll5bp.png',
+      'http://i67.tinypic.com/zje0cz.png',
+      'http://i66.tinypic.com/2e5o0nq.png'];
       if (i < 6) {
           piece.image.src = images[0];
       } else {

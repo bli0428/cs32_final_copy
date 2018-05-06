@@ -48,6 +48,7 @@
 		</div>
 	</div>
 </div>
+<canvas id="canvas"></canvas>
 <!-- <a href="" class="btn btn-link pull-left">Forgot Password?</a> -->
 
 </#assign>
