@@ -154,6 +154,9 @@ public class BughouseGame implements Game {
                   payload.addProperty("moveTo", m.end().numString());
                   payload.addProperty("piece", m.getPiece().type());
                   payload.addProperty("color", m.getPiece().color());
+                  message.add("payload", payload);
+                  session.getRemote()
+                      .sendString(ChessWebSocket.GSON.toJson(message));
                 } else {
                   message.addProperty("type",
                       ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
