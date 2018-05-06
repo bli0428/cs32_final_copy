@@ -181,7 +181,7 @@ public class JoinWebSocket {
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
       int gameId = receivedPayload.get("gameId").getAsInt();
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
-      g.addUser(new User(-1, "AI player"));
+      g.addUser(new User(-1, "AI Player"));
 
       if (!ChessWebSocket.lobbies.keySet().contains(gameId)) {
         ChessWebSocket.lobbies.put(gameId,
@@ -255,7 +255,14 @@ public class JoinWebSocket {
     }
   }
 
+  private boolean gameType(String s) {
+    if (s.equals("bughouse"))
+      return true;
+    return false;
+  }
+
   private String menuGameToUsersHtml(MenuGame g) {
+
     User[] users = g.getCurrPlayers();
     String html = "";
     for (int i = 0; i < users.length; i++) {
@@ -265,6 +272,10 @@ public class JoinWebSocket {
       if (users[i] == null) {
         html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
             + "onclick='addAI(" + i + ")'>Add AI Player</button>";
+      } else if (users[i].getUsername().equals("AI Player")) {
+        html += "<p class='card-text'>" + users[i].getUsername()
+            + "</p><button class='btn btn-info'"
+            + "onclick='removeAI()'>Remove AI</button>";
       } else {
         html += "<p class='card-text'>" + users[i].getUsername()
             + "</p><button class='btn btn-info'"
@@ -275,17 +286,13 @@ public class JoinWebSocket {
     return html;
   }
 
-  private boolean gameType(String s) {
-    if (s.equals("bughouse"))
-      return true;
-    return false;
-  }
-
   private String colorPicker(int i) {
-    if (i % 2 == 0) {
+    if (i == 0 || i == 3) {
       return "White";
-    } else {
+    } else if (i == 1 || i == 2) {
       return "Black";
+    } else {
+      return null;
     }
   }
 
