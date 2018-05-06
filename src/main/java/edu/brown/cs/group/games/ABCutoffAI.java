@@ -286,4 +286,10 @@ public class ABCutoffAI implements Player {
     return color;
   }
 
+  @Override
+  public void requestPiece(String type) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }
