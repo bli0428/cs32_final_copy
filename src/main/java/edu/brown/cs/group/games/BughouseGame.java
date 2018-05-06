@@ -1,10 +1,16 @@
 package edu.brown.cs.group.games;
 
+import java.io.IOException;
 import java.util.Set;
+
+import org.eclipse.jetty.websocket.api.Session;
+
+import com.google.gson.JsonObject;
 
 import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.InvalidMoveException;
 import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.main.ChessWebSocket;
 import edu.brown.cs.group.positions.BankPosition;
 import edu.brown.cs.group.positions.Position;
 import edu.brown.cs.group.positions.PositionException;
@@ -59,7 +65,7 @@ public class BughouseGame implements Game {
     p1.setBoard(board2);
     p3.setBoard(board2);
     Player[] t1 = { p0, p1 };
-    Player[] t2 = { p2, p3 };
+    Player[] t2 = { p3, p2 };
     team1 = t1;
     team2 = t2;
     p0.setColor(0);
@@ -83,6 +89,7 @@ public class BughouseGame implements Game {
 
     private int turn;
     private int b;
+    private Player[] prs;
 
     /**
      * Public constructor.
@@ -90,17 +97,26 @@ public class BughouseGame implements Game {
     SubGame(int b) {
       turn = 0;
       this.b = b;
+      if (b == 0) {
+        Player[] play = { p0, p2 };
+        prs = play;
+      } else {
+        Player[] play = { p3, p1 };
+        prs = play;
+      }
+
     }
 
     @Override
     public void run() {
       while (!gameOver) {
+        // System.out.println("here, player " + getPlay(turn, b));
         if (boards[b].checkmate(turn)) {
           endGame();
           System.out.println("Game over!");
           break;
         }
-        Move m = teams[turn][b].move();
+        Move m = prs[turn].move();
         try {
           Piece p;
           if (m.start() instanceof BankPosition) {
@@ -110,17 +126,59 @@ public class BughouseGame implements Game {
           }
           turn = Math.abs(turn - 1);
           if (p != null) {
-            teams[turn][Math.abs(b - 1)].acceptPiece(p);
+            prs[turn].acceptPiece(p);
           }
-          System.out.println("Moved from " + m.start().col() + ","
-              + m.start().row() + " to " + m.end().col() + "," + m.end().row());
+          // System.out.println("Moved from " + m.start().col() + ","
+          // + m.start().row() + " to " + m.end().col() + "," + m.end().row());
+          for (Session session : ChessWebSocket.games.keySet()) {
+            // System.out
+            // .println("shdijgklmgrisdjnhgjsdgjbgsbhijsndrgisgijisbfjgfsj");
+            if (ChessWebSocket.games.get(session) == BughouseGame.this) {
+              System.out.println(ChessWebSocket.playerNum
+                  .get(ChessWebSocket.playerSession.get(session)) + " "
+                  + getPlay(turn, b));
+              if (ChessWebSocket.playerNum.get(
+                  ChessWebSocket.playerSession.get(session)) == getPlay(turn,
+                      b)) {
+                // System.out.println("here " + "b=" + b + "turn=" + turn
+                // + "update=" + b * 2 + turn);
+                JsonObject message = new JsonObject();
+                message.addProperty("type",
+                    ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
+                JsonObject payload = new JsonObject();
+                payload.addProperty("moveFrom", m.start().numString());
+                payload.addProperty("moveTo", m.end().numString());
+                message.add("payload", payload);
+                session.getRemote()
+                    .sendString(ChessWebSocket.GSON.toJson(message));
+                System.out.println("Sent move");
+                break;
+              }
+            }
+          }
         } catch (InvalidMoveException e) {
           System.out.println("That's not a valid move!");
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          // Shouldn't get here
+          e.printStackTrace();
         }
-        turn = Math.abs(turn - 1);
+
       }
 
     }
+  }
+
+  public int getPlay(int a, int b) {
+    if (a == 0 && b == 0)
+      return 0;
+    if (a == 1 && b == 0)
+      return 1;
+    if (a == 0 && b == 1)
+      return 3;
+    if (a == 1 && b == 1)
+      return 2;
+    return -1;
   }
 
   private synchronized void endGame() {
@@ -143,5 +201,4 @@ public class BughouseGame implements Game {
       return boards[1].getValidMoves(player % 3).get(pos);
     }
   }
-
 }

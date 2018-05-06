@@ -57,6 +57,7 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
+        console.log("recieved update");
         var moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
         var moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
         moveOpponent(moveFrom, moveTo);
@@ -96,6 +97,7 @@ const new_tohighlight = currPiece => {
 
 
 const new_move = move => {
+
   var toSendPayload = {
     id: myId,
     moveFrom: convertFrontToBackCoordinates(move[0]),
@@ -108,6 +110,7 @@ const new_move = move => {
   }
 
   conn.send(JSON.stringify(toSend));
+  console.log("Sent move");
 }
 
 
