@@ -1,15 +1,21 @@
 package edu.brown.cs.group.games;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jetty.websocket.api.Session;
+
+import com.google.gson.JsonObject;
+
 import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.Piece;
 import edu.brown.cs.group.games.Move;
 import edu.brown.cs.group.games.Player;
+import edu.brown.cs.group.main.ChessWebSocket;
 import edu.brown.cs.group.positions.Position;
 
 public class GUIPlayer implements Player {
@@ -72,6 +78,17 @@ public class GUIPlayer implements Player {
   @Override
   public synchronized Piece promote(Position p) {
     try {
+      for (Session s : ChessWebSocket.playerSession.keySet()) {
+        if (ChessWebSocket.playerSession.get(s).equals(this)) {
+          JsonObject message = new JsonObject();
+          message.addProperty("type",
+              ChessWebSocket.MESSAGE_TYPE.PROMOTE.ordinal());
+          JsonObject payload = new JsonObject();
+          payload.addProperty("position", p.numString());
+          message.add("payload", payload);
+          s.getRemote().sendString(ChessWebSocket.GSON.toJson(message));
+        }
+      }
       wait();
     } catch (InterruptedException e) {
       try {
@@ -82,9 +99,17 @@ public class GUIPlayer implements Player {
         npe.printStackTrace();
       }
       return toPromote.get(0);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     toPromote.set(1, toPromote.get(0));
     return toPromote.get(0);
+  }
+
+  public synchronized void setPromote(Piece p) {
+    toPromote.set(0, p);
+    notify();
   }
 
   @Override
@@ -95,6 +120,22 @@ public class GUIPlayer implements Player {
   @Override
   public void setColor(int color) {
     this.color = color;
+  }
+
+  @Override
+  public int getColor() {
+    return color;
+  }
+
+  public void place(String s, Position pos) {
+    for (Piece p : bank) {
+      if (p.type().equals(s)) {
+        Move m = new Move(pos, p);
+        setMove(m);
+        break;
+      }
+    }
+
   }
 
 }

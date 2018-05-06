@@ -17,6 +17,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import edu.brown.cs.group.components.Bishop;
+import edu.brown.cs.group.components.Knight;
+import edu.brown.cs.group.components.Pawn;
+import edu.brown.cs.group.components.Piece;
+import edu.brown.cs.group.components.PromotedPawn;
+import edu.brown.cs.group.components.Queen;
+import edu.brown.cs.group.components.Rook;
 import edu.brown.cs.group.games.ABCutoffAI;
 import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
@@ -120,6 +127,16 @@ public class ChessWebSocket {
       // onto the
       // board
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+      String type = bankIdx(recievedPayload.get("bankIndex").getAsInt());
+      String[] p = recievedPayload.get("moveTo").getAsString().split(",");
+      try {
+        Position pos = new Position(Integer.parseInt(p[0]),
+            Integer.parseInt(p[1]));
+        playerSession.get(session).place(type, pos);
+      } catch (NumberFormatException | PositionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       // TODO: create payloads and add properties
 
     } else if (messageInt == MESSAGE_TYPE.TOHIGHLIGHT.ordinal()) {
@@ -186,6 +203,20 @@ public class ChessWebSocket {
         msg.add("payload", displayPayload);
         session.getRemote().sendString(GSON.toJson(msg));
       }
+    } else if (messageInt == MESSAGE_TYPE.TOPROMOTE.ordinal()) {
+      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+      String[] p1 = recievedPayload.get("position").getAsString().split(",");
+      try {
+        Position pos = new Position(Integer.parseInt(p1[0]),
+            Integer.parseInt(p1[1]));
+        Piece p = getPromote(recievedPayload.get("piece").getAsString(),
+            playerSession.get(session).getColor(), pos); // TODO: Fix the 0
+        playerSession.get(session).setPromote(p);
+      } catch (NumberFormatException | PositionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
     }
 
     // TODO: update payload needs to send if a piece was removed in the move
@@ -204,14 +235,40 @@ public class ChessWebSocket {
 
   }
 
+  public Piece getPromote(String s, int color, Position pos) {
+    if (s == "queen") {
+      return new PromotedPawn(new Queen(pos, color));
+    } else if (s == "rook") {
+      return new PromotedPawn(new Rook(pos, color));
+    } else if (s == "knight") {
+      return new PromotedPawn(new Knight(pos, color));
+    } else if (s == "bishop") {
+      return new PromotedPawn(new Bishop(pos, color));
+    }
+    return new Pawn(pos, color);
+  }
+
   public boolean chessOrBug(String in) {
     if (in.equals("Chess"))
       return true;
     if (in.equals("Bughouse")) {
       return false;
     }
-
     return false;
+  }
+
+  public String bankIdx(int i) {
+    if (i == 0)
+      return "p";
+    else if (i == 1)
+      return "r";
+    else if (i == 2)
+      return "k";
+    else if (i == 3)
+      return "b";
+    else if (i == 4)
+      return "q";
+    return "";
   }
 
 }

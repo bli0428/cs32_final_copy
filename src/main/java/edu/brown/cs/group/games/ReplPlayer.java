@@ -186,4 +186,9 @@ public class ReplPlayer implements Player {
     bank.add(p);
   }
 
+  @Override
+  public int getColor() {
+    return color;
+  }
+
 }
