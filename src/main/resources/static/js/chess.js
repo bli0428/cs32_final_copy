@@ -126,10 +126,9 @@ function promotePiece(coordinates) {
     $("#promotionMenu").on("click", ".promoteOption", function(e){
         piece = e.target.id;
         $(".modal").css("display", "none");
-        currPieces.push(coordinates);
         setPromotionPiece(piece, coordinates);
+        new_promotion(piece, convertFrontToBackCoordinates(coordinates));
     });
-    return piece;
 }
 
 function setPromotionPiece(piece, coordinates) {

@@ -67,8 +67,7 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.PROMOTE:
         $(".modal").css("display", "block");
         let position = convertBackToFrontCoordinates(data.payload.position);
-        let piece = promotePiece(position);
-        new_promotion(piece, data.payload.position);
+        promotePiece(position);
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBank(data.payload.color);

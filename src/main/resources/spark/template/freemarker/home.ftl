@@ -31,12 +31,12 @@
 			<p class="lead" style="margin-top: 0px">${message}</p>
 		</div>
 	</div>
-	<div class="row justify-content-center">
-		<div class="col-3 text-center">
-			<button class="btn btn-success" type="button" onclick="addGame('chess')">Create Chess Game</button>
+	<div class="row justify-content-center" style="margin-top: 4%">
+		<div class="col-md-3 text-center">
+			<button class="btn btn-success btn-lg" type="button" onclick="addGame('chess')">Create Chess Game</button>
 		</div>
-		<div class="col-3 text-center">
-			<button class="btn btn-success" type="button" onclick="addGame('bughouse')">Create Bughouse Game</button>
+		<div class="col-md-3 text-center">
+			<button class="btn btn-success btn-lg" type="button" onclick="addGame('bughouse')">Create Bughouse Game</button>
 		</div>
 	</div>
 	<div id='menu' class="row align-items-center" style="margin-top: 4%">
