@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jetty.websocket.api.Session;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 
 import edu.brown.cs.group.components.Board;
@@ -19,6 +21,9 @@ import edu.brown.cs.group.main.ChessWebSocket;
 import edu.brown.cs.group.positions.Position;
 
 public class GUIPlayer implements Player {
+
+  private static final Map<String, Integer> bankIdx = ImmutableMap.of("p", 0,
+      "r", 1, "k", 2, "b", 3, "q", 4);
 
   private Set<Piece> bank;
   private Board board;
@@ -114,6 +119,21 @@ public class GUIPlayer implements Player {
 
   @Override
   public void acceptPiece(Piece p) {
+    JsonObject message = new JsonObject();
+    message.addProperty("type", ChessWebSocket.MESSAGE_TYPE.BANKADD.ordinal());
+    JsonObject payload = new JsonObject();
+    payload.addProperty("idx", bankIdx.get(p));
+    message.add("payload", payload);
+    for (Session s : ChessWebSocket.playerSession.keySet()) {
+      if (ChessWebSocket.playerSession.get(s).equals(this)) {
+        try {
+          s.getRemote().sendString(ChessWebSocket.GSON.toJson(message));
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
     bank.add(p);
   }
 
@@ -128,13 +148,16 @@ public class GUIPlayer implements Player {
   }
 
   public void place(String s, Position pos) {
+    Piece temp = null;
     for (Piece p : bank) {
       if (p.type().equals(s)) {
-        Move m = new Move(pos, p);
-        setMove(m);
+        temp = p;
         break;
       }
     }
+    bank.remove(temp);
+    Move m = new Move(pos, temp);
+    setMove(m);
 
   }
 
