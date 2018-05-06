@@ -4,11 +4,11 @@ var currPiece = ""; // the selected piece to be moved
 var currPieces = []; // the player's curr pieces
 var selected = false; // boolean indicating if there is a current piece selected
 
-var myTurn = true; // boolean indicating whether or not it is my turn TODO: CHANGE (assume I move first)
+var myTurn = false; // boolean indicating whether or not it is my turn TODO: CHANGE (assume I move first)
 
 
 function movePiece(start, end) {
-    var startPiece = $("#" + start).text(); // piece to be moved
+    let startPiece = $("#" + start).text(); // piece to be moved
 
     if (validMoves.includes(end)) { // confirms that piece is being moved to a valid square
         $("#" + start).html("");
@@ -31,13 +31,13 @@ function movePiece(start, end) {
 
         checkCastling(start, end, startPiece);
 
-        var move = [start, end];
+        let move = [start, end];
         new_move(move); // send the move to the backend
     }
 }
 
 function moveOpponent(start, end) {
-    var startPiece = $("#" + start).text(); // piece to be moved
+    let startPiece = $("#" + start).text(); // piece to be moved
     $("#" + start).html("");
     $("#" + end).html(startPiece);
     if (currPieces.includes(end)) { // removes curr player's piece from play if captured
@@ -54,7 +54,7 @@ function getMoves(id) {
 
 // toggle on and off the valid moves
 function displayValidMoves() {
-    for (var i = 0; i < validMoves.length; i++) {
+    for (let i = 0; i < validMoves.length; i++) {
         $("#" + validMoves[i]).toggleClass('validMove');
     }
 }
@@ -69,18 +69,18 @@ function validPiece(id) {
 }
 
 function removePieceFromBoard(id) {
-    var removeIndex = currPieces.indexOf(id);
+    let removeIndex = currPieces.indexOf(id);
     currPieces.splice(removeIndex, 1);
     $("#" + id).html("");
 }
 
 function removePieceFromCurrPieces(id) {
-    var removeIndex = currPieces.indexOf(id);
+    let removeIndex = currPieces.indexOf(id);
     currPieces.splice(removeIndex, 1);
 }
 
 $("#chessboard").on("click", "td", function(e){
-    var currId = e.target.id;
+    let currId = e.target.id;
     console.log(currId);
     if (myTurn) {
         if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
@@ -122,15 +122,17 @@ $("#chessboard").on("click", "td", function(e){
 });
 
 function promotePiece(coordinates) {
+    let piece = "";
     $("#promotionMenu").on("click", ".promoteOption", function(e){
-        var piece = e.target.id;
+        piece = e.target.id;
         $(".modal").css("display", "none");
         setPromotionPiece(piece, coordinates);
     });
+    return piece;
 }
 
 function setPromotionPiece(piece, coordinates) {
-    if (black) {
+    if ($("#" + coordinates).html() === "♟") {
         if (piece === "rook") {
             $("#" + coordinates).html('&#9820');
         } else if (piece === "queen") {
@@ -157,11 +159,11 @@ function setPromotionPiece(piece, coordinates) {
 function checkCastling(start, end, king) {
     if (king === "♔" || king === "♚") {
         if (getRow(start) === getRow(end)) {
-            var kingRow = getRow(start);
-            var kingCol = getCol(end);
-            var rookCoordinates = "";
-            var rook = "";
-            var newRookCoordinates = "";
+            let kingRow = getRow(start);
+            let kingCol = getCol(end);
+            let rookCoordinates = "";
+            let rook = "";
+            let newRookCoordinates = "";
             if (getCol(start) - getCol(end) === 2) {
                 rookCoordinates = kingRow.toString() + "-" + "0";
                 rook = $("#" + rookCoordinates).text();

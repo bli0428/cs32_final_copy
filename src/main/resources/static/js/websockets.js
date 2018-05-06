@@ -67,12 +67,15 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.PROMOTE:
         $(".modal").css("display", "block");
         let position = convertBackToFrontCoordinates(data.payload.position);
-        promotePiece(position);
-        new_promotion(piece, position);
+        let piece = promotePiece(position);
+        new_promotion(piece, data.payload.position);
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBank(data.payload.color);
         initializeBoard(data.payload.color);
+        if (data.payload.color === "white") {
+          myTurn = true;
+        }
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.BANKADD:
@@ -120,7 +123,6 @@ const new_promotion = (piece, position) => {
     id: myId,
     piece: piece,
     position: position
-
   }
 
   let toSend = {
