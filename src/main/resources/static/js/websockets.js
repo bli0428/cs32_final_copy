@@ -55,11 +55,18 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
-        let moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
-        let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
-        moveOpponent(moveFrom, moveTo);
+        if (data.payload.moveFrom === "0,0") {
+          let piece = data.payload.piece;
+          let color = data.payload.piece; // 0 for white, 1 for black
+          let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
+          setPlacement(color, piece, moveTo);
+        } else {
+          let moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
+          let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
+          moveOpponent(moveFrom, moveTo);
+        }
         myTurn = true;
-        printTurn(myTurn);
+        printTurn(myTurn);  
         break;
       case MESSAGE_TYPE.GAMEOVER:
         let winner = data.payload.winner;
