@@ -103,7 +103,7 @@ $("#chessboard").on("click", "td", function(e){
             currPiece = currId;
             $("#" + currPiece).toggleClass('selected');
             getMoves(currPiece);
-        } else if (!selected && bughouseSelected) {
+        } else if (!selected && bughouseSelected && validPiece(currId)) {
             $(".bughousePiece#" + currBughousePiece).toggleClass('selected');
             bughouseSelected = false;
             currPiece = currId;
@@ -126,30 +126,31 @@ function promotePiece(coordinates) {
     $("#promotionMenu").on("click", ".promoteOption", function(e){
         piece = e.target.id;
         $(".modal").css("display", "none");
+        currPieces.push(coordinates);
         setPromotionPiece(piece, coordinates);
     });
     return piece;
 }
 
 function setPromotionPiece(piece, coordinates) {
-    if ($("#" + coordinates).html() === "♟") {
-        if (piece === "rook") {
+    if ($("#" + coordinates).text() == "♟") {
+        if (piece == "rook") {
             $("#" + coordinates).html('&#9820');
-        } else if (piece === "queen") {
+        } else if (piece == "queen") {
             $("#" + coordinates).html('&#9819');
-        } else if (piece === "knight") {
+        } else if (piece == "knight") {
             $("#" + coordinates).html('&#9822');
-        } else if (piece === "bishop") {
+        } else if (piece == "bishop") {
             $("#" + coordinates).html('&#9821');
         }
     } else {
-        if (piece === "rook") {
+        if (piece == "rook") {
             $("#" + coordinates).html('&#9814');
-        } else if (piece === "queen") {
+        } else if (piece == "queen") {
             $("#" + coordinates).html('&#9813');
-        } else if (piece === "knight") {
+        } else if (piece == "knight") {
             $("#" + coordinates).html('&#9816');
-        } else if (piece === "bishop") {
+        } else if (piece == "bishop") {
             $("#" + coordinates).html('&#9815');
         }
     }
@@ -157,14 +158,14 @@ function setPromotionPiece(piece, coordinates) {
 
 
 function checkCastling(start, end, king) {
-    if (king === "♔" || king === "♚") {
-        if (getRow(start) === getRow(end)) {
+    if (king == "♔" || king == "♚") {
+        if (getRow(start) == getRow(end)) {
             let kingRow = getRow(start);
             let kingCol = getCol(end);
             let rookCoordinates = "";
             let rook = "";
             let newRookCoordinates = "";
-            if (getCol(start) - getCol(end) === 2) {
+            if (getCol(start) - getCol(end) == 2) {
                 rookCoordinates = kingRow.toString() + "-" + "0";
                 rook = $("#" + rookCoordinates).text();
                 newRookCoordinates = kingRow.toString() + "-" + (kingCol + 1).toString();
@@ -172,7 +173,7 @@ function checkCastling(start, end, king) {
                 $("#" + newRookCoordinates).html(rook);
                 removePieceFromCurrPieces(rookCoordinates);
                 currPieces.push(newRookCoordinates);
-            } else if (getCol(start) - getCol(end) === -2) {
+            } else if (getCol(start) - getCol(end) == -2) {
                 rookCoordinates = kingRow.toString() + "-" + "7";
                 rook = $("#" + rookCoordinates).text();
                 newRookCoordinates = kingRow.toString() + "-" + (kingCol - 1).toString();
