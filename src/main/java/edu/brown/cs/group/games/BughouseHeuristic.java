@@ -11,7 +11,9 @@ import edu.brown.cs.group.positions.Position;
 
 public class BughouseHeuristic implements Heuristic {
   private int pieceSquareValue;
-  private int[] requests;
+//  private int[] requests;
+  private String rPiece;
+  private int myColor;
 
   private int[][] pawnT = { { 0, 0, 0, 0, 0, 0, 0, 0 },
       { 50, 50, 50, 50, 50, 50, 50, 50 }, { 10, 10, 20, 30, 30, 20, 10, 10 },
@@ -37,12 +39,25 @@ public class BughouseHeuristic implements Heuristic {
       { -5, 0, 0, 0, 0, 0, 0, -5 }, { -5, 0, 0, 0, 0, 0, 0, -5 },
       { 0, 0, 0, 5, 5, 0, 0, 0 } };
 
-  public BughouseHeuristic() {
-    requests = new int[] { 0, 0, 0, 0, 0 };
+  public BughouseHeuristic(int color) {
+    rPiece = null;
+    myColor = color;
+  }
+  
+  public void addRequest(String type) {
+    rPiece = type;
+    System.out.println("request received!!!!!!!!!!");
+  }
+  
+  public String getRequest() {
+    return rPiece;
+  }
+  
+  public void removeRequest(String type) {
+    rPiece = null;
   }
 
-  public void addRequest(String type) {
-
+  public int convert(String type) {
     int index;
     switch (type) {
     case "q":
@@ -64,6 +79,7 @@ public class BughouseHeuristic implements Heuristic {
       index = 0;
       break;
     }
+    return index;
 
   }
 
@@ -136,8 +152,13 @@ public class BughouseHeuristic implements Heuristic {
       Piece piece = places.get(key);
       pieceSquare(piece, key);
 
-      resultVector.set(piece.color(),
+      if (rPiece != null && piece.type().equals(rPiece) && !(piece.color() == myColor)) {
+        resultVector.set(piece.color(),
+          resultVector.get(piece.color()) + 950.0);
+      } else {
+        resultVector.set(piece.color(),
           resultVector.get(piece.color()) + piece.value());
+      }
     }
     Double p1 = resultVector.get(0);
     Double p2 = resultVector.get(1);

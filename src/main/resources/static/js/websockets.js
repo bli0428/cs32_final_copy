@@ -11,7 +11,8 @@ const MESSAGE_TYPE = {
   TOHIGHLIGHT: 9,
   TOPROMOTE: 10,
   DISPLAY: 11,
-  BANKADD: 12
+  BANKADD: 12,
+  REQUEST: 13
 };
 
 let conn;
@@ -55,18 +56,21 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
+        console.log(data.payload.moveFrom);
         if (data.payload.moveFrom === "0,0") {
+          console.log("placement");
           let piece = data.payload.piece;
           let color = data.payload.color; // 0 for white, 1 for black
           let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
           setPlacement(color, piece, moveTo);
         } else {
+          console.log("move");
           let moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
           let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
           moveOpponent(moveFrom, moveTo);
         }
         myTurn = true;
-        printTurn(myTurn);  
+        printTurn(myTurn);
         break;
       case MESSAGE_TYPE.GAMEOVER:
         let winner = data.payload.winner;
@@ -80,8 +84,11 @@ const setup_live_moves = () => {
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.DISPLAY:
-        initializeBank(data.payload.color); //TODO: have backend pass what type of game so we know whether or not to initialize bank
         initializeBoard(data.payload.color);
+        if (data.payload.game == false) { // false = bughouse
+          initializeBank(data.payload.color);
+        }
+        initializeBank(data.payload.color);
         if (data.payload.color == 0) { // 0 = false
           myTurn = true;
         }
@@ -158,3 +165,21 @@ const new_placement = placement => {
 
   conn.send(JSON.stringify(toSend));
 }
+
+
+const new_request = piece => {
+  let toSendPayload = {
+    id: myId,
+    piece: piece
+  }
+
+  let toSend = {
+    type: 13,
+    payload: toSendPayload
+  }
+
+  conn.send(JSON.stringify(toSend));
+}
+
+
+
