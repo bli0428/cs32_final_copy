@@ -113,7 +113,6 @@ public final class GUI {
     Spark.get("/joingame/:something", new JoinGameHandler(), freeMarker);
 
     Spark.get("/chess", new ChessHandler(), freeMarker);
-    Spark.post("/chess", new MoveHandler());
 
     Spark.post("/startgame", new StartGameHandler(), freeMarker);
     Spark.get("/chessgame/:something", new ChessGameHandler(), freeMarker);
@@ -147,7 +146,7 @@ public final class GUI {
       }
 
       Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home", "user", u.getUsername(repl.getDbm()),
-          "content", "<div id=\"menu\">" + GAME_LIST.printListHtml() + "</div>");
+          "content", GAME_LIST.printListHtml(), "message", "");
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -187,30 +186,6 @@ public final class GUI {
           "gameId", 99);
       return new ModelAndView(variables, "board.ftl");
     }
-  }
-
-  private static class MoveHandler implements Route {
-    @Override
-    public String handle(Request req, Response res) {
-      game.play();
-      QueryParamsMap qm = req.queryMap();
-      int row = Integer.parseInt(qm.value("row"));
-      int col = Integer.parseInt(qm.value("col"));
-
-      // TODO: get valid moves from row and col
-
-      // TODO: pass in which player's turn
-      // TODO: pass in list of valid moves
-
-      // hardcoded for testing
-      List<String> validMoves = new ArrayList<String>();
-      validMoves.add("5-4");
-      validMoves.add("4-4");
-
-      Map<String, Object> variables = ImmutableMap.of("validMoves", validMoves);
-      return GSON.toJson(variables);
-    }
-
   }
 
   /**
@@ -343,7 +318,7 @@ public final class GUI {
         return new ModelAndView(variables, "changepassword.ftl");
       }
       Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home", "user", username,
-          "content", "Password successfully updated.");
+          "message", "Password successfully updated.", "content", GAME_LIST.printListHtml());
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -380,7 +355,7 @@ public final class GUI {
         return new ModelAndView(variables, "changeusername.ftl");
       }
       Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home", "user", newUsername,
-          "content", "Username successfully updated.");
+          "message", "Username successfully updated.", "content", GAME_LIST.printListHtml());
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -424,15 +399,14 @@ public final class GUI {
       }
       game.addUser(u);
 
-      String html = "<ul>";
+      String html = "";
       for (User curr : game.getCurrPlayers()) {
         if (curr == null) {
-          html += "<li>Waiting for player</li>";
+          html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>Waiting for Player</div></div></div>";
         } else {
-          html += "<li>" + curr.getUsername() + "</li>";
+          html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>" + curr.getUsername() + "</div></div></div>";
         }
       }
-      html += "</ul>";
 
       Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Join Game",
           "gameId", gameId, "users", html);
