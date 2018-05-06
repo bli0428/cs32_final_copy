@@ -24,6 +24,7 @@ public class ABCutoffAIV2 implements Player {
   private Board board;
   private int color;
   private int cutoff;
+  private BughouseHeuristic internalHeur;
 
   private Map<Board, TranspositionMove> TT;
   private int TT_MAX_SIZE = 100000;
@@ -43,12 +44,16 @@ public class ABCutoffAIV2 implements Player {
     this.cutoff = cutoff;
     bank = Collections.synchronizedSet(new HashSet<Piece>());
     TT = new HashMap<Board, TranspositionMove>();
+    
   }
 
   private void startBench() {
     nodesSearched = 0;
     startTime = System.nanoTime();
-
+  }
+  
+  public void requestPiece(String type) {
+    internalHeur.addRequest(type);
   }
 
   private void printBench() {
@@ -110,7 +115,7 @@ public class ABCutoffAIV2 implements Player {
           e.printStackTrace();
         }
         double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
-            color);
+            Math.abs(color - 1));
         if (temp > v) {
 
           bestMove = new Move(potentialBest.getStart(), potentialBest.getEnd());
@@ -153,7 +158,7 @@ public class ABCutoffAIV2 implements Player {
           e.printStackTrace();
         }
         double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
-            color);
+            Math.abs(color - 1));
         if (temp > v) {
 
           bestMove = new Move(start, end);
@@ -180,6 +185,9 @@ public class ABCutoffAIV2 implements Player {
     printBench();
     System.out.println(bestMove.toString());
     System.out.println(v);
+    if (board.places().get(bestMove.end()) != null && board.places().get(bestMove.end()).type().equals(internalHeur.getRequest())) {
+      internalHeur.removeRequest("");
+    }
     return bestMove;
   }
 
@@ -198,7 +206,8 @@ public class ABCutoffAIV2 implements Player {
 
     // checks for stalemate.
     if (gameOver == 2) {
-      return 0;
+//      return 0;
+      return -200000.0;
     }
 
     // checks that the calling player is in checkmate.
@@ -323,17 +332,17 @@ public class ABCutoffAIV2 implements Player {
 
     // checks for stalemate.
     if (gameOver == 2) {
-      return -1000.0;
+      return -200000.0;
     }
 
     // checks that the calling player is in checkmate.
     if (gameOver == 1) {
-      return -10000.0;
+      return -200000.0;
     }
 
     // checks that the enemy player is in checkmate.
     if (tempBoard.gameOver(Math.abs(color - 1)) == 1) {
-      return 10000.0;
+      return 200000.0;
     }
 
     // checks that the max depth has been reached.
@@ -593,7 +602,7 @@ public class ABCutoffAIV2 implements Player {
     double beta = Double.POSITIVE_INFINITY;
     for (iterDepth = 1; iterDepth < cutoff + 1;) {
 
-      result = alphaBetaCutoff(iterDepth, new VersionTwoHeuristic(), alpha,
+      result = alphaBetaCutoff(iterDepth, internalHeur, alpha,
           beta);
 
       if (Double.compare(result.value(), alpha) <= 0
@@ -603,10 +612,10 @@ public class ABCutoffAIV2 implements Player {
         System.out.println("repeating because outside window size");
       } else {
         iterDepth++;
-        alpha = result.value() - 21.0;
-        beta = result.value() + 21.0;
-        // alpha = Double.NEGATIVE_INFINITY;
-        // beta = Double.POSITIVE_INFINITY;
+        alpha = result.value() - 100.0;
+        beta = result.value() + 100.0;
+//         alpha = Double.NEGATIVE_INFINITY;
+//         beta = Double.POSITIVE_INFINITY;
       }
 
     }
@@ -633,6 +642,7 @@ public class ABCutoffAIV2 implements Player {
   @Override
   public void setColor(int color) {
     this.color = color;
+    internalHeur = new BughouseHeuristic(color);
   }
 
   @Override
