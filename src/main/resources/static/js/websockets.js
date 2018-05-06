@@ -66,7 +66,7 @@ const setup_live_moves = () => {
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        $(".modal").css("display", "block");
+        $('#modal').modal({backdrop: 'static', keyboard: false});
         let position = convertBackToFrontCoordinates(data.payload.position);
         promotePiece(position);
         myTurn = false;

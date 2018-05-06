@@ -7,15 +7,18 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item">
+        <a class="nav-link" href="/home">Home</a>
+      </li>
     </ul>
     <form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
-        <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Log Out">
+      <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Log Out">
     </form>
   </div>
 </nav>
 
-<div id="gameId">${gameId}</div>
-<div id="gamePosition">${gamePosition}</div>
+<div id="gameId" style="display:none">${gameId}</div>
+<div id="gamePosition" style="display:none">${gamePosition}</div>
 
 <div id="messageHolder">
 	<p id="message"></p>
@@ -27,15 +30,20 @@
 	<table id="bank"></table>
 </div>
 
-<div class="modal">
-  <div class="modalContent">
-  	<ul id="promotionMenu">
-  		<li>Choose Promotion:</li>
-  		<li id="rook" class="promoteOption">Rook</li>
-  		<li id="queen" class="promoteOption">Queen</li>
-  		<li id="knight" class="promoteOption">Knight</li>
-  		<li id="bishop" class="promoteOption">Bishop</li>
-  	</ul>
+
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h2 class="modal-title" style="margin-top: 0;padding:5px">Choose Promotion:</h2>
+        <ul id="promotionMenu" class="list-group list-group-flush" style="margin-top: 0">
+          <li id="rook" class="promoteOption list-group-item list-group-item-action">Rook</li>
+          <li id="queen" class="promoteOption list-group-item list-group-item-action">Queen</li>
+          <li id="knight" class="promoteOption list-group-item list-group-item-action">Knight</li>
+          <li id="bishop" class="promoteOption list-group-item list-group-item-action">Bishop</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -49,7 +57,7 @@
 <#include "main.ftl">
 
 <script>
-$(document).ready(function() {
-  setup_live_moves();
-});
+  $(document).ready(function() {
+    setup_live_moves();
+  });
 </script>

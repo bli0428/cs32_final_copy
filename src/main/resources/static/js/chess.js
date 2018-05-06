@@ -128,9 +128,9 @@ $("#chessboard").on("click", "td", function(e){
 
 function promotePiece(coordinates) {
     let piece = "";
-    $("#promotionMenu").on("click", ".promoteOption", function(e){
+    $("#promotionMenu").on("click", "li", function(e){
         piece = e.target.id;
-        $(".modal").css("display", "none");
+        $('#modal').modal('hide')
         new_promotion(piece, convertFrontToBackCoordinates(coordinates));
         setPromotionPiece(piece, coordinates);
     });

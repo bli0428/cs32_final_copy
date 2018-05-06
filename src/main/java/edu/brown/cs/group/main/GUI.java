@@ -410,19 +410,9 @@ public final class GUI {
       }
       game.addUser(u);
 
-      String html = "";
-      for (User curr : game.getCurrPlayers()) {
-        html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>";
-        if (curr == null) {
-          html += "Waiting for Player";
-        } else {
-          html += curr.getUsername();
-        }
-        html += "</div></div></div>";
-      }
 
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Chess32: Join Game", "gameId", gameId, "users", html);
+          "Chess32: Join Game", "gameId", gameId, "users", "");
       return new ModelAndView(variables, "join.ftl");
     }
   }
