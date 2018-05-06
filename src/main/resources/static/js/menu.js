@@ -3,7 +3,10 @@ const JOIN_MESSAGE_TYPE = {
   UPDATE: 1,
   JOIN_USER: 2,
   START_CHESS_GAME: 3,
-  START_BUGHOUSE_GAME: 4
+  START_BUGHOUSE_GAME: 4,
+  SWITCH_TEAM: 5,
+  ADD_AI: 6,
+  LEAVE_GAME: 7
 };
 
 let menuConn;
@@ -54,6 +57,61 @@ const setupMenu = () => {
         break;
     }
   };
+  });
+}
+
+function addAI(index) {
+  var toSendPayload = {
+    id: myId,
+    gameId: $("#gameId").html(),
+    index: index
+  }
+
+  var toSend = {
+    type: 6,
+    payload: toSendPayload
+  }
+  menuConn.send(JSON.stringify(toSend));
+}
+
+function switchTeam() {
+  const postParameters = {};
+  $.post("/getUser", postParameters, responseJSON => {
+    // Parse the JSON response into a JavaScript object.
+    const responseObject = JSON.parse(responseJSON);
+    var toSendPayload = {
+      id: myId,
+      sparkSession: responseObject.session,
+      userId: responseObject.id,
+      gameId: $("#gameId").html()
+    }
+
+    var toSend = {
+      type: 5,
+      payload: toSendPayload
+    }
+    menuConn.send(JSON.stringify(toSend));
+  });
+}
+
+function leaveGame() {
+  const postParameters = {};
+  $.post("/getUser", postParameters, responseJSON => {
+    // Parse the JSON response into a JavaScript object.
+    const responseObject = JSON.parse(responseJSON);
+    var toSendPayload = {
+      id: myId,
+      sparkSession: responseObject.session,
+      userId: responseObject.id,
+      gameId: $("#gameId").html()
+    }
+
+    var toSend = {
+      type: 7,
+      payload: toSendPayload
+    }
+    menuConn.send(JSON.stringify(toSend));
+    $(location).attr('href', '/home');
   });
 }
 

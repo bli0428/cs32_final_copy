@@ -8,7 +8,6 @@ import java.util.Set;
 
 import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.Piece;
-
 import edu.brown.cs.group.games.Move;
 import edu.brown.cs.group.games.Player;
 import edu.brown.cs.group.positions.Position;
@@ -39,16 +38,16 @@ public class GUIPlayer implements Player {
 
   public synchronized void setMove(Move move) {
     moves.set(0, move);
-    notifyAll();
+    notify();
   }
 
   @Override
   public synchronized Move move() {
-    System.out.println("Started move");
+    // System.out.println("Started move");
     try {
-      System.out.println("Try block");
+      // System.out.println("Try block");
       wait();
-      System.out.println("After wait");
+      // System.out.println("After wait");
     } catch (InterruptedException e) {
       System.out.println("SHIT");
       try {
@@ -60,7 +59,7 @@ public class GUIPlayer implements Player {
       }
       return moves.get(0);
     }
-    System.out.println("exited try");
+    // System.out.println("exited try");
     moves.set(1, moves.get(0));
     return moves.get(0);
   }
