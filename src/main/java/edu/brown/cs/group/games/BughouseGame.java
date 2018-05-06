@@ -145,16 +145,27 @@ public class BughouseGame implements Game {
                 // System.out.println("here " + "b=" + b + "turn=" + turn
                 // + "update=" + b * 2 + turn);
                 JsonObject message = new JsonObject();
-                message.addProperty("type",
-                    ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
-                JsonObject payload = new JsonObject();
-                payload.addProperty("moveFrom", m.start().numString());
-                payload.addProperty("moveTo", m.end().numString());
-                message.add("payload", payload);
-                session.getRemote()
-                    .sendString(ChessWebSocket.GSON.toJson(message));
-                // System.out.println("Sent move");
-                break;
+
+                if (m.start() instanceof BankPosition) {
+                  message.addProperty("type",
+                      ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
+                  JsonObject payload = new JsonObject();
+                  payload.addProperty("moveFrom", m.start().numString());
+                  payload.addProperty("moveTo", m.end().numString());
+                  payload.addProperty("piece", m.getPiece().type());
+                  payload.addProperty("color", m.getPiece().color());
+                } else {
+                  message.addProperty("type",
+                      ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
+                  JsonObject payload = new JsonObject();
+                  payload.addProperty("moveFrom", m.start().numString());
+                  payload.addProperty("moveTo", m.end().numString());
+                  message.add("payload", payload);
+                  session.getRemote()
+                      .sendString(ChessWebSocket.GSON.toJson(message));
+                  // System.out.println("Sent move");
+                  break;
+                }
               }
             }
           }

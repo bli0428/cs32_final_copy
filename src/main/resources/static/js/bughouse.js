@@ -25,7 +25,7 @@ $("#bank").on("click", "td", function(e){
     let pieceCount = parseInt(pieceCountString);
 
     if (myTurn) {
-    	if (pieceCount != 0) {
+    	if (pieceCount !== 0) {
     		let selectTd = $(".bughousePiece#" + chooseArrayId).html();
     		let selectedPiece = selectTd.split("<")[0];
     		if (bughouseSelected && chooseArrayId == currBughousePiece) {
