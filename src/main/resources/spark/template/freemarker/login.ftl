@@ -19,7 +19,7 @@
 	</div>
 </nav>
 
-<div class="container">
+<div class="container" style="background: rgba(220, 242, 242, 0.9); margin-top: 5%; padding-bottom: 3%">
 	<div class="row">
 		<div class="col-lg-12 text-center" style="margin-top: 4%">
 			<p class="display-4" style="margin-bottom: 0px;margin-top: 10px">Welcome to Chess32!</p>
