@@ -99,11 +99,16 @@ public class JoinWebSocket {
         GUI.GAME_LIST.removeGame(g);
       } else if (g.getGameType().equals("Bughouse")
           && g.getCurrPlayersSize() == 4) {
+        System.out.println("in bughouse");
+        toSend.addProperty("order", "sdfasfa");
         toSend.addProperty("type", MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
         toSend.add("payload", payload);
 
-        for (Session s : sessions) {
+        for (int i = 0; i < sessions.size(); i++) {
+          Session s = sessions.get(i);
+          toSend.addProperty("order", i);
           s.getRemote().sendString(GSON.toJson(toSend));
+          toSend.remove("order");
         }
         GUI.GAME_LIST.removeGame(g);
       }
@@ -195,8 +200,11 @@ public class JoinWebSocket {
         toSend.addProperty("type", MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
         toSend.add("payload", payload);
 
-        for (Session s : sessions) {
+        for (int i = 0; i < sessions.size(); i++) {
+          Session s = sessions.get(i);
+          toSend.addProperty("order", i);
           s.getRemote().sendString(GSON.toJson(toSend));
+          toSend.remove("order");
         }
         GUI.GAME_LIST.removeGame(g);
 

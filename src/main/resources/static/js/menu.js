@@ -53,7 +53,7 @@ const setupMenu = () => {
         $(location).attr('href', '/chessgame/' + $("#gameId").html());
         break;
       case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html());
+        $(location).attr('href', '/bughousegame/' + $("#gameId").html());
         break;
     }
   };
