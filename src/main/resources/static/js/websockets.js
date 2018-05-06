@@ -82,6 +82,7 @@ const setup_live_moves = () => {
   };
 }
 
+//TODO: UPDATE myTurn and printTurn
 
 const new_tohighlight = currPiece => {
   let toSendPayload = {
@@ -110,6 +111,7 @@ const new_move = move => {
   }
 
   conn.send(JSON.stringify(toSend));
+  console.log("Sent move");
 }
 
 

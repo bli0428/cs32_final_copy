@@ -429,7 +429,7 @@ public final class GUI {
         if (curr == null) {
           html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>Waiting for Player</div></div></div>";
         } else {
-          html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>" + curr.getUsername(repl.getDbm()) + "</div></div></div>";
+          html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>" + curr.getUsername() + "</div></div></div>";
         }
       }
 

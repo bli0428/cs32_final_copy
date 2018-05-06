@@ -1,6 +1,7 @@
 <#assign content>
 
 
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	<a class="navbar-brand" href="/home">Chess32</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,7 +18,6 @@
 		</ul>
 	</div>
 </nav>
-
 
 <div class="container">
 	<div class="row">
@@ -48,9 +48,8 @@
 		</div>
 	</div>
 </div>
-
+<canvas id="canvas"></canvas>
 <!-- <a href="" class="btn btn-link pull-left">Forgot Password?</a> -->
-
 
 </#assign>
 <#include "main.ftl">

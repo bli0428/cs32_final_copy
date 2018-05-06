@@ -36,10 +36,12 @@
 </div>
 
 
+
 <div id="users">
 	${users}
 </div>
 <button onclick="switchTeam()">Switch team</button>
+<button onclick="leaveGame()">Leave game</button>
 
 </#assign>
 <#include "main.ftl">
