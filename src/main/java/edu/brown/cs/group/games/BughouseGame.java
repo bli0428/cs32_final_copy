@@ -112,7 +112,7 @@ public class BughouseGame implements Game {
       while (!gameOver) {
         // System.out.println("here, player " + getPlay(turn, b));
         if (boards[b].gameOver(turn) == 1) {
-          endGame();
+          endGame(getTeam(Math.abs(turn - 1), b));
           System.out.println("Game over!");
           break;
         }
@@ -183,8 +183,25 @@ public class BughouseGame implements Game {
     return -1;
   }
 
-  private synchronized void endGame() {
+  private synchronized void endGame(int team) {
     gameOver = true;
+    for (Session s : ChessWebSocket.games.keySet()) {
+      if (ChessWebSocket.games.get(s).equals(this)) {
+        JsonObject message = new JsonObject();
+        message.addProperty("type",
+            ChessWebSocket.MESSAGE_TYPE.GAMEOVER.ordinal());
+        JsonObject payload = new JsonObject();
+        String winner = "team " + (team + 1) + " ";
+        payload.addProperty("winner", winner);
+        message.add("payload", payload);
+        try {
+          s.getRemote().sendString(ChessWebSocket.GSON.toJson(message));
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
   public void play() {
