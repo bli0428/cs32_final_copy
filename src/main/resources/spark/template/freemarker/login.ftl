@@ -2,7 +2,7 @@
 
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	<a class="navbar-brand" href="/home">Chess32</a>
+	<a class="navbar-brand" href="/home">ChesS32</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
@@ -21,7 +21,7 @@
 <div class="container" style="background: rgba(220, 242, 242, 0.9); margin-top: 5%; padding-bottom: 2%">
 	<div class="row">
 		<div class="col-lg-12 text-center" style="margin-top: 4%">
-			<p class="display-4" style="margin-bottom: 0px;margin-top: 10px">Welcome to Chess32!</p>
+			<p class="display-4" style="margin-bottom: 0px;margin-top: 10px">Welcome to ChesS32!</p>
 			<p class="lead" style="margin-top: 0px">The premiere site to play Bughouse.</p>
 		</div>
 		<div class="form-group col-lg-8 offset-lg-2">
