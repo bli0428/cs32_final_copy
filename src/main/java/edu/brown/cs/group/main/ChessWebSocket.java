@@ -23,7 +23,6 @@ import edu.brown.cs.group.components.Pawn;
 import edu.brown.cs.group.components.Piece;
 import edu.brown.cs.group.components.Queen;
 import edu.brown.cs.group.components.Rook;
-import edu.brown.cs.group.games.ABCutoffAI;
 import edu.brown.cs.group.games.ABCutoffAIV2;
 import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
@@ -194,7 +193,9 @@ public class ChessWebSocket {
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
         displayPayload.addProperty("color", 0);
+        displayPayload.addProperty("game", gameType(games.get(session)));
         msg.add("payload", displayPayload);
+
         session.getRemote().sendString(GSON.toJson(msg));
       } else {
         int pid = recievedPayload.get("gamePosition").getAsInt();
@@ -204,6 +205,7 @@ public class ChessWebSocket {
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
         displayPayload.addProperty("color", WB[pid]);
+        displayPayload.addProperty("game", gameType(games.get(session)));
 
         msg.add("payload", displayPayload);
         session.getRemote().sendString(GSON.toJson(msg));
@@ -262,6 +264,15 @@ public class ChessWebSocket {
       return false;
     }
     return false;
+  }
+
+  public boolean gameType(Game g) {
+    if (g instanceof ChessGame) {
+      return true;
+    } else {
+      return false;
+    }
+
   }
 
   public String bankIdx(int i) {
