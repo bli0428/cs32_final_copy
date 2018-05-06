@@ -89,40 +89,48 @@ public class ABCutoffAIV2 implements Player {
 
     Map<Position, Set<Position>> validMoves = board.getValidMoves(color);
 
+    // System.out.println(validMoves.toString());
+
     // checks transposition table to try out the best move
     if (TT.containsKey(board)) {
       potentialBest = TT.get(board);
-      assert validMoves.containsKey(potentialBest.getStart());
-      assert validMoves.get(potentialBest.getStart())
-          .contains(potentialBest.getEnd());
-      Board newBoard = new Board(board);
+      if (validMoves.containsKey(potentialBest.getStart()) && validMoves
+          .get(potentialBest.getStart()).contains(potentialBest.getEnd())) {
+        // assert validMoves.containsKey(potentialBest.getStart());
+        // assert
+        // validMoves.get(potentialBest.getStart()).contains(potentialBest.getEnd());
+        Board newBoard = new Board(board);
 
-      try {
-        newBoard.processMove(potentialBest.getStart(), potentialBest.getEnd(),
-            promote(potentialBest.getEnd()));
+        try {
+          newBoard.processMove(potentialBest.getStart(), potentialBest.getEnd(),
+              promote(potentialBest.getEnd()));
 
-      } catch (InvalidMoveException e) {
+        } catch (InvalidMoveException e) {
 
-        e.printStackTrace();
-      }
-      double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur, color);
-      if (temp > v) {
+          e.printStackTrace();
+        }
+        double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
+            color);
+        if (temp > v) {
 
-        bestMove = new Move(potentialBest.getStart(), potentialBest.getEnd());
-        v = temp;
-        if (TT.containsKey(board)) {
-          if (TT.get(board).getDepth() <= iterDepth) {
+          bestMove = new Move(potentialBest.getStart(), potentialBest.getEnd());
+          v = temp;
+          if (TT.containsKey(board)) {
+            if (TT.get(board).getDepth() <= iterDepth) {
+              TT.put(new Board(board), new TranspositionMove(
+                  potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
+            }
+          } else {
             TT.put(new Board(board), new TranspositionMove(
                 potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
           }
-        } else {
-          TT.put(new Board(board), new TranspositionMove(
-              potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
-        }
 
-      }
-      if (v >= b) {
-        trimmed++;
+        }
+        if (v >= b) {
+          trimmed++;
+        }
+        bestMove.setValue(v);
+        a = Math.max(a, temp);
       }
     }
 
@@ -215,29 +223,29 @@ public class ABCutoffAIV2 implements Player {
     if (TT.containsKey(tempBoard)) {
       potentialBest = TT.get(tempBoard);
 
-      assert validMoves.containsKey(potentialBest.getStart());
-      assert validMoves.get(potentialBest.getStart())
-          .contains(potentialBest.getEnd());
-      Board newBoard = new Board(tempBoard);
+      if (validMoves.containsKey(potentialBest.getStart()) && validMoves
+          .get(potentialBest.getStart()).contains(potentialBest.getEnd())) {
+        Board newBoard = new Board(tempBoard);
 
-      try {
-        newBoard.processMove(potentialBest.getStart(), potentialBest.getEnd(),
-            new Queen(potentialBest.getEnd(), currColor));
-      } catch (InvalidMoveException e) {
-        e.printStackTrace();
-      }
-      double temp = alphaBetaCutoffMin(newBoard, ply - 1, a, b, heur,
-          Math.abs(currColor - 1));
-      if (temp > v) {
-        v = temp;
-        if (TT.containsKey(tempBoard)) {
-          if (TT.get(tempBoard).getDepth() <= iterDepth) {
+        try {
+          newBoard.processMove(potentialBest.getStart(), potentialBest.getEnd(),
+              new Queen(potentialBest.getEnd(), currColor));
+        } catch (InvalidMoveException e) {
+          e.printStackTrace();
+        }
+        double temp = alphaBetaCutoffMin(newBoard, ply - 1, a, b, heur,
+            Math.abs(currColor - 1));
+        if (temp > v) {
+          v = temp;
+          if (TT.containsKey(tempBoard)) {
+            if (TT.get(tempBoard).getDepth() <= iterDepth) {
+              TT.put(new Board(tempBoard), new TranspositionMove(
+                  potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
+            }
+          } else {
             TT.put(new Board(tempBoard), new TranspositionMove(
                 potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
           }
-        } else {
-          TT.put(new Board(tempBoard), new TranspositionMove(
-              potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
 
         }
 
@@ -248,16 +256,6 @@ public class ABCutoffAIV2 implements Player {
         }
         a = Math.max(a, v);
       }
-
-      // v = Math.max(v, alphaBetaCutoffMin(newBoard, ply - 1, a, b, heur,
-      // Math.abs(currColor - 1)));
-
-      if (v >= b) {
-        // System.out.println("returning from cutoffmax early" + v);
-        trimmed++;
-        return v;
-      }
-      a = Math.max(a, v);
 
     }
 
@@ -353,31 +351,31 @@ public class ABCutoffAIV2 implements Player {
     if (TT.containsKey(tempBoard)) {
       potentialBest = TT.get(tempBoard);
 
-      assert validMoves.containsKey(potentialBest.getStart());
-      assert validMoves.get(potentialBest.getStart())
-          .contains(potentialBest.getEnd());
-      Board newBoard = new Board(tempBoard);
+      if (validMoves.containsKey(potentialBest.getStart()) && validMoves
+          .get(potentialBest.getStart()).contains(potentialBest.getEnd())) {
+        Board newBoard = new Board(tempBoard);
 
-      try {
-        newBoard.processMove(potentialBest.getStart(), potentialBest.getEnd(),
-            new Queen(potentialBest.getEnd(), currColor));
-      } catch (InvalidMoveException e) {
-        e.printStackTrace();
-      }
+        try {
+          newBoard.processMove(potentialBest.getStart(), potentialBest.getEnd(),
+              new Queen(potentialBest.getEnd(), currColor));
+        } catch (InvalidMoveException e) {
+          e.printStackTrace();
+        }
 
-      double temp = alphaBetaCutoffMax(newBoard, ply - 1, a, b, heur,
-          Math.abs(currColor - 1));
+        double temp = alphaBetaCutoffMax(newBoard, ply - 1, a, b, heur,
+            Math.abs(currColor - 1));
 
-      if (temp < v) {
-        v = temp;
-        if (TT.containsKey(tempBoard)) {
-          if (TT.get(tempBoard).getDepth() <= iterDepth) {
+        if (temp < v) {
+          v = temp;
+          if (TT.containsKey(tempBoard)) {
+            if (TT.get(tempBoard).getDepth() <= iterDepth) {
+              TT.put(new Board(tempBoard), new TranspositionMove(
+                  potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
+            }
+          } else {
             TT.put(new Board(tempBoard), new TranspositionMove(
                 potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
           }
-        } else {
-          TT.put(new Board(tempBoard), new TranspositionMove(
-              potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
 
         }
 
@@ -392,18 +390,6 @@ public class ABCutoffAIV2 implements Player {
         }
         b = Math.min(b, v);
       }
-
-      // v = Math.min(v, alphaBetaCutoffMax(newBoard, ply - 1, a, b, heur,
-      // Math.abs(currColor - 1)));
-
-      if (v <= a) {
-        // System.out.println("returning from cutoffmin early" + v);
-        // System.out.println("trimmed 3");
-        trimmed++;
-        return v;
-      }
-      b = Math.min(b, v);
-
     }
 
     for (Position start : validMoves.keySet()) {
