@@ -57,5 +57,6 @@
 </div>
 
 <canvas id="canvas"></canvas>
+
 </#assign>
 <#include "main.ftl">
