@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
 
 import edu.brown.cs.group.accounts.MenuGame;
 import edu.brown.cs.group.accounts.User;
-import edu.brown.cs.group.games.ABCutoffAI;
+import edu.brown.cs.group.games.ABCutoffAIV2;
 import edu.brown.cs.group.games.WrapperGame;
 
 @WebSocket
@@ -188,7 +188,7 @@ public class JoinWebSocket {
             new WrapperGame(g.getGameType().equals("Chess")));
       }
 
-      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAI());
+      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAIV2(4));
 
       GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
 

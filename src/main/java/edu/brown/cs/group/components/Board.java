@@ -31,6 +31,8 @@ public class Board {
 
   private Piece passant;
 
+  private boolean bughouse;
+
   private int fiftyMove = 0;
   // private Boolean threefold;
 
@@ -47,6 +49,7 @@ public class Board {
     players = new Player[2];
     players[0] = white;
     players[1] = black;
+    bughouse = false;
   }
 
   /**
@@ -126,6 +129,90 @@ public class Board {
 
     players[0] = white;
     players[1] = black;
+
+    bughouse = false;
+  }
+
+  /**
+   * Default constructor that sets up the board in a standard chess
+   * configuration.
+   *
+   * @throws PositionException
+   *           if there's an internal issue with Position
+   */
+  public Board(Player white, Player black, boolean bughouse)
+      throws PositionException {
+    this.places = new HashMap<Position, Piece>();
+    players = new Player[2];
+    Position a1 = new Position(1, 1);
+    Position b1 = new Position(2, 1);
+    Position c1 = new Position(3, 1);
+    Position d1 = new Position(4, 1);
+    Position e1 = new Position(5, 1);
+    Position f1 = new Position(6, 1);
+    Position g1 = new Position(7, 1);
+    Position h1 = new Position(8, 1);
+    Position a2 = new Position(1, 2);
+    Position b2 = new Position(2, 2);
+    Position c2 = new Position(3, 2);
+    Position d2 = new Position(4, 2);
+    Position e2 = new Position(5, 2);
+    Position f2 = new Position(6, 2);
+    Position g2 = new Position(7, 2);
+    Position h2 = new Position(8, 2);
+    Position a8 = new Position(1, 8);
+    Position b8 = new Position(2, 8);
+    Position c8 = new Position(3, 8);
+    Position d8 = new Position(4, 8);
+    Position e8 = new Position(5, 8);
+    Position f8 = new Position(6, 8);
+    Position g8 = new Position(7, 8);
+    Position h8 = new Position(8, 8);
+    Position a7 = new Position(1, 7);
+    Position b7 = new Position(2, 7);
+    Position c7 = new Position(3, 7);
+    Position d7 = new Position(4, 7);
+    Position e7 = new Position(5, 7);
+    Position f7 = new Position(6, 7);
+    Position g7 = new Position(7, 7);
+    Position h7 = new Position(8, 7);
+    places.put(a1, new Rook(a1, 0));
+    places.put(b1, new Knight(b1, 0));
+    places.put(c1, new Bishop(c1, 0));
+    places.put(h1, new Rook(h1, 0));
+    places.put(g1, new Knight(g1, 0));
+    places.put(f1, new Bishop(f1, 0));
+    places.put(e1, new King(e1, 0));
+    places.put(d1, new Queen(d1, 0));
+    places.put(a2, new Pawn(a2, 0));
+    places.put(b2, new Pawn(b2, 0));
+    places.put(c2, new Pawn(c2, 0));
+    places.put(d2, new Pawn(d2, 0));
+    places.put(e2, new Pawn(e2, 0));
+    places.put(f2, new Pawn(f2, 0));
+    places.put(g2, new Pawn(g2, 0));
+    places.put(h2, new Pawn(h2, 0));
+    places.put(a8, new Rook(a8, 1));
+    places.put(b8, new Knight(b8, 1));
+    places.put(c8, new Bishop(c8, 1));
+    places.put(h8, new Rook(h8, 1));
+    places.put(g8, new Knight(g8, 1));
+    places.put(f8, new Bishop(f8, 1));
+    places.put(e8, new King(e8, 1));
+    places.put(d8, new Queen(d8, 1));
+    places.put(a7, new Pawn(a7, 1));
+    places.put(b7, new Pawn(b7, 1));
+    places.put(c7, new Pawn(c7, 1));
+    places.put(d7, new Pawn(d7, 1));
+    places.put(e7, new Pawn(e7, 1));
+    places.put(f7, new Pawn(f7, 1));
+    places.put(g7, new Pawn(g7, 1));
+    places.put(h7, new Pawn(h7, 1));
+
+    players[0] = white;
+    players[1] = black;
+
+    this.bughouse = bughouse;
   }
 
   /**
@@ -266,6 +353,8 @@ public class Board {
     }
     Piece p = places.get(start);
     if (!p.getValidMoves(this).contains(dest)) {
+      System.out
+          .println(p.type() + " " + start.toString() + " " + dest.toString());
       throw new InvalidMoveException(dest);
     }
 
@@ -415,25 +504,26 @@ public class Board {
       }
     }
 
-    // Filters all valid moves for moves that would leave King in check.
-    for (Position key : results.keySet()) {
+    if (!bughouse) {
+      // Filters all valid moves for moves that would leave King in check.
+      for (Position key : results.keySet()) {
 
-      Position start = key;
-      Set<Position> validMoves = results.get(key);
+        Position start = key;
+        Set<Position> validMoves = results.get(key);
 
-      for (Iterator<Position> i = validMoves.iterator(); i.hasNext();) {
-        Board tempBoard = new Board(this);
-        Position end = i.next();
-        try {
-          tempBoard.processMove(start, end, true);
-        } catch (InvalidMoveException e) {
-          e.printStackTrace();
-        }
-        if (tempBoard.check(color)) {
-          i.remove();
+        for (Iterator<Position> i = validMoves.iterator(); i.hasNext();) {
+          Board tempBoard = new Board(this);
+          Position end = i.next();
+          try {
+            tempBoard.processMove(start, end, true);
+          } catch (InvalidMoveException e) {
+            e.printStackTrace();
+          }
+          if (tempBoard.check(color)) {
+            i.remove();
+          }
         }
       }
-
     }
 
     return results;
@@ -623,40 +713,51 @@ public class Board {
    * @return 1 if in checkmate, 2 if in stalemate, 0 otherwise
    */
   public int gameOver(int color) {
-    boolean inCheck = check(color);
-    boolean hasMoves = false;
-    Map<Position, Set<Position>> map = getValidMoves(color);
+    if (!bughouse) {
+      boolean inCheck = check(color);
+      boolean hasMoves = false;
+      Map<Position, Set<Position>> map = getValidMoves(color);
 
-    for (Position p : map.keySet()) {
-      if (!map.get(p).isEmpty()) {
-        hasMoves = true;
+      for (Position p : map.keySet()) {
+        if (!map.get(p).isEmpty()) {
+          hasMoves = true;
 
-        break;
+          break;
+        }
       }
-    }
 
-    if (!hasMoves) {
-      return inCheck ? 1 : 2;
-    }
+      if (!hasMoves) {
+        return inCheck ? 1 : 2;
+      }
 
-    if (fiftyMove >= 50) {
+      if (fiftyMove >= 50) {
 
-      return 2;
-    }
-
-    Collection<Piece> pieces = places.values();
-    ArrayList<String> pieceTypes = new ArrayList<String>();
-    for (Piece piece : pieces) {
-      pieceTypes.add(piece.type());
-    }
-    if (pieces.size() <= 3) {
-
-      if (pieces.size() == 2 || pieceTypes.contains("b")
-          || pieceTypes.contains("k")) {
-        System.out.println("hi");
         return 2;
       }
 
+      Collection<Piece> pieces = places.values();
+      ArrayList<String> pieceTypes = new ArrayList<String>();
+      for (Piece piece : pieces) {
+        pieceTypes.add(piece.type());
+      }
+      if (pieces.size() <= 3) {
+
+        if (pieces.size() == 2 || pieceTypes.contains("b")
+            || pieceTypes.contains("k")) {
+          System.out.println("hi");
+          return 2;
+        }
+
+      }
+    } else {
+      int hasKing = 1;
+      for (Position p : places.keySet()) {
+        if (places.get(p).color() == color
+            && places.get(p).type().equals("K")) {
+          return 0;
+        }
+      }
+      return hasKing;
     }
 
     return 0;

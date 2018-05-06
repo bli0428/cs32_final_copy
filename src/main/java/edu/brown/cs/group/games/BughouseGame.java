@@ -47,8 +47,8 @@ public class BughouseGame implements Game {
    */
   public BughouseGame(Player p0, Player p1, Player p2, Player p3) {
     try {
-      board1 = new Board(p0, p2);
-      board2 = new Board(p3, p1);
+      board1 = new Board(p0, p2, true);
+      board2 = new Board(p3, p1, true);
     } catch (PositionException e) {
       // Shouldn't get here
       // TODO Auto-generated catch block
@@ -111,7 +111,7 @@ public class BughouseGame implements Game {
     public void run() {
       while (!gameOver) {
         // System.out.println("here, player " + getPlay(turn, b));
-        if (boards[b].checkmate(turn)) {
+        if (boards[b].gameOver(turn) == 1) {
           endGame();
           System.out.println("Game over!");
           break;
