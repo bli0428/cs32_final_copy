@@ -188,7 +188,7 @@ public final class GUI {
     public ModelAndView handle(Request req, Response res) {
 
       Map<String, Object> variables = ImmutableMap.of("title", "CHESS",
-          "gameId", 99);
+          "gameId", 99, "gamePosition", 0);
       return new ModelAndView(variables, "board.ftl");
     }
   }

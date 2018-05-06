@@ -23,6 +23,7 @@ import edu.brown.cs.group.games.WrapperGame;
 
 @WebSocket
 public class JoinWebSocket {
+
   public static final Gson GSON = new Gson();
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
 

@@ -24,6 +24,7 @@ function movePiece(start, end) {
 
         currPiece = "";
         selected = false;
+        validMoves = [];
 
         // update player's currPieces
         removePieceFromCurrPieces(start);
@@ -47,7 +48,9 @@ function moveOpponent(start, end) {
 }
 
 function getMoves(id) {
+    console.log(id);
     if (currPieces.includes(id)) {
+        console.log("currPieces includes id");
         new_tohighlight(id); // sends request to backend to get highlighted moves
     }
 }
@@ -81,20 +84,20 @@ function removePieceFromCurrPieces(id) {
 
 $("#chessboard").on("click", "td", function(e){
     let currId = e.target.id;
-    console.log(currId);
     if (myTurn) {
-        if (currPiece == currId) { //clicking on piece that is currently selected (deselect)
+        if (selected && currPiece == currId) { //clicking on piece that is currently selected (deselect)
             $("#" + currPiece).toggleClass('selected');
             selected = false;
             currPiece = "";
             if (validMoveFunctionality) {
                 displayValidMoves();  // clear the valid moves of the current piece
             }
+            validMoves = [];
         } else if (!selected && !bughouseSelected && validPiece(currId)) { // first click
             currPiece = currId;
             $("#" + currPiece).toggleClass('selected');
-            getMoves(currPiece);
             selected = true;
+            getMoves(currPiece);
         } else if (selected && !bughouseSelected && validPiece(currId)) { // another square has been picked
             $("#" + currPiece).toggleClass('selected');
             if (validMoveFunctionality) {
@@ -105,13 +108,15 @@ $("#chessboard").on("click", "td", function(e){
             getMoves(currPiece);
         } else if (!selected && bughouseSelected && validPiece(currId)) {
             $(".bughousePiece#" + currBughousePiece).toggleClass('selected');
+            currBughousePiece = "";
             bughouseSelected = false;
             currPiece = currId;
             $("#" + currPiece).toggleClass('selected');
-            getMoves(currPiece);
             selected = true;
+            getMoves(currPiece);
         } else if (selected && currId != currPiece && validMoves.includes(currId)) { // a move is being made
             movePiece(currPiece, currId);
+            selected = false;
             myTurn = false;
             printTurn(myTurn);
         }
