@@ -49,11 +49,11 @@ const setupMenu = () => {
         case JOIN_MESSAGE_TYPE.UPDATE:
         $("#users").html(data.payload.list);
         break;
-        case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html());
+      case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
+        $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
         break;
-        case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html());
+      case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
+        $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
         break;
       }
     };
@@ -143,7 +143,3 @@ function addGame(type) {
     // });
   });
 }
-
-
-
-

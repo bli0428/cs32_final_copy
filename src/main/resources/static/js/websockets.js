@@ -34,7 +34,8 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.CONNECT:
         myId = data.payload.id;
         let payloadJoin = {
-          id: $("#gameId").html()
+          id: $("#gameId").html(),
+          gamePosition: $("#gamePosition").html()
         }
         let msgJoin = {
           type: MESSAGE_TYPE.JOINGAME,
@@ -118,6 +119,9 @@ const new_move = move => {
 
 
 const new_promotion = (piece, position) => {
+  console.log(piece);
+  console.log(position);
+
   let toSendPayload = {
     id: myId,
     piece: piece,

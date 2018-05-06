@@ -44,8 +44,9 @@ public class PromotedPawn implements Piece {
   @Override
   public String type() {
     return "pp";
+    // return promotedPiece.type() + " p";
   }
-  
+
   public String innerType() {
     return promotedPiece.type();
   }
@@ -69,12 +70,12 @@ public class PromotedPawn implements Piece {
   public Set<Position> threatens(Board board) {
     return promotedPiece.threatens(board);
   }
-  
+
   @Override
   public int hashCode() {
     return promotedPiece.type().hashCode();
   }
-  
+
   @Override
   public boolean equals(Object o) {
     if (o instanceof PromotedPawn) {

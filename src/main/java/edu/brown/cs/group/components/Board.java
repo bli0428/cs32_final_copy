@@ -196,11 +196,6 @@ public class Board {
       }
     }
 
-    // Promotions
-    if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
-      p = new PromotedPawn(prmtPiece);
-    }
-
     // If there's a piece at the destination, it will get taken. Send it to a
     // bank.
     if (places.containsKey(dest)) {
@@ -235,6 +230,13 @@ public class Board {
     p.move(dest);
     places.put(dest, p);
     places.remove(start);
+
+    // Promotions
+    if (p.type().equals("p") && (dest.row() == 8 || dest.row() == 1)) {
+      p = new PromotedPawn(prmtPiece);
+      places.put(dest, p);
+    }
+
     return out;
   }
 
@@ -334,11 +336,11 @@ public class Board {
     p.move(dest);
     places.put(dest, p);
     places.remove(start);
-
     // Promotions
     if (!usrQuery && p.type().equals("p")
         && (dest.row() == 8 || dest.row() == 1)) {
       p = new PromotedPawn(players[p.color()].promote(dest));
+      places.put(dest, p);
     }
 
     return out;
@@ -365,26 +367,12 @@ public class Board {
 
     Piece out = null;
 
-    // If there's no piece at start or the piece at start can't move to end,
-    // throw an exception
-    if (!places.containsKey(start)) {
-      throw new InvalidMoveException(dest);
-    }
-
-    // If the piece is a pawn, and en-passant is an option, and the pawn is
-    // moving to the left or right column,
-    // this indicates that the player, in fact, does want to perform en-passant
-    if (passant != null && dest.col() != start.col() && p.type().equals("p")
-        && !places.containsKey(dest)) {
-      out = new Pawn(new BankPosition(), passant.color(), true);
-      places.remove(passant.position());
-    }
-
     // Process the move by updating the piece's internal position and the
     // positions map.
     p.move(dest);
     places.put(dest, p);
     places.remove(start);
+    System.out.println(toString());
     return out;
   }
 
@@ -439,7 +427,7 @@ public class Board {
         try {
           tempBoard.processMove(start, end, true);
         } catch (InvalidMoveException e) {
-          // e.printStackTrace();
+          e.printStackTrace();
         }
         if (tempBoard.check(color)) {
           i.remove();
