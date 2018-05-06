@@ -18,6 +18,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import edu.brown.cs.group.games.ABCutoffAI;
+import edu.brown.cs.group.games.ABCutoffAIV2;
 import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
 import edu.brown.cs.group.games.Game;
@@ -157,7 +158,7 @@ public class ChessWebSocket {
       GUIPlayer p = new GUIPlayer();
       playerSession.put(session, p);
       if (id == 99) {
-        ChessGame g = new ChessGame(p, new ABCutoffAI());
+        ChessGame g = new ChessGame(p, new ABCutoffAIV2(4));
         playerNum.put(p, 0);
         games.put(session, g);
         Thread t = new Thread((() -> g.play()));

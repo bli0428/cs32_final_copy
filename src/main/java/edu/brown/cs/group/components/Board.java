@@ -140,6 +140,9 @@ public class Board {
     for (Position key : oldBoard.places().keySet()) {
       this.places.put(key, oldBoard.places().get(key).copyOf());
     }
+    
+    fiftyMove = oldBoard.fiftyMove;
+    passant = oldBoard.passant;
 
     players = new Player[2];
     players[0] = oldBoard.players[0];
@@ -167,6 +170,8 @@ public class Board {
       throw new InvalidMoveException(dest);
     }
     Piece p = places.get(start);
+    
+    
     if (!p.getValidMoves(this).contains(dest)) {
       throw new InvalidMoveException(dest);
     }

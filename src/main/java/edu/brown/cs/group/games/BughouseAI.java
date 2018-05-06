@@ -18,12 +18,13 @@ import edu.brown.cs.group.positions.Position;
  * @author Brian
  *
  */
-public class ABCutoffAIV2 implements Player {
+public class BughouseAI implements Player {
 
   private Set<Piece> bank;
   private Board board;
   private int color;
   private int cutoff;
+  private Heuristic internalHeur;
   
   private Map<Board, TranspositionMove> TT;
   private int TT_MAX_SIZE = 100000;
@@ -40,10 +41,15 @@ public class ABCutoffAIV2 implements Player {
   /**
    * Instantiates a new ABCutoffAI with a bank.
    */
-  public ABCutoffAIV2(int cutoff) {
+  public BughouseAI(int cutoff) {
     this.cutoff = cutoff;
     bank = Collections.synchronizedSet(new HashSet<Piece>());
     TT = new HashMap<Board, TranspositionMove>();
+    
+  }
+  
+  public void requestPiece(String type) {
+    
   }
 
   private void startBench() {
@@ -424,134 +430,6 @@ public class ABCutoffAIV2 implements Player {
 
   }
   
-//  private double quisMin(Board tempBoard, double alpha, double beta) {
-//    nodesSearched ++;
-//    
-//    if (TT.containsKey(tempBoard)) {
-//      numRepeat++;
-//    }
-//    
-//    
-//    double v = Double.POSITIVE_INFINITY;
-//
-//    int gameOver = tempBoard.gameOver(color);
-//
-//    // checks for stalemate.
-//    if (gameOver == 2) {
-//      return -1000.0;
-//    }
-//
-//    // checks that the calling player is in checkmate.
-//    if (gameOver == 1) {
-//      return -10000.0;
-//    }
-//
-//    // checks that the enemy player is in checkmate.
-//    if (tempBoard.gameOver(Math.abs(color - 1)) == 1) {
-//      return 10000.0;
-//    }
-//
-//    // checks that the max depth has been reached.
-//    if (ply == 0) {
-//      // System.out.println("returning from cutoffmin" + v);
-//      // System.out.println(color);
-//      // System.out.println(heur.evalBoard(tempBoard));
-//      return heur.evalBoard(tempBoard).get(color);
-//    }
-//
-//    Map<Position, Set<Position>> validMoves = tempBoard
-//        .getValidMoves(currColor);
-//    
-// // checks transposition table
-//    if (TT.containsKey(tempBoard)) {
-//      potentialBest = TT.get(tempBoard);
-//      
-//      if (validMoves.containsKey(potentialBest.getStart()) && validMoves.get(potentialBest.getStart()).contains(potentialBest.getEnd())) {
-//        Board newBoard = new Board(tempBoard);
-//  
-//        try {
-//          newBoard.processMove(potentialBest.getStart(), potentialBest.getEnd(), new Queen(potentialBest.getEnd(), currColor));
-//        } catch (InvalidMoveException e) {
-//          e.printStackTrace();
-//        }
-//        
-//        double temp = alphaBetaCutoffMax(newBoard, ply - 1, a, b, heur,
-//            Math.abs(currColor - 1));
-//        
-//        if (temp < v) {
-//          v = temp;
-//          if (TT.containsKey(tempBoard)) {
-//            if (TT.get(tempBoard).getDepth() <= iterDepth) {
-//              TT.put(new Board(tempBoard), new TranspositionMove(potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
-//            }
-//          } else {
-//            TT.put(new Board(tempBoard), new TranspositionMove(potentialBest.getStart(), potentialBest.getEnd(), iterDepth));
-//          }
-//        }
-//            
-//            
-//  //      v = Math.min(v, alphaBetaCutoffMax(newBoard, ply - 1, a, b, heur,
-//  //          Math.abs(currColor - 1)));
-//        
-//        if (v <= a) {
-//          // System.out.println("returning from cutoffmin early" + v);
-//  //        System.out.println("trimmed 3");
-//          trimmed ++;
-//          return v;
-//        }
-//        b = Math.min(b, v);
-//      }
-//    }
-//    
-//    for (Position start : validMoves.keySet()) {
-//      for (Position end : validMoves.get(start)) {
-//        
-//        if (potentialBest != null) {
-//          if (start.equals(potentialBest.getStart()) && end.equals(potentialBest.getEnd())) {
-//            continue;
-//          }
-//        }
-//        
-//        Board newBoard = new Board(tempBoard);
-//
-//        try {
-//          newBoard.processMove(start, end, new Queen(end, currColor));
-//        } catch (InvalidMoveException e) {
-//          e.printStackTrace();
-//        }
-//        
-//        double temp = alphaBetaCutoffMax(newBoard, ply - 1, a, b, heur,
-//            Math.abs(currColor - 1));
-//        
-//        if (temp < v) {
-//          v = temp;
-//          if (TT.containsKey(tempBoard)) {
-//            if (TT.get(tempBoard).getDepth() <= iterDepth) {
-//              TT.put(new Board(tempBoard), new TranspositionMove(start, end, iterDepth));
-//            }
-//          } else {
-//            TT.put(new Board(tempBoard), new TranspositionMove(start, end, iterDepth));
-//          }
-//        }
-//            
-//            
-////        v = Math.min(v, alphaBetaCutoffMax(newBoard, ply - 1, a, b, heur,
-////            Math.abs(currColor - 1)));
-//        
-//        if (v <= a) {
-//          // System.out.println("returning from cutoffmin early" + v);
-////          System.out.println("trimmed 3");
-//          trimmed ++;
-//          return v;
-//        }
-//        b = Math.min(b, v);
-//      }
-//    }
-//    // System.out.println("returning from cutoffmin" + v);
-//    return v;
-//
-//  }
-//  }
 
   @Override
   public Set<Piece> bank() {
@@ -566,7 +444,7 @@ public class ABCutoffAIV2 implements Player {
     double beta = Double.POSITIVE_INFINITY;
     for (iterDepth = 1; iterDepth < cutoff + 1;) {
       
-      result = alphaBetaCutoff(iterDepth, new VersionTwoHeuristic(), alpha, beta);
+      result = alphaBetaCutoff(iterDepth, internalHeur, alpha, beta);
       
       if (Double.compare(result.value(), alpha) <= 0 || Double.compare(result.value(), beta) >= 0) {
         alpha = Double.NEGATIVE_INFINITY;
@@ -605,5 +483,4 @@ public class ABCutoffAIV2 implements Player {
   public void setColor(int color) {
     this.color = color;
   }
-
 }
