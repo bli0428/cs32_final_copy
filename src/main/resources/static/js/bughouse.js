@@ -59,6 +59,7 @@ $("#bank").on("click", "td", function(e){
     				updateBankIndex(chooseArrayId, -1);
     				currBughousePiece = "";
     				myTurn = false;
+    				printTurn(myTurn);
     			}
     		});
     	}
