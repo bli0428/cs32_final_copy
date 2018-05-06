@@ -28,6 +28,8 @@ public interface Player {
    *         player's move
    */
   Move move();
+  
+  void requestPiece(String type);
 
   /**
    * Sets this player's Board to board.

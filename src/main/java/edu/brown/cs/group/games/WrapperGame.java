@@ -77,4 +77,21 @@ public class WrapperGame {
     t.start();
   }
 
+  public void makeRequest(Player p, String type) {
+    int ind = players.indexOf(p);
+    players.get(partner(ind)).requestPiece(type);
+  }
+
+  public int partner(int p) {
+    if (p == 0)
+      return 1;
+    if (p == 1)
+      return 0;
+    if (p == 2)
+      return 3;
+    if (p == 4)
+      return 2;
+    return -1;
+  }
+
 }

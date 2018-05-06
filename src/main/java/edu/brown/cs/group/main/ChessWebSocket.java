@@ -45,7 +45,7 @@ public class ChessWebSocket {
   // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD, REQUEST
   }
 
   private static final boolean[] WB = { false, true, true, false };
@@ -224,6 +224,12 @@ public class ChessWebSocket {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+
+    } else if (messageInt == MESSAGE_TYPE.REQUEST.ordinal()) {
+      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+      String type = recievedPayload.get("piece").getAsString();
+      int id = recievedPayload.get("gameId").getAsInt();
+      lobbies.get(id).makeRequest(playerSession.get(session), type);
 
     }
 
