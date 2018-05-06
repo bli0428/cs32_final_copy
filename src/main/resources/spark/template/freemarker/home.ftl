@@ -19,7 +19,7 @@
 			</li>
 		</ul>
 		<form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
-				<input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Log Out">
+			<input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Log Out">
 		</form>
 	</div>
 </nav>
@@ -28,15 +28,25 @@
 	<div class="row">
 		<div class="col-lg-12 text-center" style="margin-top: 4%">
 			<p class="display-4" style="margin-bottom: 0px;margin-top: 10px">Welcome ${user}!</p>
-			<p class="lead" style="margin-top: 0px">${content}</p>
+			<p class="lead" style="margin-top: 0px">${message}</p>
 		</div>
+	</div>
+	<div class="row justify-content-center">
+		<div class="col-3 text-center">
+			<button class="btn btn-success" type="button" onclick="addGame('chess')">Create Chess Game</button>
+		</div>
+		<div class="col-3 text-center">
+			<button class="btn btn-success" type="button" onclick="addGame('bughouse')">Create Bughouse Game</button>
+		</div>
+	</div>
+	<div id='menu' class="row align-items-center" style="margin-top: 4%">
+		${content}
 	</div>
 </div>
 
 
 
-<button type="button" onclick="addGame('chess')">Create Chess game</button>
-<button type="button" onclick="addGame('bughouse')">Create Bughouse game</button>
+
 
 
 </#assign>

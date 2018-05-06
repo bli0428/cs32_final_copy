@@ -151,8 +151,38 @@ ul#promotionMenu li.promoteOption:hover {
 }
 
 
+/********************************************************/
 
+.saving span.load {
+  animation-name: blink;
+  animation-duration: 1.4s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
 
+.saving span.load:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.saving span.load:nth-child(3) {
+  animation-delay: .4s;
+}
+
+.saving span.load:nth-child(4) {
+  animation-delay: .6s;
+}
+
+@keyframes blink {
+  0% {
+    opacity: .2;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: .2;
+  }
+}
 
 /********************************************************/
 .colorgraph {

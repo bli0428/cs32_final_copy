@@ -90,12 +90,12 @@ $("#chessboard").on("click", "td", function(e){
             if (validMoveFunctionality) {
                 displayValidMoves();  // clear the valid moves of the current piece
             }
-        } else if (!selected && validPiece(currId)) { // first click
+        } else if (!selected && !bughouseSelected && validPiece(currId)) { // first click
             currPiece = currId;
             $("#" + currPiece).toggleClass('selected');
             getMoves(currPiece);
             selected = true;
-        } else if (selected && validPiece(currId)) { // another square has been picked
+        } else if (selected && !bughouseSelected && validPiece(currId)) { // another square has been picked
             $("#" + currPiece).toggleClass('selected');
             if (validMoveFunctionality) {
                 displayValidMoves(); // reset the previously selected valid moves
@@ -103,7 +103,14 @@ $("#chessboard").on("click", "td", function(e){
             currPiece = currId;
             $("#" + currPiece).toggleClass('selected');
             getMoves(currPiece);
-        } else if (selected && currId != currPiece && validMoves.includes(currId)) {
+        } else if (!selected && bughouseSelected) {
+            $(".bughousePiece#" + currBughousePiece).toggleClass('selected');
+            bughouseSelected = false;
+            currPiece = currId;
+            $("#" + currPiece).toggleClass('selected');
+            getMoves(currPiece);
+            selected = true;
+        } else if (selected && currId != currPiece && validMoves.includes(currId)) { // a move is being made
             movePiece(currPiece, currId);
             myTurn = false;
             printTurn(myTurn);

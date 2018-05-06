@@ -147,7 +147,7 @@ public final class GUI {
       }
 
       Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home", "user", u.getUsername(repl.getDbm()),
-          "content", "<div id=\"menu\">" + GAME_LIST.printListHtml() + "</div>");
+          "content", GAME_LIST.printListHtml(), "message", "");
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -343,7 +343,7 @@ public final class GUI {
         return new ModelAndView(variables, "changepassword.ftl");
       }
       Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home", "user", username,
-          "content", "Password successfully updated.");
+          "message", "Password successfully updated.", "content", "<div id=\"menu\">" + GAME_LIST.printListHtml() + "</div>");
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -380,7 +380,7 @@ public final class GUI {
         return new ModelAndView(variables, "changeusername.ftl");
       }
       Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Home", "user", newUsername,
-          "content", "Username successfully updated.");
+          "message", "Username successfully updated.", "content", "<div id=\"menu\">" + GAME_LIST.printListHtml() + "</div>");
       return new ModelAndView(variables, "home.ftl");
     }
   }
@@ -424,15 +424,14 @@ public final class GUI {
       }
       game.addUser(u);
 
-      String html = "<ul>";
+      String html = "";
       for (User curr : game.getCurrPlayers()) {
         if (curr == null) {
-          html += "<li>Waiting for player</li>";
+          html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>Waiting for Player</div></div></div>";
         } else {
-          html += "<li>" + curr.getUsername() + "</li>";
+          html += "<div class='col-md-3' style='margin-top: 2%'><div class='card'><div class='card-body'>" + curr.getUsername() + "</div></div></div>";
         }
       }
-      html += "</ul>";
 
       Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Join Game",
           "gameId", gameId, "users", html);
