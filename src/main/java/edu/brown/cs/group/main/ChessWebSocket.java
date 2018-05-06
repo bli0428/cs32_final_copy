@@ -21,7 +21,6 @@ import edu.brown.cs.group.components.Bishop;
 import edu.brown.cs.group.components.Knight;
 import edu.brown.cs.group.components.Pawn;
 import edu.brown.cs.group.components.Piece;
-import edu.brown.cs.group.components.PromotedPawn;
 import edu.brown.cs.group.components.Queen;
 import edu.brown.cs.group.components.Rook;
 import edu.brown.cs.group.games.ABCutoffAI;
@@ -237,13 +236,13 @@ public class ChessWebSocket {
 
   public Piece getPromote(String s, int color, Position pos) {
     if (s == "queen") {
-      return new PromotedPawn(new Queen(pos, color));
+      return new Queen(pos, color);
     } else if (s == "rook") {
-      return new PromotedPawn(new Rook(pos, color));
+      return new Rook(pos, color);
     } else if (s == "knight") {
-      return new PromotedPawn(new Knight(pos, color));
+      return new Knight(pos, color);
     } else if (s == "bishop") {
-      return new PromotedPawn(new Bishop(pos, color));
+      return new Bishop(pos, color);
     }
     return new Pawn(pos, color);
   }

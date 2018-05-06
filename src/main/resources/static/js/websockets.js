@@ -73,7 +73,7 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.DISPLAY:
         initializeBank(data.payload.color);
         initializeBoard(data.payload.color);
-        if (data.payload.color === "white") {
+        if (data.payload.color == 0) {
           myTurn = true;
         }
         printTurn(myTurn);
@@ -148,4 +148,3 @@ const new_placement = placement => {
 
   conn.send(JSON.stringify(toSend));
 }
-
