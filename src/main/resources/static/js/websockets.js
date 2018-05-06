@@ -66,7 +66,7 @@ const setup_live_moves = () => {
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        $(".modal").css("display", "block");
+        $('#modal').modal({backdrop: 'static', keyboard: false});
         let position = convertBackToFrontCoordinates(data.payload.position);
         promotePiece(position);
         myTurn = false;
@@ -75,7 +75,7 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.DISPLAY:
         initializeBank(data.payload.color); //TODO: have backend pass what type of game so we know whether or not to initialize bank
         initializeBoard(data.payload.color);
-        if (data.payload.color == 0) {
+        if (data.payload.color == 0) { // 0 = false
           myTurn = true;
         }
         printTurn(myTurn);
@@ -87,10 +87,8 @@ const setup_live_moves = () => {
   };
 }
 
-//TODO: UPDATE myTurn and printTurn
 
 const new_tohighlight = currPiece => {
-  console.log("in new_tohighlight "+currPiece);
   let toSendPayload = {
     id: myId,
     piece: convertFrontToBackCoordinates(currPiece)
@@ -117,7 +115,6 @@ const new_move = move => {
   }
 
   conn.send(JSON.stringify(toSend));
-  console.log("Sent move");
 }
 
 
