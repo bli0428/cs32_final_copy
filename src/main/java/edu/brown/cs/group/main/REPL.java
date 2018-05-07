@@ -86,7 +86,7 @@ public class REPL {
         Board b1 = new Board(temp, pl1, pl2);
 
         // ChessGame game = new ChessGame(pl1, pl2, b1);
-        ChessGame game = new ChessGame(new ABCutoffAIV2(1), new ABCutoffAIV2(4));
+        ChessGame game = new ChessGame(new ABCutoffAIV2(1, false), new ABCutoffAIV2(4, false));
         // ChessGame game = new ChessGame(new ReplPlayer(), new ReplPlayer());
         game.play();
       } catch (PositionException e) {

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +25,8 @@ import edu.brown.cs.group.positions.PositionException;
 public class Board {
 
   private static final String[] WB = { "W", "B" };
+  
+  private static List<Position> allPos = null;
 
   private Map<Position, Piece> places;
 
@@ -50,6 +53,23 @@ public class Board {
     players[0] = white;
     players[1] = black;
     bughouse = false;
+  }
+  
+  public static List<Position> getAllPos() {
+    if (allPos == null) {
+      allPos = new ArrayList<Position>();
+      for (int i = 1; i < 9; i++) {
+        for (int j = 1; i < 9; i++) {
+          try {
+            allPos.add(new Position(j,i));
+          } catch (PositionException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+    
+    return allPos;
   }
 
   /**

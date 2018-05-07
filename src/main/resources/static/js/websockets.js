@@ -12,15 +12,26 @@ const MESSAGE_TYPE = {
   TOPROMOTE: 10,
   DISPLAY: 11,
   BANKADD: 12,
-  REQUEST: 13
+  REQUEST: 13,
+  BOOP: 14
 };
 
 let conn;
 let myId = -1;
+//let ip;
 
 // Setup the WebSocket connection for live updating of scores.
 const setup_live_moves = () => {
-  conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
+ let ip;
+ const postParameters = {};
+ $.post("/getIp", postParameters, responseJSON => {
+
+    // Parse the JSON response into a JavaScript object.
+   const responseObject = JSON.parse(responseJSON);
+  	ip = responseObject.ip;
+  	console.log(ip);
+   conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
+   //conn = new WebSocket("ws://" + ip + ":4567/play");
 
   conn.onerror = err => {
     console.log('Connection error:', err);
@@ -42,7 +53,6 @@ const setup_live_moves = () => {
           type: MESSAGE_TYPE.JOINGAME,
           payload: payloadJoin
         }
-        console.log(msgJoin);
         conn.send(JSON.stringify(msgJoin));
         break;
       case MESSAGE_TYPE.HIGHLIGHT:
@@ -58,13 +68,11 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.UPDATE:
         console.log(data.payload.moveFrom);
         if (data.payload.moveFrom === "0,0") {
-          console.log("placement");
           let piece = data.payload.piece;
           let color = data.payload.color; // 0 for white, 1 for black
           let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
           setPlacement(color, piece, moveTo);
         } else {
-          console.log("move");
           let moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
           let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
           moveOpponent(moveFrom, moveTo);
@@ -87,6 +95,7 @@ const setup_live_moves = () => {
         initializeBoard(data.payload.color);
         if (data.payload.game == false) { // false = bughouse
           initializeBank(data.payload.color);
+          $('#listRequest').show();
         }
         if (data.payload.color == 0) { // 0 = false
           myTurn = true;
@@ -96,8 +105,14 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.BANKADD:
         let pieceIndex = data.payload.idx;
         updateBankIndex(pieceIndex, 1);
+        break;
+      case MESSAGE_TYPE.BOOP:
+        let piece = data.payload.piece;
+        createRequestAlert(piece);
+        break;
     }
   };
+  });
 }
 
 
@@ -177,6 +192,3 @@ const new_request = (piece, gameId) => {
 
   conn.send(JSON.stringify(toSend));
 }
-
-
-
