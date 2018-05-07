@@ -20,8 +20,8 @@ const setupMenu = () => {
     // Parse the JSON response into a JavaScript object.
     const responseObject = JSON.parse(responseJSON);
     ip = responseObject.ip;
-    //menuConn = new WebSocket("ws://" + ip + ":4567/join");
-    menuConn = new WebSocket("ws://localhost:4567/join");
+    menuConn = new WebSocket("ws://" + ip + ":4567/join");
+    //menuConn = new WebSocket("ws://localhost:4567/join");
 
 
     menuConn.onerror = err => {

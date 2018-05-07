@@ -16,10 +16,20 @@ const MESSAGE_TYPE = {
 
 let conn;
 let myId = -1;
+//let ip;
 
 // Setup the WebSocket connection for live updating of scores.
 const setup_live_moves = () => {
-  conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
+ let ip;
+ const postParameters = {};
+ $.post("/getIp", postParameters, responseJSON => {
+
+    // Parse the JSON response into a JavaScript object.
+   const responseObject = JSON.parse(responseJSON);
+  	ip = responseObject.ip;
+  	console.log(ip);
+   //conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
+   conn = new WebSocket("ws://" + ip + ":4567/play");
 
   conn.onerror = err => {
     console.log('Connection error:', err);
@@ -92,6 +102,7 @@ const setup_live_moves = () => {
         updateBankIndex(pieceIndex, 1);
     }
   };
+  });
 }
 
 
