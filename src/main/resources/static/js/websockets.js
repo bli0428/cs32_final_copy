@@ -84,7 +84,6 @@ const setup_live_moves = () => {
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.DISPLAY:
-        initializeBoard(data.payload.color);
         if (data.payload.game == false) { // false = bughouse
           initializeBank(data.payload.color);
         }
@@ -133,9 +132,6 @@ const new_move = move => {
 
 
 const new_promotion = (piece, position) => {
-  console.log(piece);
-  console.log(position);
-
   let toSendPayload = {
     id: myId,
     piece: piece,
@@ -167,10 +163,11 @@ const new_placement = placement => {
 }
 
 
-const new_request = piece => {
+const new_request = (piece, gameId) => {
   let toSendPayload = {
     id: myId,
-    piece: piece
+    piece: piece,
+    gameId: gameId
   }
 
   let toSend = {
