@@ -57,7 +57,7 @@ public class BughouseHeuristic implements Heuristic {
     rPiece = null;
   }
 
-  public int convert(String type) {
+  static public int convert(String type) {
     int index;
     switch (type) {
     case "q":
