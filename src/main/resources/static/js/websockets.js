@@ -85,14 +85,17 @@ const setup_live_moves = () => {
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        $('#modal').modal({backdrop: 'static', keyboard: false});
+        console.log("recieved promote message");
+        $('#modal').modal({});
         let position = convertBackToFrontCoordinates(data.payload.position);
+        console.log("position to promote: " + position);
         promotePiece(position);
         myTurn = false;
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBoard(data.payload.color);
+        console.log("payload game boolean: " + data.payload.game);
         if (data.payload.game == false) { // false = bughouse
           initializeBank(data.payload.color);
           $('#listRequest').show();
@@ -147,6 +150,9 @@ const new_move = move => {
 
 
 const new_promotion = (piece, position) => {
+  console.log("in new_promotion");
+  console.log("piece " + piece);
+  console.log("position " + position);
   let toSendPayload = {
     id: myId,
     piece: piece,
@@ -159,6 +165,7 @@ const new_promotion = (piece, position) => {
   }
 
   conn.send(JSON.stringify(toSend));
+  console.log("new_promotion sent");
 }
 
 

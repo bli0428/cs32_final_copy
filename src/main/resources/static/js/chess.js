@@ -127,9 +127,15 @@ $("#chessboard").on("click", "td", function(e){
 });
 
 function promotePiece(coordinates) {
+    console.log("in promote piece");
+    console.log("coordinates: " + coordinates);
     let piece = "";
+    $('#modal').modal('show')
     $("#promotionMenu").on("click", "li", function(e){
+        console.log("in even listener for promotion menu");
+        console.log("piece before: " + piece);
         piece = e.target.id;
+        console.log("piece after: " + piece);
         $('#modal').modal('hide')
         new_promotion(piece, convertFrontToBackCoordinates(coordinates));
         setPromotionPiece(piece, coordinates);
@@ -137,6 +143,7 @@ function promotePiece(coordinates) {
 }
 
 function setPromotionPiece(piece, coordinates) {
+    console.log("in setPromotionPiece");
     if ($("#" + coordinates).text() == "♟") {
         if (piece == "rook") {
             $("#" + coordinates).html('&#9820');
