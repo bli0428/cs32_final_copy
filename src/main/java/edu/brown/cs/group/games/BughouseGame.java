@@ -47,8 +47,8 @@ public class BughouseGame implements Game {
    */
   public BughouseGame(Player p0, Player p1, Player p2, Player p3) {
     try {
-      board1 = new Board(p0, p2);
-      board2 = new Board(p3, p1);
+      board1 = new Board(p0, p2, true);
+      board2 = new Board(p3, p1, true);
     } catch (PositionException e) {
       // Shouldn't get here
       // TODO Auto-generated catch block
@@ -111,8 +111,8 @@ public class BughouseGame implements Game {
     public void run() {
       while (!gameOver) {
         // System.out.println("here, player " + getPlay(turn, b));
-        if (boards[b].checkmate(turn)) {
-          endGame();
+        if (boards[b].gameOver(turn) == 1) {
+          endGame(getTeam(Math.abs(turn - 1), b));
           System.out.println("Game over!");
           break;
         }
@@ -145,16 +145,30 @@ public class BughouseGame implements Game {
                 // System.out.println("here " + "b=" + b + "turn=" + turn
                 // + "update=" + b * 2 + turn);
                 JsonObject message = new JsonObject();
-                message.addProperty("type",
-                    ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
-                JsonObject payload = new JsonObject();
-                payload.addProperty("moveFrom", m.start().numString());
-                payload.addProperty("moveTo", m.end().numString());
-                message.add("payload", payload);
-                session.getRemote()
-                    .sendString(ChessWebSocket.GSON.toJson(message));
-                // System.out.println("Sent move");
-                break;
+
+                if (m.start() instanceof BankPosition) {
+                  message.addProperty("type",
+                      ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
+                  JsonObject payload = new JsonObject();
+                  payload.addProperty("moveFrom", m.start().numString());
+                  payload.addProperty("moveTo", m.end().numString());
+                  payload.addProperty("piece", m.getPiece().type());
+                  payload.addProperty("color", m.getPiece().color());
+                  message.add("payload", payload);
+                  session.getRemote()
+                      .sendString(ChessWebSocket.GSON.toJson(message));
+                } else {
+                  message.addProperty("type",
+                      ChessWebSocket.MESSAGE_TYPE.UPDATE.ordinal());
+                  JsonObject payload = new JsonObject();
+                  payload.addProperty("moveFrom", m.start().numString());
+                  payload.addProperty("moveTo", m.end().numString());
+                  message.add("payload", payload);
+                  session.getRemote()
+                      .sendString(ChessWebSocket.GSON.toJson(message));
+                  // System.out.println("Sent move");
+                  break;
+                }
               }
             }
           }
@@ -183,8 +197,25 @@ public class BughouseGame implements Game {
     return -1;
   }
 
-  private synchronized void endGame() {
+  private synchronized void endGame(int team) {
     gameOver = true;
+    for (Session s : ChessWebSocket.games.keySet()) {
+      if (ChessWebSocket.games.get(s).equals(this)) {
+        JsonObject message = new JsonObject();
+        message.addProperty("type",
+            ChessWebSocket.MESSAGE_TYPE.GAMEOVER.ordinal());
+        JsonObject payload = new JsonObject();
+        String winner = "team " + (team + 1) + " ";
+        payload.addProperty("winner", winner);
+        message.add("payload", payload);
+        try {
+          s.getRemote().sendString(ChessWebSocket.GSON.toJson(message));
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
   public void play() {

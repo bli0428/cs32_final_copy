@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
 
 import edu.brown.cs.group.accounts.MenuGame;
 import edu.brown.cs.group.accounts.User;
-import edu.brown.cs.group.games.ABCutoffAI;
+import edu.brown.cs.group.games.ABCutoffAIV2;
 import edu.brown.cs.group.games.WrapperGame;
 
 @WebSocket
@@ -125,14 +125,14 @@ public class JoinWebSocket {
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
       int gameId = receivedPayload.get("gameId").getAsInt();
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
-      g.addUser(new User(-1, "AI player"));
+      g.addUser(new User(-1, "AI Player"));
 
       if (!ChessWebSocket.lobbies.keySet().contains(gameId)) {
         ChessWebSocket.lobbies.put(gameId,
             new WrapperGame(g.getGameType().equals("Chess")));
       }
 
-      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAI());
+      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAIV2(4));
 
       GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
 
@@ -222,6 +222,9 @@ public class JoinWebSocket {
 			if (users[i] == null) {
 				html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
 						+ "onclick='addAI(" + i + ")'>Add AI Player</button>";
+			} else if (users[i].getUsername().equals("AI Player")) {
+				html += "<p class='card-text'>" + users[i].getUsername() + "</p><button class='btn btn-info'"
+						+ "onclick='removeAI()'>Remove AI</button>";
 			} else {
 				html += "<p class='card-text'>" + users[i].getUsername() + "</p><button class='btn btn-info'"
 						+ "onclick='switchTeam()'>Switch Team</button>";
@@ -232,10 +235,12 @@ public class JoinWebSocket {
 	}
 	
 	private String colorPicker(int i) {
-		if (i % 2 == 0) {
+		if (i == 0 || i == 3) {
 			return "White";
-		} else {
+		} else if (i == 1 || i ==2){
 			return "Black";
+		} else {
+			return null;
 		}
 	}
 

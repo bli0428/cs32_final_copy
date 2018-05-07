@@ -162,4 +162,10 @@ public class GUIPlayer implements Player {
 
   }
 
+  @Override
+  public void requestPiece(String type) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }
