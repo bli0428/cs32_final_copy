@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 
+import org.sqlite.SQLiteException;
+
 import edu.brown.cs.group.handling.Handling;
 
 /*
@@ -142,21 +144,16 @@ public class DatabaseManager {
     }
   }
 
-  private void addAllCurrentUsers() {
+  private void addAllCurrentUsers() throws SQLException {
     ResultSet rs;
-    try {
-      prep = conn.prepareStatement("SELECT userid, username FROM accounts;");
-      rs = prep.executeQuery();
-      while (rs.next()) {
-        int userid = rs.getInt(1);
-        String username = rs.getString(2);
-        users.put(userid, new User(userid, username));
-      }
-      rs.close();
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    prep = conn.prepareStatement("SELECT userid, username FROM accounts;");
+    rs = prep.executeQuery();
+    while (rs.next()) {
+      int userid = rs.getInt(1);
+      String username = rs.getString(2);
+      users.put(userid, new User(userid, username));
     }
+    rs.close();
   }
 
   public String getUsername(int userId) {
