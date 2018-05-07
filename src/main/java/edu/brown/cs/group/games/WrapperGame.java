@@ -24,9 +24,6 @@ public class WrapperGame {
   }
 
   public synchronized int addPlayer(Player p) {
-    // while (players.size() < playerNum) {
-    // players.add(null);
-    // }
     int out = players.size();
     if (out == playerNum - 1) {
       players.add(p);
@@ -91,10 +88,6 @@ public class WrapperGame {
      * for (Player p : players) { if (p.equals(null)) return false; } return
      * true;
      */
-  }
-
-  public void removePlayer(int idx) {
-    players.set(idx, null);
   }
 
   public int partner(int p) {

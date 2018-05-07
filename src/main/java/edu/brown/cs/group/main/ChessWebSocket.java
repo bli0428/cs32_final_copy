@@ -212,11 +212,11 @@ public class ChessWebSocket {
         session.getRemote().sendString(GSON.toJson(msg));
       } else {
         int pid = recievedPayload.get("gamePosition").getAsInt();
-        if (!lobbies.get(id).full()) {
-          System.out.println("not full");
-          lobbies.get(id).addPlayer(p, pid);
-          playerNum.put(p, pid);
-        }
+
+        System.out.println("not full");
+        lobbies.get(id).addPlayer(p, pid);
+        playerNum.put(p, pid);
+
         JsonObject msg = new JsonObject();
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
