@@ -48,9 +48,7 @@ function moveOpponent(start, end) {
 }
 
 function getMoves(id) {
-    console.log(id);
     if (currPieces.includes(id)) {
-        console.log("currPieces includes id");
         new_tohighlight(id); // sends request to backend to get highlighted moves
     }
 }
@@ -128,6 +126,7 @@ $("#chessboard").on("click", "td", function(e){
 
 function promotePiece(coordinates) {
     let piece = "";
+    $('#modal').modal('show')
     $("#promotionMenu").on("click", "li", function(e){
         piece = e.target.id;
         $('#modal').modal('hide')
@@ -138,23 +137,23 @@ function promotePiece(coordinates) {
 
 function setPromotionPiece(piece, coordinates) {
     if ($("#" + coordinates).text() == "♟") {
-        if (piece == "rook") {
+        if (piece == "rook" || piece == "r") {
             $("#" + coordinates).html('&#9820');
-        } else if (piece == "queen") {
+        } else if (piece == "queen" || piece == "q") {
             $("#" + coordinates).html('&#9819');
-        } else if (piece == "knight") {
+        } else if (piece == "knight" || piece == "k") {
             $("#" + coordinates).html('&#9822');
-        } else if (piece == "bishop") {
+        } else if (piece == "bishop" || piece == "b") {
             $("#" + coordinates).html('&#9821');
         }
     } else {
-        if (piece == "rook") {
+        if (piece == "rook" || piece == "r") {
             $("#" + coordinates).html('&#9814');
-        } else if (piece == "queen") {
+        } else if (piece == "queen" || piece == "q") {
             $("#" + coordinates).html('&#9813');
-        } else if (piece == "knight") {
+        } else if (piece == "knight" || piece == "k") {
             $("#" + coordinates).html('&#9816');
-        } else if (piece == "bishop") {
+        } else if (piece == "bishop" || piece == "b") {
             $("#" + coordinates).html('&#9815');
         }
     }

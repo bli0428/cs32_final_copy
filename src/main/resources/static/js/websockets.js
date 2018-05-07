@@ -13,7 +13,8 @@ const MESSAGE_TYPE = {
   DISPLAY: 11,
   BANKADD: 12,
   REQUEST: 13,
-  BOOP: 14
+  BOOP: 14,
+  PUPDATE: 15
 };
 
 let conn;
@@ -66,7 +67,6 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
-        console.log(data.payload.moveFrom);
         if (data.payload.moveFrom === "0,0") {
           let piece = data.payload.piece;
           let color = data.payload.color; // 0 for white, 1 for black
@@ -85,11 +85,11 @@ const setup_live_moves = () => {
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        $('#modal').modal({backdrop: 'static', keyboard: false});
         let position = convertBackToFrontCoordinates(data.payload.position);
         promotePiece(position);
         myTurn = false;
         printTurn(myTurn);
+        console.log("promote sent");
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBoard(data.payload.color);
@@ -109,6 +109,14 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.BOOP:
         let piece = data.payload.piece;
         createRequestAlert(piece);
+        break;
+      case MESSAGE_TYPE.PUPDATE:
+        console.log("recieved pupdate")
+        let type = data.payload.type;
+        let coordinates = convertBackToFrontCoordinates(data.payload.position);
+        console.log(type);
+        console.log(coordinates);
+        setPromotionPiece(type, coordinates);
         break;
     }
   };
@@ -150,7 +158,8 @@ const new_promotion = (piece, position) => {
   let toSendPayload = {
     id: myId,
     piece: piece,
-    position: position
+    position: position,
+    gameId: $("#gameId").html()
   }
 
   let toSend = {
