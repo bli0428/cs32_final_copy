@@ -14,7 +14,8 @@ const MESSAGE_TYPE = {
   BANKADD: 12,
   REQUEST: 13,
   BOOP: 14,
-  PUPDATE: 15
+  PUPDATE: 15,
+  REDIRECT: 16
 };
 
 let conn;
@@ -99,6 +100,7 @@ const setup_live_moves = () => {
         }
         if (data.payload.color == 0) { // 0 = false
           myTurn = true;
+          black = false;
         }
         printTurn(myTurn);
         break;
@@ -113,11 +115,11 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.PUPDATE:
         console.log("recieved pupdate")
         let type = data.payload.type;
-        let coordinates = convertBackToFrontCoordinates(data.payload.position);
-        console.log(type);
-        console.log(coordinates);
-        setPromotionPiece(type, coordinates);
+        cachedCoordinates = convertBackToFrontCoordinates(data.payload.position);
+        setPromotionPiecePupdate(type);
         break;
+      case MESSAGE_TYPE.REDIRECT:
+        window.location.replace("localhost:4567/home");
     }
   };
   });
@@ -200,4 +202,5 @@ const new_request = (piece, gameId) => {
   }
 
   conn.send(JSON.stringify(toSend));
+
 }

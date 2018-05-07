@@ -82,6 +82,14 @@ public class WrapperGame {
     players.get(partner(ind)).requestPiece(type);
   }
 
+  public boolean full() {
+    return players.contains(null);
+    /*
+     * for (Player p : players) { if (p.equals(null)) return false; } return
+     * true;
+     */
+  }
+
   public int partner(int p) {
     if (p == 0)
       return 1;

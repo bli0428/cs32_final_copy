@@ -1,6 +1,7 @@
 package edu.brown.cs.group.main;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -45,7 +46,7 @@ public class ChessWebSocket {
   // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD, REQUEST, BOOP, PUPDATE
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD, REQUEST, BOOP, PUPDATE, REDIRECT
   }
 
   private static final boolean[] WB = { false, true, true, false };
@@ -144,11 +145,22 @@ public class ChessWebSocket {
       String piece = recievedPayload.get("piece").getAsString();
       String[] p1 = piece.split(",");
       try {
-        Position start = new Position(Integer.parseInt(p1[0]),
-            Integer.parseInt(p1[1]));
-        Set<Position> moves = games.get(session)
-            .moves(playerNum.get(playerSession.get(session)), start);
-        System.out.println(games.get(session));
+        Set<Position> moves = new HashSet<Position>();
+        try {
+          if (games.get(session) == null) {
+
+          }
+          Position start = new Position(Integer.parseInt(p1[0]),
+              Integer.parseInt(p1[1]));
+          moves = games.get(session)
+              .moves(playerNum.get(playerSession.get(session)), start);
+
+          System.out.println(games.get(session));
+        } catch (NullPointerException npe) {
+          System.out.println(playerNum.get(playerSession.get(session)));
+          npe.printStackTrace();
+
+        }
         JsonArray outMoves = new JsonArray();
         try {
           for (Position p : moves) {
@@ -200,8 +212,11 @@ public class ChessWebSocket {
         session.getRemote().sendString(GSON.toJson(msg));
       } else {
         int pid = recievedPayload.get("gamePosition").getAsInt();
+
+        System.out.println("not full");
         lobbies.get(id).addPlayer(p, pid);
         playerNum.put(p, pid);
+
         JsonObject msg = new JsonObject();
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
