@@ -32,23 +32,31 @@
       <table id="chessboard"></table>
     </div>
     <div class="col">
-      <div class="row" id='alertBox' style="max-height: 30%">
+      <div class="container">
+        <div class="row justify-content-center" style="min-height: 32%">
+          <div class="col" id='alertBox'>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col">
+            <ul id='listRequest' class="list-group" style="display: none">
+              <li class="list-group-item disabled">Request a Piece:</li>
+              <li id='p' class="list-group-item list-group-item-action">Pawn</li>
+              <li id='r' class="list-group-item list-group-item-action">Rook</li>
+              <li id='k' class="list-group-item list-group-item-action">Knight</li>
+              <li id='b' class="list-group-item list-group-item-action">Bishop</li>
+              <li id='q' class="list-group-item list-group-item-action">Queen</li>
+            </ul>
+          </div>
+        </div>
+        
       </div>
-      <div class="row">
-        <ul id='listRequest' class="list-group" style="display: none">
-          <li class="list-group-item disabled">Request a Piece:</li>
-          <li id='p' class="list-group-item list-group-item-action">Pawn</li>
-          <li id='r' class="list-group-item list-group-item-action">Rook</li>
-          <li id='k' class="list-group-item list-group-item-action">Knight</li>
-          <li id='b' class="list-group-item list-group-item-action">Bishop</li>
-          <li id='q' class="list-group-item list-group-item-action">Queen</li>
-        </ul>
-      </div>
-      
     </div>
   </div>
   <div class="row" style="margin-top: 3%">
-    <table id="bank"></table>
+    <div class="col">
+      <table id="bank"></table>
+    </div>
   </div> 
 </div>
 

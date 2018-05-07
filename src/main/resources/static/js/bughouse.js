@@ -98,10 +98,10 @@ function createRequestAlert(piece) {
 		curr = "Pawn";
 	}
 	let html = "<div class='alert alert-info alert-success fade show' role='alert'>" +
-	"<strong>Holy guacamole!</strong>Your teammate requests a " + curr + "." +
+	"<strong>Holy guacamole!</strong><br>Your teammate requests a " + curr + "." +
 	"<button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
 	"<span aria-hidden='true'>&times;</span></button></div>"
-	$("#alertBox").text(html);
+	$("#alertBox").html(html);
 }
 
 
