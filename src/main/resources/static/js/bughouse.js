@@ -78,7 +78,7 @@ function updateBankIndex(index, x) {
 
 $("#listRequest").on("click", ".list-group-item-action", function(e){
 	let currId = e.target.id;
-	let gameId = $("#gameId");
+	let gameId = $("#gameId").text();
 	new_request(currId, gameId);
 });
 

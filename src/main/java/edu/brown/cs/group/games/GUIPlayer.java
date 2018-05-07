@@ -165,7 +165,21 @@ public class GUIPlayer implements Player {
   @Override
   public void requestPiece(String type) {
     // TODO Auto-generated method stub
-    
+    for (Session s : ChessWebSocket.playerSession.keySet()) {
+      if (ChessWebSocket.playerSession.get(s).equals(this)) {
+        JsonObject message = new JsonObject();
+        message.addProperty("type", ChessWebSocket.MESSAGE_TYPE.BOOP.ordinal());
+        JsonObject payload = new JsonObject();
+        payload.addProperty("piece", type);
+        message.add("payload", payload);
+        try {
+          s.getRemote().sendString(ChessWebSocket.GSON.toJson(message));
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
 }
