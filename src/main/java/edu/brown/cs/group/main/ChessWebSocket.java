@@ -157,6 +157,7 @@ public class ChessWebSocket {
 
           System.out.println(games.get(session));
         } catch (NullPointerException npe) {
+          System.out.println(playerNum.get(playerSession.get(session)));
           npe.printStackTrace();
 
         }
