@@ -6,7 +6,8 @@ const JOIN_MESSAGE_TYPE = {
   START_BUGHOUSE_GAME: 4,
   SWITCH_TEAM: 5,
   ADD_AI: 6,
-  LEAVE_GAME: 7
+  LEAVE_GAME: 7,
+  REMOVE_AI: 8
 };
 
 let menuConn;
@@ -69,6 +70,20 @@ function addAI(index) {
 
   let toSend = {
     type: 6,
+    payload: toSendPayload
+  }
+  menuConn.send(JSON.stringify(toSend));
+}
+
+function removeAI(index) {
+  let toSendPayload = {
+    id: myId,
+    gameId: $("#gameId").html(),
+    index: index
+  }
+
+  let toSend = {
+    type: 8,
     payload: toSendPayload
   }
   menuConn.send(JSON.stringify(toSend));
