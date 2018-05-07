@@ -275,9 +275,18 @@ public final class GUI {
             "Chess32: Create Account", "message", message);
         return new ModelAndView(variables, "newaccount.ftl");
       }
-      Map<String, Object> variables = ImmutableMap.of("title", "Chess32: Login",
-          "message", "New account created.");
-      return new ModelAndView(variables, "login.ftl");
+      repl.processCommand("login " + username + " " + password);
+      User user = repl.getUser();
+
+      if (user != null) {
+        SESSIONS.put(req.session(true).id(), user);
+        res.redirect("/home");
+      } else {
+        Map<String, Object> variables = ImmutableMap.of("title",
+            "Chess32: Login", "message", "Invalid username or password.");
+        return new ModelAndView(variables, "login.ftl");
+      }
+      return null;
     }
   }
 

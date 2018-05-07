@@ -19,10 +19,6 @@ table#chessboard {
   width: 140px;
 }
 
-#boardHolder {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
 
 #chessboard tr td { 
   width: 60px; 
@@ -97,15 +93,13 @@ p#message {
   width: 200px;
 }
 
-#messageHolder {
-  margin-top: 20px;
-}
 
 
 span.badge {
   font-size: 12px;
   position: absolute;
 }
+
 
 
 

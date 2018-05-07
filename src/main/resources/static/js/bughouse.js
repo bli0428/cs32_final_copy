@@ -58,6 +58,7 @@ $("#bank").on("click", "td", function(e){
     				new_placement(placement);
     				updateBankIndex(chooseArrayId, -1);
     				currBughousePiece = "";
+    				bughouseSelected = false;
     				myTurn = false;
     				printTurn(myTurn);
     			}
@@ -70,18 +71,37 @@ $("#bank").on("click", "td", function(e){
 function updateBankIndex(index, x) {
 	let countId = "span#" + index.toString() + ".badge";
 	let pieceCountString = $(countId).html(); // gets curr piece count
-    let pieceCount = parseInt(pieceCountString);
-    let newPieceCount = pieceCount + x;
+	let pieceCount = parseInt(pieceCountString);
+	let newPieceCount = pieceCount + x;
 	$(countId).html(newPieceCount.toString());
 }
 
+$("#listRequest").on("click", ".list-group-item-action", function(e){
+	let currId = e.target.id;
+	let gameId = $("#gameId").text();
+	new_request(currId, gameId);
+});
 
 
 
-
-
-
-
-
+function createRequestAlert(piece) {
+	let curr = "";
+	if (piece == "r") {
+		curr = "Rook";
+	} else if (piece == "q") {
+		curr = "Queen";
+	} else if (piece == "k") {
+		curr = "Knight";
+	} else if (piece == "b") {
+		curr = "Bishop";
+	} else if (piece == "p") {
+		curr = "Pawn";
+	}
+	let html = "<div class='alert alert-info alert-success fade show' role='alert'>" +
+	"<strong>Holy guacamole!</strong>Your teammate requests a " + curr + "." +
+	"<button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
+	"<span aria-hidden='true'>&times;</span></button></div>"
+	$("#alertBox").text(html);
+}
 
 

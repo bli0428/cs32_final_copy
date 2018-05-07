@@ -23,7 +23,6 @@ import edu.brown.cs.group.components.Pawn;
 import edu.brown.cs.group.components.Piece;
 import edu.brown.cs.group.components.Queen;
 import edu.brown.cs.group.components.Rook;
-import edu.brown.cs.group.games.ABCutoffAI;
 import edu.brown.cs.group.games.ABCutoffAIV2;
 import edu.brown.cs.group.games.ChessGame;
 import edu.brown.cs.group.games.GUIPlayer;
@@ -46,7 +45,7 @@ public class ChessWebSocket {
   // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD, REQUEST, BOOP
   }
 
   private static final boolean[] WB = { false, true, true, false };
@@ -185,7 +184,7 @@ public class ChessWebSocket {
       GUIPlayer p = new GUIPlayer();
       playerSession.put(session, p);
       if (id == 99) {
-        ChessGame g = new ChessGame(p, new ABCutoffAIV2(4));
+        ChessGame g = new ChessGame(p, new ABCutoffAIV2(4, false));
         playerNum.put(p, 0);
         games.put(session, g);
         Thread t = new Thread((() -> g.play()));
@@ -194,7 +193,9 @@ public class ChessWebSocket {
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
         displayPayload.addProperty("color", 0);
+        displayPayload.addProperty("game", gameType(games.get(session)));
         msg.add("payload", displayPayload);
+
         session.getRemote().sendString(GSON.toJson(msg));
       } else {
         int pid = recievedPayload.get("gamePosition").getAsInt();
@@ -204,6 +205,7 @@ public class ChessWebSocket {
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
         displayPayload.addProperty("color", WB[pid]);
+        displayPayload.addProperty("game", gameType(games.get(session)));
 
         msg.add("payload", displayPayload);
         session.getRemote().sendString(GSON.toJson(msg));
@@ -222,6 +224,12 @@ public class ChessWebSocket {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+
+    } else if (messageInt == MESSAGE_TYPE.REQUEST.ordinal()) {
+      JsonObject recievedPayload = received.get("payload").getAsJsonObject();
+      String type = recievedPayload.get("piece").getAsString();
+      int id = Integer.parseInt(recievedPayload.get("gameId").getAsString());
+      lobbies.get(id).makeRequest(playerSession.get(session), type);
 
     }
 
@@ -262,6 +270,15 @@ public class ChessWebSocket {
       return false;
     }
     return false;
+  }
+
+  public boolean gameType(Game g) {
+    if (g instanceof ChessGame) {
+      return true;
+    } else {
+      return false;
+    }
+
   }
 
   public String bankIdx(int i) {

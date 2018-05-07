@@ -1,8 +1,10 @@
 package edu.brown.cs.group.games;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,6 +12,7 @@ import edu.brown.cs.group.components.Board;
 import edu.brown.cs.group.components.InvalidMoveException;
 import edu.brown.cs.group.components.Piece;
 import edu.brown.cs.group.components.Queen;
+import edu.brown.cs.group.positions.BankPosition;
 import edu.brown.cs.group.positions.Position;
 
 /**
@@ -20,10 +23,12 @@ import edu.brown.cs.group.positions.Position;
  */
 public class ABCutoffAIV2 implements Player {
 
-  private Set<Piece> bank;
+  private List<Piece> bank;
   private Board board;
   private int color;
   private int cutoff;
+  private BughouseHeuristic internalHeur;
+  private boolean isBughouse;
 
   private Map<Board, TranspositionMove> TT;
   private int TT_MAX_SIZE = 100000;
@@ -39,16 +44,22 @@ public class ABCutoffAIV2 implements Player {
   /**
    * Instantiates a new ABCutoffAI with a bank.
    */
-  public ABCutoffAIV2(int cutoff) {
+  public ABCutoffAIV2(int cutoff, boolean isBughouse) {
     this.cutoff = cutoff;
-    bank = Collections.synchronizedSet(new HashSet<Piece>());
+    bank = Collections.synchronizedList(new ArrayList<Piece>());
     TT = new HashMap<Board, TranspositionMove>();
+    this.isBughouse = isBughouse;
+    
   }
+  
 
   private void startBench() {
     nodesSearched = 0;
     startTime = System.nanoTime();
-
+  }
+  
+  public void requestPiece(String type) {
+    internalHeur.addRequest(type);
   }
 
   private void printBench() {
@@ -110,7 +121,7 @@ public class ABCutoffAIV2 implements Player {
           e.printStackTrace();
         }
         double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
-            color);
+            Math.abs(color - 1));
         if (temp > v) {
 
           bestMove = new Move(potentialBest.getStart(), potentialBest.getEnd());
@@ -134,6 +145,44 @@ public class ABCutoffAIV2 implements Player {
       }
     }
 
+//    for (Piece placingPiece : bank) {
+//      for (Position pos : Board.getAllPos()) {
+//        if (!board.places().containsKey(pos)) {
+//          Board newBoard = new Board(board);
+//    
+//          try {
+//            newBoard.processPlace(new BankPosition(), dest, p);
+//    
+//          } catch (InvalidMoveException e) {
+//    
+//            e.printStackTrace();
+//          }
+//          double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
+//              Math.abs(color - 1));
+//          if (temp > v) {
+//    
+//            bestMove = new Move(start, end);
+//            bestMove.setValue(temp);
+//            v = temp;
+//            if (TT.containsKey(board)) {
+//              if (TT.get(board).getDepth() <= iterDepth) {
+//                TT.put(new Board(board),
+//                    new TranspositionMove(start, end, iterDepth));
+//              }
+//            } else {
+//              TT.put(new Board(board),
+//                  new TranspositionMove(start, end, iterDepth));
+//            }
+//    
+//          }
+//          if (v >= b) {
+//            trimmed++;
+//          }
+//          a = Math.max(a, temp);
+//        }
+//      }
+//    }
+    
     for (Position start : validMoves.keySet()) {
       for (Position end : validMoves.get(start)) {
         if (potentialBest != null) {
@@ -153,7 +202,7 @@ public class ABCutoffAIV2 implements Player {
           e.printStackTrace();
         }
         double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
-            color);
+            Math.abs(color - 1));
         if (temp > v) {
 
           bestMove = new Move(start, end);
@@ -180,6 +229,9 @@ public class ABCutoffAIV2 implements Player {
     printBench();
     System.out.println(bestMove.toString());
     System.out.println(v);
+    if (board.places().get(bestMove.end()) != null && board.places().get(bestMove.end()).type().equals(internalHeur.getRequest())) {
+      internalHeur.removeRequest("");
+    }
     return bestMove;
   }
 
@@ -198,7 +250,8 @@ public class ABCutoffAIV2 implements Player {
 
     // checks for stalemate.
     if (gameOver == 2) {
-      return 0;
+//      return 0;
+      return -200000.0;
     }
 
     // checks that the calling player is in checkmate.
@@ -323,17 +376,17 @@ public class ABCutoffAIV2 implements Player {
 
     // checks for stalemate.
     if (gameOver == 2) {
-      return -1000.0;
+      return -200000.0;
     }
 
     // checks that the calling player is in checkmate.
     if (gameOver == 1) {
-      return -10000.0;
+      return -200000.0;
     }
 
     // checks that the enemy player is in checkmate.
     if (tempBoard.gameOver(Math.abs(color - 1)) == 1) {
-      return 10000.0;
+      return 200000.0;
     }
 
     // checks that the max depth has been reached.
@@ -581,7 +634,7 @@ public class ABCutoffAIV2 implements Player {
   // }
 
   @Override
-  public Set<Piece> bank() {
+  public List<Piece> bank() {
     return bank;
   }
 
@@ -593,7 +646,7 @@ public class ABCutoffAIV2 implements Player {
     double beta = Double.POSITIVE_INFINITY;
     for (iterDepth = 1; iterDepth < cutoff + 1;) {
 
-      result = alphaBetaCutoff(iterDepth, new VersionTwoHeuristic(), alpha,
+      result = alphaBetaCutoff(iterDepth, internalHeur, alpha,
           beta);
 
       if (Double.compare(result.value(), alpha) <= 0
@@ -603,10 +656,10 @@ public class ABCutoffAIV2 implements Player {
         System.out.println("repeating because outside window size");
       } else {
         iterDepth++;
-        alpha = result.value() - 21.0;
-        beta = result.value() + 21.0;
-        // alpha = Double.NEGATIVE_INFINITY;
-        // beta = Double.POSITIVE_INFINITY;
+        alpha = result.value() - 200.0;
+        beta = result.value() + 200.0;
+//         alpha = Double.NEGATIVE_INFINITY;
+//         beta = Double.POSITIVE_INFINITY;
       }
 
     }
@@ -627,12 +680,15 @@ public class ABCutoffAIV2 implements Player {
   @Override
   public void acceptPiece(Piece p) {
     bank.add(p);
-
+    Collections.sort(bank, (Piece p1, Piece p2) -> 
+      Integer.compare(BughouseHeuristic.convert(p1.type()), BughouseHeuristic.convert(p2.type()))
+    );
   }
 
   @Override
   public void setColor(int color) {
     this.color = color;
+    internalHeur = new BughouseHeuristic(color);
   }
 
   @Override
