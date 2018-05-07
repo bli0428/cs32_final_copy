@@ -76,13 +76,12 @@ public class JoinWebSocket {
       int gameId = receivedPayload.get("gameId").getAsInt();
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
       gameTypes.put(g.getId(), g.getGameType());
-      // System.out.println(menuGameToUsersHtml(g));
 
-      GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
+      addNextSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
 
       checkForStartGame(g, gameId);
     } else if (messageInt == MESSAGE_TYPE.SWITCH_TEAM.ordinal()) {
-      // System.out.println("in switch team");
+      System.out.println("in switch team");
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
       // System.out.println(receivedPayload.get("sparkSession").getAsString());
       int gameId = receivedPayload.get("gameId").getAsInt();
@@ -90,9 +89,7 @@ public class JoinWebSocket {
 
       User[] users = g.getCurrPlayers();
       if (g.getGameType().equals("Chess")) {
-        User u = users[0];
-        users[0] = users[1];
-        users[1] = u;
+        switchUsers(0, 1, users, gameId);
       } else if (g.getGameType().equals("Bughouse")) {
         for (int i = 0; i < users.length; i++) {
           User u = users[i];
@@ -132,9 +129,10 @@ public class JoinWebSocket {
             new WrapperGame(g.getGameType().equals("Chess")));
       }
 
-      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAIV2(4, true));
+      ChessWebSocket.lobbies.get(gameId)
+          .addPlayer(new ABCutoffAIV2(4, gameType(g.getGameType())));
 
-      GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
+      // addNextSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
 
       checkForStartGame(g, gameId);
     } else if (messageInt == MESSAGE_TYPE.LEAVE_GAME.ordinal()) {
@@ -143,14 +141,16 @@ public class JoinWebSocket {
       int gameId = receivedPayload.get("gameId").getAsInt();
       int userId = receivedPayload.get("userId").getAsInt();
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
-      g.removeUser(userId);
+      if (g != null) {
+        g.removeUser(userId);
+      }
 
-      GUI.GAME_ID_TO_SESSIONS.get(gameId).remove(session);
+      removeSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
 
       sendUpdate(g, gameId);
     }
   }
-  
+
   private void sendUpdate(MenuGame g, int gameId) throws IOException {
     JsonObject payload = new JsonObject();
     payload.addProperty("list", menuGameToUsersHtml(g));
@@ -159,13 +159,34 @@ public class JoinWebSocket {
     toSend.addProperty("type", MESSAGE_TYPE.UPDATE.ordinal());
     toSend.add("payload", payload);
 
-    List<Session> sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
+    Session[] sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
     for (Session s : sessions) {
-      s.getRemote().sendString(GSON.toJson(toSend));
-
+      if (s != null) {
+        s.getRemote().sendString(GSON.toJson(toSend));
+      }
     }
   }
   
+  private void addNextSession(Session[] sessions, Session s) {
+    for (int i = 0; i < sessions.length; i++) {
+      Session session = sessions[i];
+      if (session == null) {
+        sessions[i] = s;
+        return;
+      }
+    }
+  }
+  
+  private void removeSession(Session[] sessions, Session s) {
+    for (int i = 0; i < sessions.length; i++) {
+      Session session = sessions[i];
+      if (s.equals(session)) {
+        sessions[i] = null;
+        return;
+      }
+    }
+  }
+
   private void checkForStartGame(MenuGame g, int gameId) throws IOException {
     JsonObject payload = new JsonObject();
     payload.addProperty("list", menuGameToUsersHtml(g));
@@ -174,43 +195,55 @@ public class JoinWebSocket {
     toSend.addProperty("type", MESSAGE_TYPE.UPDATE.ordinal());
     toSend.add("payload", payload);
 
-    List<Session> sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
+    Session[] sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
     for (Session s : sessions) {
-      s.getRemote().sendString(GSON.toJson(toSend));
+      if (s != null) {
+        s.getRemote().sendString(GSON.toJson(toSend));
+      }
     }
-    
+
     if (g.getGameType().equals("Chess") && g.getCurrPlayersSize() == 2) {
       // toSend.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
       // toSend.add("payload", payload);
 
-      for (Session s : sessions) {
-        JsonObject toSendB = new JsonObject();
-        toSendB.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
-        JsonObject payloadB = new JsonObject();
-        payloadB.addProperty("gamePosition", sessions.indexOf(s));
-        toSendB.add("payload", payloadB);
-        s.getRemote().sendString(GSON.toJson(toSendB));
+      for (int i = 0; i < sessions.length; i++) {
+        Session s = sessions[i];
+        if (s != null) {
+          JsonObject toSendB = new JsonObject();
+          toSendB.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
+          JsonObject payloadB = new JsonObject();
+          payloadB.addProperty("gamePosition", i);
+          toSendB.add("payload", payloadB);
+          s.getRemote().sendString(GSON.toJson(toSendB));
+        }
       }
       GUI.GAME_LIST.removeGame(g);
     } else if (g.getGameType().equals("Bughouse")
         && g.getCurrPlayersSize() == 4) {
-      for (Session s : sessions) {
-        JsonObject toSendB = new JsonObject();
-        toSendB.addProperty("type",
-            MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
-        JsonObject payloadB = new JsonObject();
-        payloadB.addProperty("gamePosition", sessions.indexOf(s));
-        toSendB.add("payload", payloadB);
-        s.getRemote().sendString(GSON.toJson(toSendB));
+      for (int i = 0; i < sessions.length; i++) {
+        Session s = sessions[i];
+        if (s != null) {
+          JsonObject toSendB = new JsonObject();
+          toSendB.addProperty("type",
+              MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
+          JsonObject payloadB = new JsonObject();
+          payloadB.addProperty("gamePosition", i);
+          toSendB.add("payload", payloadB);
+          s.getRemote().sendString(GSON.toJson(toSendB));
+        }
       }
       GUI.GAME_LIST.removeGame(g);
     }
   }
-  
+
   private void switchUsers(int index1, int index2, User[] users, int gameId) {
     User u = users[index1];
     users[index1] = users[index2];
     users[index2] = u;
+    Session[] sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
+    Session s = sessions[index1];
+    sessions[index1] = sessions[index2];
+    sessions[index2] = s;
   }
 
   private boolean gameType(String s) {

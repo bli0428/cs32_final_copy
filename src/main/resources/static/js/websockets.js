@@ -192,6 +192,3 @@ const new_request = (piece, gameId) => {
 
   conn.send(JSON.stringify(toSend));
 }
-
-
-
