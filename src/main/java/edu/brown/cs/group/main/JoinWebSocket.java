@@ -1,7 +1,6 @@
 package edu.brown.cs.group.main;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +27,8 @@ public class JoinWebSocket {
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
 
   public static final Map<Integer, String> gameTypes = new ConcurrentHashMap<Integer, String>();
+  public static final Map<Session, Integer> gameIds = new ConcurrentHashMap<Session, Integer>();
+  public static final Map<Session, Integer> userIds = new ConcurrentHashMap<Session, Integer>();
 
   private static int nextId = 0;
   private static int nextGame = 0;
@@ -55,7 +56,23 @@ public class JoinWebSocket {
 
   @OnWebSocketClose
   public void closed(Session session, int statusCode, String reason) {
+    int gameId = gameIds.get(session);
+    int userId = userIds.get(session);
     sessions.remove(session);
+
+    MenuGame g = GUI.GAME_LIST.getGame(gameId);
+    if (g != null) {
+      // g.removeUser(userId);
+    }
+
+    removeSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
+
+    try {
+      sendUpdate(g, gameId);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   @OnWebSocketMessage
@@ -70,16 +87,23 @@ public class JoinWebSocket {
       // TODO: create payloads and add properties
 
     } else if (messageInt == MESSAGE_TYPE.JOIN_USER.ordinal()) {
-      // System.out.println("in join user");
+      System.out.println("in join user");
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
       // System.out.println(receivedPayload.get("sparkSession").getAsString());
       int gameId = receivedPayload.get("gameId").getAsInt();
+      System.out.println("id:" + gameId);
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
       gameTypes.put(g.getId(), g.getGameType());
+      System.out.println(g.getCurrPlayersSize());
+      gameIds.put(session, gameId);
+      userIds.put(session, receivedPayload.get("userId").getAsInt());
 
       addNextSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
 
+      // sendUpdate(g, gameId);
+
       checkForStartGame(g, gameId);
+
     } else if (messageInt == MESSAGE_TYPE.SWITCH_TEAM.ordinal()) {
       System.out.println("in switch team");
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
@@ -166,7 +190,7 @@ public class JoinWebSocket {
       }
     }
   }
-  
+
   private void addNextSession(Session[] sessions, Session s) {
     for (int i = 0; i < sessions.length; i++) {
       Session session = sessions[i];
@@ -176,7 +200,7 @@ public class JoinWebSocket {
       }
     }
   }
-  
+
   private void removeSession(Session[] sessions, Session s) {
     for (int i = 0; i < sessions.length; i++) {
       Session session = sessions[i];
