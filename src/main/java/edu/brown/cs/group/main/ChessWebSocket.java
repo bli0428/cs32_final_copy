@@ -228,7 +228,7 @@ public class ChessWebSocket {
     } else if (messageInt == MESSAGE_TYPE.REQUEST.ordinal()) {
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       String type = recievedPayload.get("piece").getAsString();
-      int id = recievedPayload.get("gameId").getAsInt();
+      int id = Integer.parseInt(recievedPayload.get("gameId").getAsString());
       lobbies.get(id).makeRequest(playerSession.get(session), type);
 
     }

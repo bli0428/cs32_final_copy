@@ -84,10 +84,10 @@ const setup_live_moves = () => {
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.DISPLAY:
+        initializeBoard(data.payload.color);
         if (data.payload.game == false) { // false = bughouse
           initializeBank(data.payload.color);
         }
-        initializeBank(data.payload.color);
         if (data.payload.color == 0) { // 0 = false
           myTurn = true;
         }
