@@ -132,7 +132,8 @@ public class JoinWebSocket {
             new WrapperGame(g.getGameType().equals("Chess")));
       }
 
-      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAIV2(4));
+      ChessWebSocket.lobbies.get(gameId)
+          .addPlayer(new ABCutoffAIV2(4, gameType(g.getGameType())));
 
       GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
 
@@ -150,7 +151,7 @@ public class JoinWebSocket {
       sendUpdate(g, gameId);
     }
   }
-  
+
   private void sendUpdate(MenuGame g, int gameId) throws IOException {
     JsonObject payload = new JsonObject();
     payload.addProperty("list", menuGameToUsersHtml(g));
@@ -165,7 +166,7 @@ public class JoinWebSocket {
 
     }
   }
-  
+
   private void checkForStartGame(MenuGame g, int gameId) throws IOException {
     JsonObject payload = new JsonObject();
     payload.addProperty("list", menuGameToUsersHtml(g));
@@ -178,7 +179,7 @@ public class JoinWebSocket {
     for (Session s : sessions) {
       s.getRemote().sendString(GSON.toJson(toSend));
     }
-    
+
     if (g.getGameType().equals("Chess") && g.getCurrPlayersSize() == 2) {
       // toSend.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
       // toSend.add("payload", payload);
@@ -196,8 +197,7 @@ public class JoinWebSocket {
         && g.getCurrPlayersSize() == 4) {
       for (Session s : sessions) {
         JsonObject toSendB = new JsonObject();
-        toSendB.addProperty("type",
-            MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
+        toSendB.addProperty("type", MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
         JsonObject payloadB = new JsonObject();
         payloadB.addProperty("gamePosition", sessions.indexOf(s));
         toSendB.add("payload", payloadB);
@@ -206,7 +206,7 @@ public class JoinWebSocket {
       GUI.GAME_LIST.removeGame(g);
     }
   }
-  
+
   private void switchUsers(int index1, int index2, User[] users, int gameId) {
     User u = users[index1];
     users[index1] = users[index2];

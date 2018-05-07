@@ -103,5 +103,3 @@ function createRequestAlert(piece) {
 	"<span aria-hidden='true'>&times;</span></button></div>"
 	$("#alertBox").html(html);
 }
-
-
