@@ -67,7 +67,6 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
-        console.log(data.payload.moveFrom);
         if (data.payload.moveFrom === "0,0") {
           let piece = data.payload.piece;
           let color = data.payload.color; // 0 for white, 1 for black
@@ -86,17 +85,13 @@ const setup_live_moves = () => {
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        console.log("recieved promote message");
-        $('#modal').modal({});
         let position = convertBackToFrontCoordinates(data.payload.position);
-        console.log("position to promote: " + position);
         promotePiece(position);
         myTurn = false;
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBoard(data.payload.color);
-        console.log("payload game boolean: " + data.payload.game);
         if (data.payload.game == false) { // false = bughouse
           initializeBank(data.payload.color);
           $('#listRequest').show();
@@ -156,13 +151,11 @@ const new_move = move => {
 
 
 const new_promotion = (piece, position) => {
-  console.log("in new_promotion");
-  console.log("piece " + piece);
-  console.log("position " + position);
   let toSendPayload = {
     id: myId,
     piece: piece,
-    position: position
+    position: position,
+    gameId: $("#gameId").text()
   }
 
   let toSend = {
@@ -171,7 +164,6 @@ const new_promotion = (piece, position) => {
   }
 
   conn.send(JSON.stringify(toSend));
-  console.log("new_promotion sent");
 }
 
 
