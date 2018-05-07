@@ -116,17 +116,22 @@ function leaveGame() {
 }
 
 const new_join_lobby = sparkSession => {
-  let toSendPayload = {
-    id: myId,
-    sparkSession: sparkSession,
-    gameId: $("#gameId").html()
-  }
+  const postParameters = {};
+  $.post("/getUser", postParameters, responseJSON => {
+    const responseObject = JSON.parse(responseJSON);
+    let toSendPayload = {
+      id: myId,
+      sparkSession: sparkSession,
+      gameId: $("#gameId").html(),
+      userId: responseObject.id
+    }
 
-  let toSend = {
-    type: 2,
-    payload: toSendPayload
-  }
-  menuConn.send(JSON.stringify(toSend));
+    let toSend = {
+      type: 2,
+      payload: toSendPayload
+    }
+    menuConn.send(JSON.stringify(toSend));
+  });
 }
 
 function addGame(type) {

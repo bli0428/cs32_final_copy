@@ -89,6 +89,7 @@ const setup_live_moves = () => {
         promotePiece(position);
         myTurn = false;
         printTurn(myTurn);
+        console.log("promote sent");
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBoard(data.payload.color);
@@ -110,8 +111,11 @@ const setup_live_moves = () => {
         createRequestAlert(piece);
         break;
       case MESSAGE_TYPE.PUPDATE:
+        console.log("recieved pupdate")
         let type = data.payload.type;
         let coordinates = convertBackToFrontCoordinates(data.payload.position);
+        console.log(type);
+        console.log(coordinates);
         setPromotionPiece(type, coordinates);
         break;
     }
