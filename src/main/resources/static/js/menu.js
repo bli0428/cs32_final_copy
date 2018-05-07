@@ -35,26 +35,26 @@ const setupMenu = () => {
         console.log('Unknown message type!', data.type);
         break;
         case JOIN_MESSAGE_TYPE.CONNECT:
-        myMenuId = data.payload.id;
-        console.log("id" + myMenuId);
+          myMenuId = data.payload.id;
+          console.log("id" + myMenuId);
 
-        const postParameters = {};
-        $.post("/getUser", postParameters, responseJSON => {
+          const postParameters = {};
+          $.post("/getUser", postParameters, responseJSON => {
 
-          // Parse the JSON response into a JavaScript object.
-          const responseObject = JSON.parse(responseJSON);
-          new_join_lobby(responseObject.session);
-        });
-        break;
+            // Parse the JSON response into a JavaScript object.
+            const responseObject = JSON.parse(responseJSON);
+            new_join_lobby(responseObject.session);
+          });
+          break;
         case JOIN_MESSAGE_TYPE.UPDATE:
-        $("#users").html(data.payload.list);
-        break;
-      case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
-        break;
-      case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
-        $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
-        break;
+          $("#users").html(data.payload.list);
+          break;
+        case JOIN_MESSAGE_TYPE.START_CHESS_GAME:
+          $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
+          break;
+        case JOIN_MESSAGE_TYPE.START_BUGHOUSE_GAME:
+          $(location).attr('href', '/chessgame/' + $("#gameId").html() + '/' + data.payload.gamePosition);
+          break;
       }
     };
   });

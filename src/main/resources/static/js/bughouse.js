@@ -58,6 +58,7 @@ $("#bank").on("click", "td", function(e){
     				new_placement(placement);
     				updateBankIndex(chooseArrayId, -1);
     				currBughousePiece = "";
+    				bughouseSelected = false;
     				myTurn = false;
     				printTurn(myTurn);
     			}
@@ -74,6 +75,12 @@ function updateBankIndex(index, x) {
     let newPieceCount = pieceCount + x;
 	$(countId).html(newPieceCount.toString());
 }
+
+$("#listRequest").on("click", ".list-group-item-action", function(e){
+	let currId = e.target.id;
+	let gameId = $("#gameId").text();
+	new_request(currId, gameId);
+});
 
 
 

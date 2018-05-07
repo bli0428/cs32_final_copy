@@ -20,14 +20,31 @@
 <div id="gameId" style="display:none">${gameId}</div>
 <div id="gamePosition" style="display:none">${gamePosition}</div>
 
-<div id="messageHolder">
-	<p id="message"></p>
-</div>
-<div id="boardHolder">
-	<table id="chessboard"></table>
-</div>
-<div id="bankHolder">
-	<table id="bank"></table>
+<div class="container">
+  <div class='row' style="margin-top: 3%">
+    <div class='col-sm'>
+      <p id="message"></p>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 3%">
+    <div class="col"></div>
+    <div class="col-7">
+      <table id="chessboard"></table>
+    </div>
+    <div class="col">
+      <ul id='listRequest' class="list-group" style="display: none">
+        <li class="list-group-item disabled">Request a Piece:</li>
+        <li id='p' class="list-group-item list-group-item-action">Pawn</li>
+        <li id='r' class="list-group-item list-group-item-action">Rook</li>
+        <li id='k' class="list-group-item list-group-item-action">Knight</li>
+        <li id='b' class="list-group-item list-group-item-action">Bishop</li>
+        <li id='q' class="list-group-item list-group-item-action">Queen</li>
+      </ul>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 3%">
+    <table id="bank"></table>
+  </div> 
 </div>
 
 
