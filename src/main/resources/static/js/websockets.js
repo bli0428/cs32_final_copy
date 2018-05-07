@@ -10,7 +10,8 @@ const MESSAGE_TYPE = {
   HIGHLIGHT: 8,
   TOHIGHLIGHT: 9,
   TOPROMOTE: 10,
-  DISPLAY: 11
+  DISPLAY: 11,
+  BANKADD: 12
 };
 
 let conn;
@@ -27,68 +28,73 @@ const setup_live_moves = () => {
   conn.onmessage = msg => {
     const data = JSON.parse(msg.data);
     switch (data.type) {
-      default:
+        default:
         console.log('Unknown message type!', data.type);
         break;
       case MESSAGE_TYPE.CONNECT:
         myId = data.payload.id;
         let payloadJoin = {
-          id: $("#gameId").html()
+          id: $("#gameId").html(),
+          gamePosition: $("#gamePosition").html()
         }
         let msgJoin = {
           type: MESSAGE_TYPE.JOINGAME,
           payload: payloadJoin
         }
-
         console.log(msgJoin);
-
         conn.send(JSON.stringify(msgJoin));
-
-        //TODO: maybe need to know whether player is black or white
         break;
       case MESSAGE_TYPE.HIGHLIGHT:
         validMoves = [];
-        var backendValidMoves = data.payload.validMoves;
-        for (var i = 0; i < backendValidMoves.length; i++) {
+        let backendValidMoves = data.payload.validMoves;
+        for (let i = 0; i < backendValidMoves.length; i++) {
           validMoves[i] = convertBackToFrontCoordinates(backendValidMoves[i]);
         }
         if (validMoveFunctionality) {
-            displayValidMoves();
+          displayValidMoves();
         }
         break;
       case MESSAGE_TYPE.UPDATE:
-        console.log("recieved update");
-        var moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
-        var moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
+        let moveFrom = convertBackToFrontCoordinates(data.payload.moveFrom);
+        let moveTo = convertBackToFrontCoordinates(data.payload.moveTo);
         moveOpponent(moveFrom, moveTo);
         myTurn = true;
         printTurn(myTurn);
         break;
       case MESSAGE_TYPE.GAMEOVER:
-        var winner = data.payload.winner;
+        let winner = data.payload.winner;
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        $(".modal").css("display", "block");
-        var coordinates = convertBackToFrontCoordinates(data.payload.coordinates);
-        promotePiece(coordinates);
-        new_promotion(piece);
+        $('#modal').modal({backdrop: 'static', keyboard: false});
+        let position = convertBackToFrontCoordinates(data.payload.position);
+        promotePiece(position);
+        myTurn = false;
+        printTurn(myTurn);
         break;
       case MESSAGE_TYPE.DISPLAY:
-        initializeBank(data.payload.color);
+        initializeBank(data.payload.color); //TODO: have backend pass what type of game so we know whether or not to initialize bank
         initializeBoard(data.payload.color);
+        if (data.payload.color == 0) { // 0 = false
+          myTurn = true;
+        }
+        printTurn(myTurn);
+        break;
+      case MESSAGE_TYPE.BANKADD:
+        let pieceIndex = data.payload.idx;
+        updateBankIndex(pieceIndex, 1);
     }
   };
 }
 
 
 const new_tohighlight = currPiece => {
-  var toSendPayload = {
+  let toSendPayload = {
     id: myId,
     piece: convertFrontToBackCoordinates(currPiece)
   }
 
-  var toSend = {
+  let toSend = {
     type: 9,
     payload: toSendPayload
   }
@@ -97,30 +103,32 @@ const new_tohighlight = currPiece => {
 
 
 const new_move = move => {
-
-  var toSendPayload = {
+  let toSendPayload = {
     id: myId,
     moveFrom: convertFrontToBackCoordinates(move[0]),
     moveTo: convertFrontToBackCoordinates(move[1])
   }
 
-  var toSend = {
+  let toSend = {
     type: 1,
     payload: toSendPayload
   }
 
   conn.send(JSON.stringify(toSend));
-  console.log("Sent move");
 }
 
 
-const new_promotion = piece => {
-  var toSendPayload = {
+const new_promotion = (piece, position) => {
+  console.log(piece);
+  console.log(position);
+
+  let toSendPayload = {
     id: myId,
-    piece: piece
+    piece: piece,
+    position: position
   }
 
-  var toSend = {
+  let toSend = {
     type: 10,
     payload: toSendPayload
   }
@@ -129,28 +137,14 @@ const new_promotion = piece => {
 }
 
 
-
-
-
-
-
-
-
-
-//////////////////////////////////////////////////
-
-
-
-var placement = [];
-
 const new_placement = placement => {
-  var toSendPayload = {
+  let toSendPayload = {
     id: myId,
-    bankIndex: placement[0], //TODO: index in bank
-    moveTo: placement[1] //TODO: pass in new coordinate
+    bankIndex: placement[0],
+    moveTo: convertFrontToBackCoordinates(placement[1])
   }
 
-  var toSend = {
+  let toSend = {
     type: 2,
     payload: toSendPayload
   }

@@ -18,46 +18,45 @@
 			</li>
 		</ul>
 		<form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
-				<input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Log Out">
+			<input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Log Out">
 		</form>
 	</div>
 </nav>
 
-<div class="container">
-	<div class="container">
-		<div class="row">
-			<div class="form-group col-lg-8 offset-lg-2" style="margin-top:2%">
-				<form role="form" method="POST" action="/changepasswordresults">
-					<h1>Change Password <small class="lead"> ${message}</small></h1>
-					<hr class="colorgraph">
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6">
-							<div class="form-group">
-								<input type="text" name="username" placeholder="username" class="form-control input-lg" tabindex="5">
-							</div>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6">
-							<div class="form-group">
-								<input name="currpassword" type="password" placeholder="password" class="form-control input-lg" tabindex="6">
-							</div>
+<div class="container" style="background: rgba(220, 242, 242, 0.9); margin-top: 5%; padding-bottom: 3%">
+	<div class="row">
+		<div class="form-group col-lg-8 offset-lg-2" style="margin-top:2%">
+			<form role="form" method="POST" action="/changepasswordresults">
+				<h1>Change Password <small class="lead"> ${message}</small></h1>
+				<hr class="colorgraph">
+				<div class="row">
+					<div class="col-xs-12 col-sm-6 col-md-6">
+						<div class="form-group">
+							<input type="text" name="username" placeholder="username" class="form-control input-lg" tabindex="5">
 						</div>
 					</div>
-					<div class="form-group">
-						<input name="newpassword" type="password" placeholder="new password" class="form-control input-lg" tabindex="3">
+					<div class="col-xs-12 col-sm-6 col-md-6">
+						<div class="form-group">
+							<input name="currpassword" type="password" placeholder="password" class="form-control input-lg" tabindex="6">
+						</div>
 					</div>
-					<div class="form-group">
-						<input name="newpassword2" type="password" placeholder="confirm new password" class="form-control input-lg" tabindex="3">
-					</div>
-					<div class="row">
-						<div class="col-lg-12">
-							<input id="submit" type="submit" value="Change Password" class="btn btn-success btn-block btn-lg">
-						</div>	
-					</div>
-				</form>
-			</div>
+				</div>
+				<div class="form-group">
+					<input name="newpassword" type="password" placeholder="new password" class="form-control input-lg" tabindex="3">
+				</div>
+				<div class="form-group">
+					<input name="newpassword2" type="password" placeholder="confirm new password" class="form-control input-lg" tabindex="3">
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<input id="submit" type="submit" value="Change Password" class="btn btn-success btn-block btn-lg">
+					</div>	
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
+<canvas id="canvas"></canvas>
 
 </#assign>
 <#include "main.ftl">

@@ -62,4 +62,9 @@ public interface Player {
    *          the color to set this player to.
    */
   void setColor(int color);
+
+  /**
+   * Getter for color
+   */
+  int getColor();
 }

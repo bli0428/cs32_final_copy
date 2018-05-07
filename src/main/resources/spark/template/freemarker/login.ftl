@@ -18,14 +18,13 @@
 	</div>
 </nav>
 
-
-<div class="container">
+<div class="container" style="background: rgba(220, 242, 242, 0.9); margin-top: 5%; padding-bottom: 2%">
 	<div class="row">
 		<div class="col-lg-12 text-center" style="margin-top: 4%">
 			<p class="display-4" style="margin-bottom: 0px;margin-top: 10px">Welcome to Chess32!</p>
 			<p class="lead" style="margin-top: 0px">The premiere site to play Bughouse.</p>
 		</div>
-		<div class="form-group col-lg-8 offset-lg-2" style="margin-top: 2%">
+		<div class="form-group col-lg-8 offset-lg-2">
 			<form class="form-group" role="form" method="POST" action="/loginresults">
 				<h1>Log In <small class="lead"> ${message}</small></h1>
 				<hr class="colorgraph">
@@ -48,9 +47,7 @@
 		</div>
 	</div>
 </div>
-
+<canvas id="canvas"></canvas>
 <!-- <a href="" class="btn btn-link pull-left">Forgot Password?</a> -->
-
-
 </#assign>
 <#include "main.ftl">

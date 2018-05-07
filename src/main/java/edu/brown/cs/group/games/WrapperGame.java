@@ -34,6 +34,29 @@ public class WrapperGame {
     return players.size() - 1;
   }
 
+  public synchronized int addPlayer(Player p, int pos) {
+    while (players.size() < playerNum) {
+      players.add(null);
+    }
+    Player ai = players.get(pos);
+    players.set(pos, p);
+    for (int i = 0; i < playerNum; i++) {
+      if (players.get(i) == null) {
+        players.set(i, ai);
+        break;
+      }
+    }
+    boolean start = true;
+    for (int i = 0; i < playerNum; i++) {
+      if (players.get(i) == null) {
+        start = false;
+      }
+    }
+    if (start)
+      startGame();
+    return pos;
+  }
+
   public void startGame() {
     Game g;
     if (chess) {

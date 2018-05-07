@@ -23,39 +23,38 @@
 	</div>
 </nav>
 
-<div class="container">
-	<div class="container">
-		<div class="row">
-			<div class="form-group col-lg-8 offset-lg-2" style="margin-top:2%">
-				<form role="form" method="POST" action="/changeusernameresults">
-					<h1>Change Username <small class="lead"> ${message}</small></h1>
-					<hr class="colorgraph">
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6">
-							<div class="form-group">
-								<input type="text" name="currusername" placeholder="username" class="form-control input-lg" tabindex="5">
-							</div>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6">
-							<div class="form-group">
-								<input name="password" type="password" placeholder="password" class="form-control input-lg" tabindex="6">
-							</div>
+<div class="container" style="background: rgba(220, 242, 242, 0.9); margin-top: 5%; padding-bottom: 3%">
+	<div class="row">
+		<div class="form-group col-lg-8 offset-lg-2" style="margin-top:2%">
+			<form role="form" method="POST" action="/changeusernameresults">
+				<h1>Change Username <small class="lead"> ${message}</small></h1>
+				<hr class="colorgraph">
+				<div class="row">
+					<div class="col-xs-12 col-sm-6 col-md-6">
+						<div class="form-group">
+							<input type="text" name="currusername" placeholder="username" class="form-control input-lg" tabindex="5">
 						</div>
 					</div>
-					<div class="form-group">
-						<input name="newusername" type="text" placeholder="new username" class="form-control input-lg" tabindex="3">
-					</div>
-					<div class="row">
-						<div class="col-lg-12">
-							<input id="submit" type="submit" value="Change Username" class="btn btn-success btn-block btn-lg">
+					<div class="col-xs-12 col-sm-6 col-md-6">
+						<div class="form-group">
+							<input name="password" type="password" placeholder="password" class="form-control input-lg" tabindex="6">
 						</div>
 					</div>
-				</form>
-			</div>
+				</div>
+				<div class="form-group">
+					<input name="newusername" type="text" placeholder="new username" class="form-control input-lg" tabindex="3">
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<input id="submit" type="submit" value="Change Username" class="btn btn-success btn-block btn-lg">
+					</div>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
 
+<canvas id="canvas"></canvas>
 
 </#assign>
 <#include "main.ftl">
