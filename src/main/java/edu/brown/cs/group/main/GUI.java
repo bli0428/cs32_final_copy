@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jetty.websocket.api.Session;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
@@ -45,7 +47,7 @@ public final class GUI {
   private static REPL repl;
   public final static ConcurrentHashMap<String, User> SESSIONS = new ConcurrentHashMap<>();
   public final static GameList GAME_LIST = new GameList();
-  public final static ConcurrentHashMap<Integer, List<org.eclipse.jetty.websocket.api.Session>> GAME_ID_TO_SESSIONS = new ConcurrentHashMap<>();
+  public final static ConcurrentHashMap<Integer, org.eclipse.jetty.websocket.api.Session[]> GAME_ID_TO_SESSIONS = new ConcurrentHashMap<>();
   private static Game game;
 
   /**
@@ -388,13 +390,15 @@ public final class GUI {
 
       int gameId;
 
+      int numPlayers;
       if (gameType.equals("bughouse")) {
-        gameId = GAME_LIST.addGame(4);
+        numPlayers = 4;
       } else {
-        gameId = GAME_LIST.addGame(2);
+        numPlayers = 2;
       }
+      gameId = GAME_LIST.addGame(numPlayers);
 
-      GAME_ID_TO_SESSIONS.put(gameId, new ArrayList<>());
+      GAME_ID_TO_SESSIONS.put(gameId, new Session[numPlayers]);
 
       Map<String, Object> variables = ImmutableMap.of("games",
           GAME_LIST.printListHtml());
