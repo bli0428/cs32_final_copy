@@ -32,10 +32,10 @@
 		</div>
 	</div>
 	<div class="row justify-content-center" style="margin-top: 4%">
-		<div class="col-sm-4 text-center">
+		<div class="col-md-4 text-center">
 			<button class="btn btn-success btn-lg" type="button" onclick="addGame('chess')">Create Chess Game</button>
 		</div>
-		<div class="col-sm-4 text-center">
+		<div class="col-md-4 text-center">
 			<button class="btn btn-success btn-lg" type="button" onclick="addGame('bughouse')">Create Bughouse Game</button>
 		</div>
 	</div>

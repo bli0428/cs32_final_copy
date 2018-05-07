@@ -32,7 +32,7 @@
       <table id="chessboard"></table>
     </div>
     <div class="col">
-      <ul id='listRequest' class="list-group">
+      <ul id='listRequest' class="list-group" style="display: none">
         <li class="list-group-item disabled">Request a Piece:</li>
         <li id='p' class="list-group-item list-group-item-action">Pawn</li>
         <li id='r' class="list-group-item list-group-item-action">Rook</li>
