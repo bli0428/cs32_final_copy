@@ -24,6 +24,9 @@ public class WrapperGame {
   }
 
   public synchronized int addPlayer(Player p) {
+    // while (players.size() < playerNum) {
+    // players.add(null);
+    // }
     int out = players.size();
     if (out == playerNum - 1) {
       players.add(p);
