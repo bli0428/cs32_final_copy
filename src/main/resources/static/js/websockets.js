@@ -14,7 +14,8 @@ const MESSAGE_TYPE = {
   BANKADD: 12,
   REQUEST: 13,
   BOOP: 14,
-  PUPDATE: 15
+  PUPDATE: 15,
+  REDIRECT: 16
 };
 
 let conn;
@@ -118,6 +119,8 @@ const setup_live_moves = () => {
         console.log(coordinates);
         setPromotionPiece(type, coordinates);
         break;
+      case MESSAGE_TYPE.REDIRECT:
+        window.location.replace("localhost:4567/home");
     }
   };
   });
@@ -200,4 +203,5 @@ const new_request = (piece, gameId) => {
   }
 
   conn.send(JSON.stringify(toSend));
+
 }
