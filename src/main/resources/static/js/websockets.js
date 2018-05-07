@@ -13,7 +13,8 @@ const MESSAGE_TYPE = {
   DISPLAY: 11,
   BANKADD: 12,
   REQUEST: 13,
-  BOOP: 14
+  BOOP: 14,
+  PUPDATE: 15
 };
 
 let conn;
@@ -112,6 +113,11 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.BOOP:
         let piece = data.payload.piece;
         createRequestAlert(piece);
+        break;
+      case MESSAGE_TYPE.PUPDATE:
+        let type = data.payload.type;
+        let coordinates = convertBackToFrontCoordinates(data.payload.position);
+        setPromotionPiece(type, coordinates);
         break;
     }
   };
