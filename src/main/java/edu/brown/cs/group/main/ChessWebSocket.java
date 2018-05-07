@@ -147,16 +147,18 @@ public class ChessWebSocket {
       try {
         Set<Position> moves = new HashSet<Position>();
         try {
+          if (games.get(session) == null) {
+
+          }
           Position start = new Position(Integer.parseInt(p1[0]),
               Integer.parseInt(p1[1]));
           moves = games.get(session)
               .moves(playerNum.get(playerSession.get(session)), start);
+
           System.out.println(games.get(session));
         } catch (NullPointerException npe) {
           npe.printStackTrace();
-          JsonObject msg = new JsonObject();
-          msg.addProperty("type", MESSAGE_TYPE.REDIRECT.ordinal());
-          session.getRemote().sendString(GSON.toJson(msg));
+
         }
         JsonArray outMoves = new JsonArray();
         try {
@@ -210,6 +212,7 @@ public class ChessWebSocket {
       } else {
         int pid = recievedPayload.get("gamePosition").getAsInt();
         if (!lobbies.get(id).full()) {
+          System.out.println("not full");
           lobbies.get(id).addPlayer(p, pid);
           playerNum.put(p, pid);
         }

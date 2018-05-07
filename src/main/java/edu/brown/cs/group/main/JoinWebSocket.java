@@ -278,28 +278,71 @@ public class JoinWebSocket {
 
   private String menuGameToUsersHtml(MenuGame g) {
 
-    User[] users = g.getCurrPlayers();
-    String html = "";
-    for (int i = 0; i < users.length; i++) {
-      html += "<div class='col' style='margin-top: 2%'><div class='card text-center'>"
-          + "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>"
-          + colorPicker(i) + "</h2>";
-      if (users[i] == null) {
-        html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
-            + "onclick='addAI(" + i + ")'>Add AI Player</button>";
-      } else if (users[i].getUsername().equals("AI Player")) {
-        html += "<p class='card-text'>" + users[i].getUsername()
-            + "</p><button class='btn btn-info'"
-            + "onclick='removeAI()'>Remove AI</button>";
-      } else {
-        html += "<p class='card-text'>" + users[i].getUsername()
-            + "</p><button class='btn btn-info'"
-            + "onclick='switchTeam()'>Switch Team</button>";
-      }
-      html += "</div></div></div>";
-    }
-    return html;
-  }
+		User[] users = g.getCurrPlayers();
+		String html = "";
+		if (users.length == 2) {
+			for (int i = 0; i < users.length; i++) {
+				html += "<div class='col' style='margin-top: 2%'><div class='card text-center'>"
+						+ "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>"
+						+ colorPicker(i) + "</h2>";
+				if (users[i] == null) {
+					html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
+							+ "onclick='addAI(" + i + ")'>Add AI Player</button>";
+				} else if (users[i].getUsername().equals("AI Player")) {
+					html += "<p class='card-text'>" + users[i].getUsername()
+							+ "</p><button class='btn btn-info'"
+							+ "onclick='removeAI()'>Remove AI</button>";
+				} else {
+					html += "<p class='card-text'>" + users[i].getUsername()
+							+ "</p><button class='btn btn-info'"
+							+ "onclick='switchTeam()'>Switch Team</button>";
+				}
+				html += "</div></div></div>";
+			}
+		} else if (users.length == 4) {
+			html += "<div class='col'><div class='card text-center' style='margin-top: 2%'><div class='card-header' style='padding-bottom:0px'><h2 class='card-title' style='margin-top:0px'>Team 1</h2></div><div class='card-body'>";
+			for (int i = 0; i < 2; i++) {
+				html += "<div class='card text-center' style='margin-top: 10px'>"
+						+ "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>"
+						+ colorPicker(i) + "</h2>";
+				if (users[i] == null) {
+					html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
+							+ "onclick='addAI(" + i + ")'>Add AI Player</button>";
+				} else if (users[i].getUsername().equals("AI Player")) {
+					html += "<p class='card-text'>" + users[i].getUsername()
+							+ "</p><button class='btn btn-info'"
+							+ "onclick='removeAI()'>Remove AI</button>";
+				} else {
+					html += "<p class='card-text'>" + users[i].getUsername()
+							+ "</p><button class='btn btn-info'"
+							+ "onclick='switchTeam()'>Switch Team</button>";
+				}
+				html += "</div></div>";
+			}
+			html += "</div></div></div><div class='col'><div class='card text-center' style='margin-top: 2%'><div class='card-header' style='padding-bottom:0px'><h2 class='card-title' style='margin-top:0px'>Team 2</h2></div><div class='card-body'>";
+			for (int i = 2; i < 4; i++) {
+				html += "<div class='card text-center' style='margin-top: 10px'>"
+						+ "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>"
+						+ colorPicker(i) + "</h2>";
+				if (users[i] == null) {
+					html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
+							+ "onclick='addAI(" + i + ")'>Add AI Player</button>";
+				} else if (users[i].getUsername().equals("AI Player")) {
+					html += "<p class='card-text'>" + users[i].getUsername()
+							+ "</p><button class='btn btn-info'"
+							+ "onclick='removeAI()'>Remove AI</button>";
+				} else {
+					html += "<p class='card-text'>" + users[i].getUsername()
+							+ "</p><button class='btn btn-info'"
+							+ "onclick='switchTeam()'>Switch Team</button>";
+				}
+				html += "</div></div>";
+			}
+			html += "</div></div></div>";
+		}
+
+		return html;
+	}
 
   private String colorPicker(int i) {
     if (i == 0 || i == 3) {

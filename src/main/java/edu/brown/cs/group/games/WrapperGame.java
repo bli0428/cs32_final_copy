@@ -83,11 +83,15 @@ public class WrapperGame {
   }
 
   public boolean full() {
-    for (Player p : players) {
-      if (p == null)
-        return false;
-    }
-    return true;
+    return players.contains(null);
+    /*
+     * for (Player p : players) { if (p.equals(null)) return false; } return
+     * true;
+     */
+  }
+
+  public void removePlayer(int idx) {
+    players.set(idx, null);
   }
 
   public int partner(int p) {

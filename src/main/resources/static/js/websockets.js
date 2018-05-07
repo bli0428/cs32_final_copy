@@ -14,7 +14,8 @@ const MESSAGE_TYPE = {
   BANKADD: 12,
   REQUEST: 13,
   BOOP: 14,
-  PUPDATE: 15
+  PUPDATE: 15,
+  REDIRECT: 16
 };
 
 let conn;
@@ -202,4 +203,5 @@ const new_request = (piece, gameId) => {
   }
 
   conn.send(JSON.stringify(toSend));
+
 }

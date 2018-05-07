@@ -33,13 +33,15 @@
 	<div id='users' class="row align-items-center" style="margin-top: 4%">
 		${users}
 	</div>
-	<div class="row" style="margin-top: 15%">
+	<div class="row" style="margin-top: 10%">
 		<div class="col-sm-12 offset-sm-5">
 			<button class="btn btn-danger btn-lg" onclick="leaveGame()">Leave Game</button>
 		</div>
 	</div>
-
 </div>
+
+
+
 
 
 
