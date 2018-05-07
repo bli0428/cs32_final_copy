@@ -45,7 +45,7 @@ public class ChessWebSocket {
   // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD, REQUEST, BOOP
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD, REQUEST, BOOP, PUPDATE
   }
 
   private static final boolean[] WB = { false, true, true, false };
@@ -193,7 +193,8 @@ public class ChessWebSocket {
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
         displayPayload.addProperty("color", 0);
-        displayPayload.addProperty("game", gameType(games.get(session)));
+        displayPayload.addProperty("game",
+            chessOrBug(JoinWebSocket.gameTypes.get(id)));
         msg.add("payload", displayPayload);
 
         session.getRemote().sendString(GSON.toJson(msg));
@@ -205,12 +206,14 @@ public class ChessWebSocket {
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
         displayPayload.addProperty("color", WB[pid]);
-        displayPayload.addProperty("game", gameType(games.get(session)));
+        displayPayload.addProperty("game",
+            chessOrBug(JoinWebSocket.gameTypes.get(id)));
 
         msg.add("payload", displayPayload);
         session.getRemote().sendString(GSON.toJson(msg));
       }
     } else if (messageInt == MESSAGE_TYPE.TOPROMOTE.ordinal()) {
+      System.out.println("promote recieved socket");
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       String[] p1 = recievedPayload.get("position").getAsString().split(",");
       try {
@@ -219,7 +222,8 @@ public class ChessWebSocket {
             Integer.parseInt(p1[1]));
         Piece p = getPromote(recievedPayload.get("piece").getAsString(),
             playerSession.get(session).getColor(), pos); // TODO: Fix the 0
-        playerSession.get(session).setPromote(p);
+        playerSession.get(session).setPromote(p,
+            recievedPayload.get("gameId").getAsInt());
       } catch (NumberFormatException | PositionException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -263,13 +267,31 @@ public class ChessWebSocket {
     return new Pawn(pos, color);
   }
 
-  public boolean chessOrBug(String in) {
+  public static boolean chessOrBug(String in) {
     if (in.equals("Chess"))
       return true;
     if (in.equals("Bughouse")) {
       return false;
     }
     return false;
+  }
+
+  public static int opp(int idx, boolean type) {
+    if (type) {
+      if (idx == 0)
+        return 1;
+      else
+        return 0;
+    } else {
+      if (idx == 0)
+        return 2;
+      else if (idx == 1)
+        return 3;
+      else if (idx == 2)
+        return 0;
+      else
+        return 1;
+    }
   }
 
   public boolean gameType(Game g) {
@@ -279,6 +301,33 @@ public class ChessWebSocket {
       return false;
     }
 
+  }
+
+  public static void updateOppPrmt(Session session, Position pos, Piece p,
+      int id) {
+    Game g = games.get(session);
+    for (Session s : playerSession.keySet()) {
+      if (playerNum.get(playerSession.get(s)) == opp(
+          playerNum.get(playerSession.get(session)),
+          chessOrBug(JoinWebSocket.gameTypes.get(id)))
+          && games.get(s).equals(g)) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", MESSAGE_TYPE.PUPDATE.ordinal());
+        JsonObject pld = new JsonObject();
+        pld.addProperty("position", pos.numString());
+        pld.addProperty("type", p.type());
+        msg.add("payload", pld);
+        try {
+          System.out
+              .println("Sending PUPDATE" + playerNum.get(playerSession.get(s))
+                  + " " + playerNum.get(playerSession.get(session)));
+          s.getRemote().sendString(GSON.toJson(msg));
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
   public String bankIdx(int i) {

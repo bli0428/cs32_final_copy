@@ -8,8 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -396,6 +394,8 @@ public final class GUI {
       } else {
         numPlayers = 2;
       }
+
+      // System.out.println("here is bad more than once");
       gameId = GAME_LIST.addGame(numPlayers);
 
       GAME_ID_TO_SESSIONS.put(gameId, new Session[numPlayers]);
@@ -418,12 +418,18 @@ public final class GUI {
       String gameId = java.net.URLDecoder.decode(request.params(":something"),
           "UTF-8");
       MenuGame game = GAME_LIST.getGame(Integer.parseInt(gameId));
-      if (game.getCurrPlayersSize() == game.getNumPlayers()) {
+      if (game == null || game.getCurrPlayersSize() >= game.getNumPlayers()) {
         response.redirect("/home");
       }
+
+      System.out.println("id:" + gameId);
+
+      System.out.println("aha!");
+
+      game.removeUser(u);
       game.addUser(u);
 
-
+      System.out.println(game.getCurrPlayersSize());
       Map<String, Object> variables = ImmutableMap.of("title",
           "Chess32: Join Game", "gameId", gameId, "users", "");
       return new ModelAndView(variables, "join.ftl");
