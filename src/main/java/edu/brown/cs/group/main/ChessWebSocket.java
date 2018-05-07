@@ -45,7 +45,7 @@ public class ChessWebSocket {
   // private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD, REQUEST, BOOP
+    CONNECT, MOVE, PLACEMENT, UPDATE, GAMEOVER, PROMOTE, CREATEGAME, JOINGAME, HIGHLIGHT, TOHIGHLIGHT, TOPROMOTE, DISPLAY, BANKADD, REQUEST, BOOP, PUPDATE
   }
 
   private static final boolean[] WB = { false, true, true, false };
@@ -230,6 +230,13 @@ public class ChessWebSocket {
               playerNum.get(playerSession.get(session)),
               chessOrBug(JoinWebSocket.gameTypes.get(id)))
               && games.get(s).equals(g)) {
+            JsonObject msg = new JsonObject();
+            msg.addProperty("type", MESSAGE_TYPE.PUPDATE.ordinal());
+            JsonObject pld = new JsonObject();
+            pld.addProperty("position", pos.numString());
+            pld.addProperty("type", p.type());
+            msg.add("payload", pld);
+            s.getRemote().sendString(GSON.toJson(msg));
           }
         }
       } catch (NumberFormatException | PositionException e) {
