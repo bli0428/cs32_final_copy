@@ -189,7 +189,7 @@ public class JoinWebSocket {
       }
 
       ChessWebSocket.lobbies.get(gameId)
-          .addPlayer(new ABCutoffAIV2(4, gameType(g.getGameType())));
+          .removePlayer(index);
 
       // addNextSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
 
