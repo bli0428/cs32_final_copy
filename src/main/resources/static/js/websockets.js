@@ -99,6 +99,7 @@ const setup_live_moves = () => {
         }
         if (data.payload.color == 0) { // 0 = false
           myTurn = true;
+          black = false;
         }
         printTurn(myTurn);
         break;
@@ -113,10 +114,8 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.PUPDATE:
         console.log("recieved pupdate")
         let type = data.payload.type;
-        let coordinates = convertBackToFrontCoordinates(data.payload.position);
-        console.log(type);
-        console.log(coordinates);
-        setPromotionPiece(type, coordinates);
+        cachedCoordinates = convertBackToFrontCoordinates(data.payload.position);
+        setPromotionPiecePupdate(type);
         break;
     }
   };

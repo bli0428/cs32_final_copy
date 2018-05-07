@@ -6,6 +6,13 @@ var selected = false; // boolean indicating if there is a current piece selected
 
 var myTurn = false; // boolean indicating whether or not it is my turn TODO: CHANGE (assume I move first)
 
+var black = true;
+
+var cachedPiece = "";
+var cachedCoordinates = "";
+
+//when I get a piece that I'm promoting, store the piece type and coordinates, when I get a moveOpponent to that square place that thing
+
 
 function movePiece(start, end) {
     let startPiece = $("#" + start).text(); // piece to be moved
@@ -38,13 +45,21 @@ function movePiece(start, end) {
 }
 
 function moveOpponent(start, end) {
-    let startPiece = $("#" + start).text(); // piece to be moved
-    $("#" + start).html("");
-    $("#" + end).html(startPiece);
-    if (currPieces.includes(end)) { // removes curr player's piece from play if captured
-        removePieceFromCurrPieces(end);
+    console.log("in moveOpponent");
+    if (cachedPiece !== "") {
+        $("#" + start).html("");
+        $("#" + end).html(cachedPiece);
+        cachedPiece = "";
+    } else {
+        let startPiece = $("#" + start).text(); // piece to be moved
+        $("#" + start).html("");
+        $("#" + end).html(startPiece);
+        checkCastling(start, end, startPiece);
     }
-    checkCastling(start, end, startPiece);
+    if (currPieces.includes(end)) { // removes curr player's piece from play if captured
+            removePieceFromCurrPieces(end);
+    }
+    
 }
 
 function getMoves(id) {
@@ -125,6 +140,7 @@ $("#chessboard").on("click", "td", function(e){
 });
 
 function promotePiece(coordinates) {
+    console.log("in promotePiece");
     let piece = "";
     $('#modal').modal('show')
     $("#promotionMenu").on("click", "li", function(e){
@@ -136,7 +152,8 @@ function promotePiece(coordinates) {
 }
 
 function setPromotionPiece(piece, coordinates) {
-    if ($("#" + coordinates).text() == "♟") {
+    console.log("in setPromotionPiece");
+    if (black) {
         if (piece == "rook" || piece == "r") {
             $("#" + coordinates).html('&#9820');
         } else if (piece == "queen" || piece == "q") {
@@ -155,6 +172,34 @@ function setPromotionPiece(piece, coordinates) {
             $("#" + coordinates).html('&#9816');
         } else if (piece == "bishop" || piece == "b") {
             $("#" + coordinates).html('&#9815');
+        }
+    }
+}
+
+function setPromotionPiecePupdate(piece) {
+    console.log("in setPromotionPiecePupdate");
+    console.log("piece: " + piece);
+
+    if (!black) {
+        if (piece == "rook" || piece == "r") {
+            cachedPiece = '&#9820';
+        } else if (piece == "queen" || piece == "q") {
+            cachedPiece = '&#9819';
+        } else if (piece == "knight" || piece == "k") {
+            cachedPiece = '&#9822';
+        } else if (piece == "bishop" || piece == "b") {
+            cachedPiece = '&#9821';
+        }
+    } else {
+        if (piece == "rook" || piece == "r") {
+            cachedPiece = '&#9814';
+        } else if (piece == "queen" || piece == "q") {
+            cachedPiece = '&#9813';
+            $("#" + coordinates).html();
+        } else if (piece == "knight" || piece == "k") {
+            cachedPiece = '&#9816';
+        } else if (piece == "bishop" || piece == "b") {
+            cachedPiece = '&#9815';
         }
     }
 }
