@@ -136,6 +136,14 @@ function convertBackToFrontCoordinates(stringCoordinates) {
     return toReturn;
 }
 
+function isPieceBlack(piece) {
+    if (piece == "♖" || piece == "♘" || piece == "♗" || piece == "♔" || piece == "♕" || piece == "♙") {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 
 
 
