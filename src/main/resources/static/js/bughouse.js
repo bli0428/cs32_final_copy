@@ -97,7 +97,7 @@ function createRequestAlert(piece) {
 	} else if (piece == "p") {
 		curr = "Pawn";
 	}
-	let html = "<div class='alert alert-info alert-success fade show' role='alert'>" +
+	let html = "<div class='alert alert-primary alert-dismissible fade show' role='alert'>" +
 	"<strong>Holy guacamole!</strong><br>Your teammate requests a " + curr + "." +
 	"<button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
 	"<span aria-hidden='true'>&times;</span></button></div>"
