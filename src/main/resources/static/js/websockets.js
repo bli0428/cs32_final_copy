@@ -13,7 +13,8 @@ const MESSAGE_TYPE = {
   DISPLAY: 11,
   BANKADD: 12,
   REQUEST: 13,
-  BOOP: 14
+  BOOP: 14,
+  PUPDATE: 15
 };
 
 let conn;
@@ -85,9 +86,10 @@ const setup_live_moves = () => {
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        console.log("promote recieved")
-        $('#modal').modal({backdrop: 'static', keyboard: false});
+        console.log("recieved promote message");
+        $('#modal').modal({});
         let position = convertBackToFrontCoordinates(data.payload.position);
+        console.log("position to promote: " + position);
         promotePiece(position);
         myTurn = false;
         printTurn(myTurn);
@@ -95,6 +97,7 @@ const setup_live_moves = () => {
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBoard(data.payload.color);
+        console.log("payload game boolean: " + data.payload.game);
         if (data.payload.game == false) { // false = bughouse
           initializeBank(data.payload.color);
           $('#listRequest').show();
@@ -111,6 +114,11 @@ const setup_live_moves = () => {
       case MESSAGE_TYPE.BOOP:
         let piece = data.payload.piece;
         createRequestAlert(piece);
+        break;
+      case MESSAGE_TYPE.PUPDATE:
+        let type = data.payload.type;
+        let coordinates = convertBackToFrontCoordinates(data.payload.position);
+        setPromotionPiece(type, coordinates);
         break;
     }
   };
@@ -149,10 +157,13 @@ const new_move = move => {
 
 
 const new_promotion = (piece, position) => {
+  console.log("in new_promotion");
+  console.log("piece " + piece);
+  console.log("position " + position);
   let toSendPayload = {
     id: myId,
     piece: piece,
-    position: position
+    position: position,
   }
 
   let toSend = {
@@ -161,6 +172,7 @@ const new_promotion = (piece, position) => {
   }
 
   conn.send(JSON.stringify(toSend));
+  console.log("new_promotion sent");
 }
 
 

@@ -127,9 +127,15 @@ $("#chessboard").on("click", "td", function(e){
 });
 
 function promotePiece(coordinates) {
+    console.log("in promote piece");
+    console.log("coordinates: " + coordinates);
     let piece = "";
+    $('#modal').modal('show')
     $("#promotionMenu").on("click", "li", function(e){
+        console.log("in even listener for promotion menu");
+        console.log("piece before: " + piece);
         piece = e.target.id;
+        console.log("piece after: " + piece);
         $('#modal').modal('hide')
         new_promotion(piece, convertFrontToBackCoordinates(coordinates));
         setPromotionPiece(piece, coordinates);
@@ -137,24 +143,25 @@ function promotePiece(coordinates) {
 }
 
 function setPromotionPiece(piece, coordinates) {
+    console.log("in setPromotionPiece");
     if ($("#" + coordinates).text() == "♟") {
-        if (piece == "rook") {
+        if (piece == "rook" || piece == "r") {
             $("#" + coordinates).html('&#9820');
-        } else if (piece == "queen") {
+        } else if (piece == "queen" || piece == "q") {
             $("#" + coordinates).html('&#9819');
-        } else if (piece == "knight") {
+        } else if (piece == "knight" || piece == "k") {
             $("#" + coordinates).html('&#9822');
-        } else if (piece == "bishop") {
+        } else if (piece == "bishop" || piece == "b") {
             $("#" + coordinates).html('&#9821');
         }
     } else {
-        if (piece == "rook") {
+        if (piece == "rook" || piece == "r") {
             $("#" + coordinates).html('&#9814');
-        } else if (piece == "queen") {
+        } else if (piece == "queen" || piece == "q") {
             $("#" + coordinates).html('&#9813');
-        } else if (piece == "knight") {
+        } else if (piece == "knight" || piece == "k") {
             $("#" + coordinates).html('&#9816');
-        } else if (piece == "bishop") {
+        } else if (piece == "bishop" || piece == "b") {
             $("#" + coordinates).html('&#9815');
         }
     }
