@@ -25,7 +25,7 @@ public class GUIPlayer implements Player {
   private static final Map<String, Integer> bankIdx = ImmutableMap.of("p", 0,
       "r", 1, "k", 2, "b", 3, "q", 4);
 
-  private Set<Piece> bank;
+  private List<Piece> bank;
   private Board board;
   private List<Move> moves;
   private List<Piece> toPromote;
@@ -33,7 +33,7 @@ public class GUIPlayer implements Player {
   private int id;
 
   public GUIPlayer() {
-    bank = Collections.synchronizedSet(new HashSet<Piece>());
+    bank = Collections.synchronizedList(new ArrayList<Piece>());
     moves = Collections.synchronizedList(new ArrayList<Move>());
     toPromote = Collections.synchronizedList(new ArrayList<Piece>());
     moves.add(null);
@@ -43,7 +43,7 @@ public class GUIPlayer implements Player {
   }
 
   @Override
-  public Set<Piece> bank() {
+  public List<Piece> bank() {
     return bank;
   }
 
@@ -156,10 +156,11 @@ public class GUIPlayer implements Player {
         break;
       }
     }
-    bank.remove(temp);
-    Move m = new Move(pos, temp);
-    setMove(m);
-
+    if (temp != null) {
+      bank.remove(temp);
+      Move m = new Move(pos, temp);
+      setMove(m);
+    }
   }
 
   @Override

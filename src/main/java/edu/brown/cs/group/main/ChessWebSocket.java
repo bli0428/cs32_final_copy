@@ -185,7 +185,7 @@ public class ChessWebSocket {
       GUIPlayer p = new GUIPlayer();
       playerSession.put(session, p);
       if (id == 99) {
-        ChessGame g = new ChessGame(p, new ABCutoffAIV2(4));
+        ChessGame g = new ChessGame(p, new ABCutoffAIV2(4, false));
         playerNum.put(p, 0);
         games.put(session, g);
         Thread t = new Thread((() -> g.play()));

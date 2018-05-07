@@ -1,5 +1,6 @@
 package edu.brown.cs.group.games;
 
+import java.util.Collection;
 import java.util.Set;
 
 import edu.brown.cs.group.components.Board;
@@ -19,7 +20,7 @@ public interface Player {
    *
    * @return a set of pieces in this player's bank
    */
-  Set<Piece> bank();
+  Collection<Piece> bank();
 
   /**
    * Return a Move, determined by the implementation.

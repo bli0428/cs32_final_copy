@@ -29,6 +29,11 @@ public class Move {
     this.end = end;
   }
 
+  /**
+   * Constructor for placing
+   * @param end
+   * @param piece
+   */
   public Move(Position end, Piece piece) {
     this.start = new BankPosition();
     this.end = end;
