@@ -101,7 +101,5 @@ function createRequestAlert(piece) {
 	"<strong>Holy guacamole!</strong>Your teammate requests a " + curr + "." +
 	"<button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
 	"<span aria-hidden='true'>&times;</span></button></div>"
-	$("#alertBox").text(html);
+	$("#alertBox").html(html);
 }
-
-
