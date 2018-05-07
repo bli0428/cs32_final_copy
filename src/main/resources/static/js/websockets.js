@@ -85,11 +85,13 @@ const setup_live_moves = () => {
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
+        console.log("promote recieved")
         $('#modal').modal({backdrop: 'static', keyboard: false});
         let position = convertBackToFrontCoordinates(data.payload.position);
         promotePiece(position);
         myTurn = false;
         printTurn(myTurn);
+        console.log("promote sent");
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBoard(data.payload.color);

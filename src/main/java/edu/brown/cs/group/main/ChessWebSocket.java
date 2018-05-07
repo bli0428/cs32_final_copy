@@ -193,7 +193,8 @@ public class ChessWebSocket {
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
         displayPayload.addProperty("color", 0);
-        displayPayload.addProperty("game", gameType(games.get(session)));
+        displayPayload.addProperty("game",
+            chessOrBug(JoinWebSocket.gameTypes.get(id)));
         msg.add("payload", displayPayload);
 
         session.getRemote().sendString(GSON.toJson(msg));
@@ -205,12 +206,14 @@ public class ChessWebSocket {
         msg.addProperty("type", MESSAGE_TYPE.DISPLAY.ordinal());
         JsonObject displayPayload = new JsonObject();
         displayPayload.addProperty("color", WB[pid]);
-        displayPayload.addProperty("game", gameType(games.get(session)));
+        displayPayload.addProperty("game",
+            chessOrBug(JoinWebSocket.gameTypes.get(id)));
 
         msg.add("payload", displayPayload);
         session.getRemote().sendString(GSON.toJson(msg));
       }
     } else if (messageInt == MESSAGE_TYPE.TOPROMOTE.ordinal()) {
+      System.out.println("promote recieved socket");
       JsonObject recievedPayload = received.get("payload").getAsJsonObject();
       String[] p1 = recievedPayload.get("position").getAsString().split(",");
       try {
@@ -220,6 +223,15 @@ public class ChessWebSocket {
         Piece p = getPromote(recievedPayload.get("piece").getAsString(),
             playerSession.get(session).getColor(), pos); // TODO: Fix the 0
         playerSession.get(session).setPromote(p);
+        int id = recievedPayload.get("gameId").getAsInt();
+        Game g = games.get(session);
+        for (Session s : playerSession.keySet()) {
+          if (playerNum.get(playerSession.get(s)) == opp(
+              playerNum.get(playerSession.get(session)),
+              chessOrBug(JoinWebSocket.gameTypes.get(id)))
+              && games.get(s).equals(g)) {
+          }
+        }
       } catch (NumberFormatException | PositionException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -270,6 +282,24 @@ public class ChessWebSocket {
       return false;
     }
     return false;
+  }
+
+  public int opp(int idx, boolean type) {
+    if (type) {
+      if (idx == 0)
+        return 1;
+      else
+        return 2;
+    } else {
+      if (idx == 0)
+        return 2;
+      else if (idx == 1)
+        return 3;
+      else if (idx == 2)
+        return 0;
+      else
+        return 1;
+    }
   }
 
   public boolean gameType(Game g) {

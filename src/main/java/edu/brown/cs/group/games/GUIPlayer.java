@@ -3,10 +3,8 @@ package edu.brown.cs.group.games;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jetty.websocket.api.Session;
 
@@ -94,7 +92,9 @@ public class GUIPlayer implements Player {
           s.getRemote().sendString(ChessWebSocket.GSON.toJson(message));
         }
       }
+      System.out.println("promote sent");
       wait();
+      System.out.println("promote recieved");
     } catch (InterruptedException e) {
       try {
         if (toPromote.get(0) == toPromote.get(1)) {
