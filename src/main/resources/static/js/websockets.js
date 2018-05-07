@@ -155,7 +155,7 @@ const new_promotion = (piece, position) => {
     id: myId,
     piece: piece,
     position: position,
-    gameId: $("#gameId").text()
+    gameId: $("#gameId").html()
   }
 
   let toSend = {
