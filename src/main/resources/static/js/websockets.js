@@ -118,6 +118,8 @@ const setup_live_moves = () => {
         console.log(coordinates);
         setPromotionPiece(type, coordinates);
         break;
+      case MESSAGE_TYPE.REDIRECT:
+        window.location.replace("localhost:4567/home");
     }
   };
   });
