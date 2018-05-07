@@ -418,7 +418,7 @@ public final class GUI {
       String gameId = java.net.URLDecoder.decode(request.params(":something"),
           "UTF-8");
       MenuGame game = GAME_LIST.getGame(Integer.parseInt(gameId));
-      if (game.getCurrPlayersSize() >= game.getNumPlayers()) {
+      if (game == null || game.getCurrPlayersSize() >= game.getNumPlayers()) {
         response.redirect("/home");
       }
 

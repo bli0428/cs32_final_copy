@@ -34,7 +34,7 @@ public class JoinWebSocket {
   private static int nextGame = 0;
 
   public static enum MESSAGE_TYPE {
-    CONNECT, UPDATE, JOIN_USER, START_CHESS_GAME, START_BUGHOUSE_GAME, SWITCH_TEAM, ADD_AI, LEAVE_GAME
+    CONNECT, UPDATE, JOIN_USER, START_CHESS_GAME, START_BUGHOUSE_GAME, SWITCH_TEAM, ADD_AI, LEAVE_GAME, REMOVE_AI
   }
 
   @OnWebSocketConnect
@@ -172,6 +172,28 @@ public class JoinWebSocket {
       removeSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
 
       sendUpdate(g, gameId);
+    } else if (messageInt == MESSAGE_TYPE.REMOVE_AI.ordinal()) {
+      // System.out.println("in add AI");
+      JsonObject receivedPayload = received.get("payload").getAsJsonObject();
+      int gameId = receivedPayload.get("gameId").getAsInt();
+      int index = receivedPayload.get("index").getAsInt();
+      MenuGame g = GUI.GAME_LIST.getGame(gameId);
+      User[] curr = g.getCurrPlayers();
+      if (curr != null && curr.length > index) {
+        curr[index] = null;
+      }
+
+      if (!ChessWebSocket.lobbies.keySet().contains(gameId)) {
+        ChessWebSocket.lobbies.put(gameId,
+            new WrapperGame(g.getGameType().equals("Chess")));
+      }
+
+      ChessWebSocket.lobbies.get(gameId)
+          .addPlayer(new ABCutoffAIV2(4, gameType(g.getGameType())));
+
+      // addNextSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
+
+      checkForStartGame(g, gameId);
     }
   }
 
@@ -291,7 +313,7 @@ public class JoinWebSocket {
 				} else if (users[i].getUsername().equals("AI Player")) {
 					html += "<p class='card-text'>" + users[i].getUsername()
 							+ "</p><button class='btn btn-info'"
-							+ "onclick='removeAI()'>Remove AI</button>";
+							+ "onclick='removeAI(" + i + ")'>Remove AI</button>";
 				} else {
 					html += "<p class='card-text'>" + users[i].getUsername()
 							+ "</p><button class='btn btn-info'"
@@ -311,7 +333,7 @@ public class JoinWebSocket {
 				} else if (users[i].getUsername().equals("AI Player")) {
 					html += "<p class='card-text'>" + users[i].getUsername()
 							+ "</p><button class='btn btn-info'"
-							+ "onclick='removeAI()'>Remove AI</button>";
+							+ "onclick='removeAI(" + i + ")'>Remove AI</button>";
 				} else {
 					html += "<p class='card-text'>" + users[i].getUsername()
 							+ "</p><button class='btn btn-info'"
@@ -330,7 +352,7 @@ public class JoinWebSocket {
 				} else if (users[i].getUsername().equals("AI Player")) {
 					html += "<p class='card-text'>" + users[i].getUsername()
 							+ "</p><button class='btn btn-info'"
-							+ "onclick='removeAI()'>Remove AI</button>";
+							+ "onclick='removeAI(" + i + ")'>Remove AI</button>";
 				} else {
 					html += "<p class='card-text'>" + users[i].getUsername()
 							+ "</p><button class='btn btn-info'"
