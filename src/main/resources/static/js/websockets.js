@@ -83,9 +83,7 @@ const setup_live_moves = () => {
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBoard(data.payload.color);
-        console.log(data.payload.game);
         if (data.payload.game == false) { // false = bughouse
-          console.log("it's bughouse!!!");
           initializeBank(data.payload.color);
           $('#listRequest').show();
         }
@@ -100,7 +98,8 @@ const setup_live_moves = () => {
         break;
       case MESSAGE_TYPE.BOOP:
         let piece = data.payload.piece;
-        //TODO: finish
+        createRequestAlert(piece);
+        break;
     }
   };
 }
