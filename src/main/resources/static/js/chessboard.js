@@ -105,7 +105,7 @@ function printTurn(myTurn) {
     if (myTurn) {
         $("#message").html("It's your turn!");
     } else {
-        $("#message").html("Wait!");
+        $("#message").html("Wait!<div class='loader'></div>");
     }
 }
 
