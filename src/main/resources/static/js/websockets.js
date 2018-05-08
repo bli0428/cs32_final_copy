@@ -32,8 +32,8 @@ const setup_live_moves = () => {
    const responseObject = JSON.parse(responseJSON);
   	ip = responseObject.ip;
   	console.log(ip);
-   //conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
-   conn = new WebSocket("ws://" + ip + ":4567/play");
+   conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
+   //conn = new WebSocket("ws://" + ip + ":4567/play");
 
   conn.onerror = err => {
     console.log('Connection error:', err);
