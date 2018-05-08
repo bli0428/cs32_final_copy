@@ -11,7 +11,6 @@ var black = true;
 var cachedPiece = "";
 var cachedCoordinates = "";
 
-//when I get a piece that I'm promoting, store the piece type and coordinates, when I get a moveOpponent to that square place that thing
 
 
 function movePiece(start, end) {
@@ -19,6 +18,12 @@ function movePiece(start, end) {
 
     if (validMoves.includes(end)) { // confirms that piece is being moved to a valid square
         $("#" + start).html("");
+
+        if ($("#" + end).text() == "") {
+            console.log("end square is empty");
+            checkEnPassant(start, end, startPiece);
+        }
+
         $("#" + end).html(startPiece);
 
         // unselect currPiece
@@ -45,8 +50,7 @@ function movePiece(start, end) {
 }
 
 function moveOpponent(start, end) {
-    console.log("in moveOpponent");
-    if (cachedPiece !== "") {
+    if (cachedPiece !== "") { // special case for promotion
         $("#" + start).html("");
         $("#" + end).html(cachedPiece);
         cachedPiece = "";
@@ -54,6 +58,7 @@ function moveOpponent(start, end) {
         let startPiece = $("#" + start).text(); // piece to be moved
         $("#" + start).html("");
         $("#" + end).html(startPiece);
+        checkEnPassant(start, end, startPiece);
         checkCastling(start, end, startPiece);
     }
     if (currPieces.includes(end)) { // removes curr player's piece from play if captured
@@ -256,5 +261,38 @@ function checkCastling(start, end, king) {
             }
         }
     }
-
 }
+
+
+function checkEnPassant(start, end, pawn) {
+    console.log("in enpassant");
+    console.log(pawn);
+    if (pawn == "♙" || pawn == "♟") {
+        console.log("its a pawn");
+        let startRow = getRow(start);
+        let startCol = getCol(start);
+        let endRow = getRow(end);
+        let endCol = getCol(end);
+
+        console.log(startRow);
+        console.log(startCol);
+        console.log(endRow);
+        console.log(endCol);
+
+        if (Math.abs(startRow - endRow) == 1) {
+            console.log("first if");
+            if (Math.abs(startCol - endCol) == 1) {
+                console.log("second if");
+                let temp = startRow.toString() + "-" + endCol.toString();
+                console.log(temp);
+                $("#" + temp).html("");
+            }
+        }
+    }
+}
+
+
+
+
+
+
