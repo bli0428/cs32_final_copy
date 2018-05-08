@@ -119,7 +119,7 @@ const setup_live_moves = () => {
         setPromotionPiecePupdate(type);
         break;
       case MESSAGE_TYPE.REDIRECT:
-        window.location.replace("localhost:4567/home");
+        window.location.replace("ws://" + ip + ":4567/home");
     }
   };
   });
