@@ -105,7 +105,7 @@ function printTurn(myTurn) {
     if (myTurn) {
         $("#message").html("It's your turn!");
     } else {
-        $("#message").html("Wait!" /*+ "<span class=\"triangle2\"></span><span class=\"triangle3\"></span><span class=\"hourglass\"></span>"*/);
+        $("#message").html("Wait!");
     }
 }
 
