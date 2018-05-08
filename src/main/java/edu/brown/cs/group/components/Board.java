@@ -433,7 +433,8 @@ public class Board {
     // moving to the left or right column,
     // this indicates that the player, in fact, does want to perform en-passant
     if (passant != null && dest.col() != start.col() && p.type().equals("p")
-        && !places.containsKey(dest)) {
+        && !places.containsKey(dest)
+        && Math.abs(dest.row() - passant.position().row()) == 1) {
       out = new Pawn(new BankPosition(), passant.color(), true);
       places.remove(passant.position());
     }
