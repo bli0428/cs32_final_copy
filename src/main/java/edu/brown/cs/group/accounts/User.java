@@ -24,6 +24,16 @@ public class User {
   public void setUsername(String username) {
     this.username = username;
   }
+  
+  public static boolean checkChar(String username) {
+    String specialChars = "/%&\"\\<>'";
+    for (int i = 0; i < username.length(); i++) {
+        if (specialChars.contains(username.substring(i, i+1))) {
+          return true;
+        }
+    }
+    return false;
+  }
 
 @Override
 public String toString() {
