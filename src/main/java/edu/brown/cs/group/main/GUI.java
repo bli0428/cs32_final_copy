@@ -264,6 +264,13 @@ public final class GUI {
       String username = qm.value("username");
       String password = qm.value("password");
       String password2 = qm.value("password2");
+      
+
+      if (User.checkChar(username)) {
+        Map<String, Object> variables = ImmutableMap.of("title",
+           "Chess32: Create Account", "message", "Invalid Username");
+        return new ModelAndView(variables, "newaccount.ftl");
+      }
       if (!password.equals(password2)) {
         Map<String, Object> variables = ImmutableMap.of("title",
             "Chess32: Create Account", "message", "Passwords don't match.");
@@ -366,6 +373,14 @@ public final class GUI {
       }
 
       String newUsername = qm.value("newusername");
+      
+      if (User.checkChar(newUsername)) {
+        Map<String, Object> variables = ImmutableMap.of("title",
+            "Chess32: Change Username", "message",
+            "Invalid Username");
+        return new ModelAndView(variables, "changeusername.ftl");
+      }
+      
       String message = repl.getDbm().changeUsername(currUsername, password,
           newUsername);
       if (message != null) {
