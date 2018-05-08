@@ -132,7 +132,7 @@ public class JoinWebSocket {
             new WrapperGame(g.getGameType().equals("Chess")));
       }
 
-      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAIV2(4));
+      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAIV2(4, true));
 
       GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
 

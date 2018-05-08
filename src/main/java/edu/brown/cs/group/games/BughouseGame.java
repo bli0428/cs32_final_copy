@@ -120,7 +120,7 @@ public class BughouseGame implements Game {
         try {
           Piece p;
           if (m.start() instanceof BankPosition) {
-            p = boards[b].processPlace(m.start(), m.end(), m.getPiece());
+            p = boards[b].processPlace(m.end(), m.getPiece());
           } else {
             p = boards[b].processMove(m.start(), m.end(), false);
           }
@@ -174,6 +174,7 @@ public class BughouseGame implements Game {
           }
         } catch (InvalidMoveException e) {
           System.out.println("That's not a valid move!");
+          e.printStackTrace();
         } catch (IOException e) {
           // TODO Auto-generated catch block
           // Shouldn't get here

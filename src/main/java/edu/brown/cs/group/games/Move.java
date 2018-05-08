@@ -15,6 +15,7 @@ public class Move {
   private Position end;
   private double value;
   private Piece piece;
+  private String type = "";
 
   /**
    * Public constructor.
@@ -38,6 +39,11 @@ public class Move {
     this.start = new BankPosition();
     this.end = end;
     this.piece = piece;
+    type = "placing";
+  }
+  
+  public String getType() {
+    return type;
   }
 
   public Move(Position start, Position end, double value) {

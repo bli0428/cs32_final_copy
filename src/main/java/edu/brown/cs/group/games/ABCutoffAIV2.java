@@ -144,44 +144,40 @@ public class ABCutoffAIV2 implements Player {
         a = Math.max(a, temp);
       }
     }
-
-//    for (Piece placingPiece : bank) {
-//      for (Position pos : Board.getAllPos()) {
-//        if (!board.places().containsKey(pos)) {
-//          Board newBoard = new Board(board);
-//    
-//          try {
-//            newBoard.processPlace(new BankPosition(), dest, p);
-//    
-//          } catch (InvalidMoveException e) {
-//    
-//            e.printStackTrace();
-//          }
-//          double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
-//              Math.abs(color - 1));
-//          if (temp > v) {
-//    
-//            bestMove = new Move(start, end);
-//            bestMove.setValue(temp);
-//            v = temp;
-//            if (TT.containsKey(board)) {
-//              if (TT.get(board).getDepth() <= iterDepth) {
-//                TT.put(new Board(board),
-//                    new TranspositionMove(start, end, iterDepth));
-//              }
-//            } else {
-//              TT.put(new Board(board),
-//                  new TranspositionMove(start, end, iterDepth));
-//            }
-//    
-//          }
-//          if (v >= b) {
-//            trimmed++;
-//          }
-//          a = Math.max(a, temp);
-//        }
-//      }
-//    }
+    if (isBughouse) {
+      for (Piece placingPiece : bank) {
+        for (Position pos : Board.getAllPos()) {
+          if (!board.places().containsKey(pos)) {
+            Board newBoard = new Board(board);
+      
+            try {
+              newBoard.processPlace(pos, placingPiece);
+      
+            } catch (InvalidMoveException e) {
+      
+              e.printStackTrace();
+            }
+            
+            double temp = alphaBetaCutoffMin(newBoard, cutoff - 1, a, b, heur,
+                Math.abs(color - 1));
+            System.out.println(String.format("looking to place type: %s at pos %s", placingPiece.type(), pos.numString()));
+            if (temp > v) {
+      
+              bestMove = new Move(pos, placingPiece);
+              
+              bestMove.setValue(temp);
+              v = temp;
+              System.out.println(String.format("replaced placing move with value %f", v));
+      
+            }
+            if (v >= b) {
+              trimmed++;
+            }
+            a = Math.max(a, temp);
+          }
+        }
+      }
+    }
     
     for (Position start : validMoves.keySet()) {
       for (Position end : validMoves.get(start)) {
@@ -231,6 +227,8 @@ public class ABCutoffAIV2 implements Player {
     System.out.println(v);
     if (board.places().get(bestMove.end()) != null && board.places().get(bestMove.end()).type().equals(internalHeur.getRequest())) {
       internalHeur.removeRequest("");
+    } else if (bestMove.getType().equals("placing")) {
+      bank.remove(bestMove.getPiece());
     }
     return bestMove;
   }
