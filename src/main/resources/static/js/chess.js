@@ -140,19 +140,17 @@ $("#chessboard").on("click", "td", function(e){
 });
 
 function promotePiece(coordinates) {
-    console.log("in promotePiece");
     let piece = "";
-    $('#modal').modal('show')
+    $('#modal').modal('show');
     $("#promotionMenu").on("click", "li", function(e){
         piece = e.target.id;
-        $('#modal').modal('hide')
+        $('#modal').modal('hide');
         new_promotion(piece, convertFrontToBackCoordinates(coordinates));
         setPromotionPiece(piece, coordinates);
     });
 }
 
 function setPromotionPiece(piece, coordinates) {
-    console.log("in setPromotionPiece");
     if (black) {
         if (piece == "rook" || piece == "r") {
             $("#" + coordinates).html('&#9820');
@@ -177,9 +175,6 @@ function setPromotionPiece(piece, coordinates) {
 }
 
 function setPromotionPiecePupdate(piece) {
-    console.log("in setPromotionPiecePupdate");
-    console.log("piece: " + piece);
-
     if (!black) {
         if (piece == "rook" || piece == "r") {
             cachedPiece = '&#9820';
