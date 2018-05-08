@@ -25,7 +25,7 @@ import edu.brown.cs.group.positions.PositionException;
 public class Board {
 
   private static final String[] WB = { "W", "B" };
-  
+
   private static List<Position> allPos = null;
 
   private Map<Position, Piece> places;
@@ -54,21 +54,21 @@ public class Board {
     players[1] = black;
     bughouse = false;
   }
-  
+
   public static List<Position> getAllPos() {
     if (allPos == null) {
       allPos = new ArrayList<Position>();
       for (int i = 1; i < 9; i++) {
         for (int j = 1; i < 9; i++) {
           try {
-            allPos.add(new Position(j,i));
+            allPos.add(new Position(j, i));
           } catch (PositionException e) {
             e.printStackTrace();
           }
         }
       }
     }
-    
+
     return allPos;
   }
 
@@ -247,7 +247,7 @@ public class Board {
     for (Position key : oldBoard.places().keySet()) {
       this.places.put(key, oldBoard.places().get(key).copyOf());
     }
-    
+
     fiftyMove = oldBoard.fiftyMove;
     passant = oldBoard.passant;
 
@@ -277,8 +277,7 @@ public class Board {
       throw new InvalidMoveException(dest);
     }
     Piece p = places.get(start);
-    
-    
+
     if (!p.getValidMoves(this).contains(dest)) {
       throw new InvalidMoveException(dest);
     }
@@ -325,7 +324,8 @@ public class Board {
     // moving to the left or right column,
     // this indicates that the player, in fact, does want to perform en-passant
     if (passant != null && dest.col() != start.col() && p.type().equals("p")
-        && !places.containsKey(dest)) {
+        && !places.containsKey(dest)
+        && Math.abs(dest.row() - passant.position().row()) == 1) {
       out = new Pawn(new BankPosition(), passant.color(), true);
       places.remove(passant.position());
     }
@@ -433,7 +433,8 @@ public class Board {
     // moving to the left or right column,
     // this indicates that the player, in fact, does want to perform en-passant
     if (passant != null && dest.col() != start.col() && p.type().equals("p")
-        && !places.containsKey(dest)) {
+        && !places.containsKey(dest)
+        && Math.abs(dest.row() - passant.position().row()) == 1) {
       out = new Pawn(new BankPosition(), passant.color(), true);
       places.remove(passant.position());
     }
@@ -529,7 +530,7 @@ public class Board {
     }
 
     if (!bughouse) {
-//    if (false) {
+      // if (false) {
       // Filters all valid moves for moves that would leave King in check.
       for (Position key : results.keySet()) {
 
@@ -738,7 +739,7 @@ public class Board {
    * @return 1 if in checkmate, 2 if in stalemate, 0 otherwise
    */
   public int gameOver(int color) {
-//      if (false) {
+    // if (false) {
     if (!bughouse) {
       boolean inCheck = check(color);
       boolean hasMoves = false;

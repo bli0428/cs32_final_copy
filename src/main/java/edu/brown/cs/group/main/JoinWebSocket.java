@@ -1,7 +1,6 @@
 package edu.brown.cs.group.main;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +27,8 @@ public class JoinWebSocket {
   private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
 
   public static final Map<Integer, String> gameTypes = new ConcurrentHashMap<Integer, String>();
+  public static final Map<Session, Integer> gameIds = new ConcurrentHashMap<Session, Integer>();
+  public static final Map<Session, Integer> userIds = new ConcurrentHashMap<Session, Integer>();
 
   private static int nextId = 0;
   private static int nextGame = 0;
@@ -55,7 +56,23 @@ public class JoinWebSocket {
 
   @OnWebSocketClose
   public void closed(Session session, int statusCode, String reason) {
+    int gameId = gameIds.get(session);
+    int userId = userIds.get(session);
     sessions.remove(session);
+
+    MenuGame g = GUI.GAME_LIST.getGame(gameId);
+    if (g != null) {
+      // g.removeUser(userId);
+    }
+
+    removeSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
+
+    try {
+      sendUpdate(g, gameId);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   @OnWebSocketMessage
@@ -70,19 +87,25 @@ public class JoinWebSocket {
       // TODO: create payloads and add properties
 
     } else if (messageInt == MESSAGE_TYPE.JOIN_USER.ordinal()) {
-      // System.out.println("in join user");
+      System.out.println("in join user");
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
       // System.out.println(receivedPayload.get("sparkSession").getAsString());
       int gameId = receivedPayload.get("gameId").getAsInt();
+      System.out.println("id:" + gameId);
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
       gameTypes.put(g.getId(), g.getGameType());
-      // System.out.println(menuGameToUsersHtml(g));
+      System.out.println(g.getCurrPlayersSize());
+      gameIds.put(session, gameId);
+      userIds.put(session, receivedPayload.get("userId").getAsInt());
 
-      GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
+      addNextSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
+
+      // sendUpdate(g, gameId);
 
       checkForStartGame(g, gameId);
+
     } else if (messageInt == MESSAGE_TYPE.SWITCH_TEAM.ordinal()) {
-      // System.out.println("in switch team");
+      System.out.println("in switch team");
       JsonObject receivedPayload = received.get("payload").getAsJsonObject();
       // System.out.println(receivedPayload.get("sparkSession").getAsString());
       int gameId = receivedPayload.get("gameId").getAsInt();
@@ -90,9 +113,7 @@ public class JoinWebSocket {
 
       User[] users = g.getCurrPlayers();
       if (g.getGameType().equals("Chess")) {
-        User u = users[0];
-        users[0] = users[1];
-        users[1] = u;
+        switchUsers(0, 1, users, gameId);
       } else if (g.getGameType().equals("Bughouse")) {
         for (int i = 0; i < users.length; i++) {
           User u = users[i];
@@ -132,9 +153,13 @@ public class JoinWebSocket {
             new WrapperGame(g.getGameType().equals("Chess")));
       }
 
-      ChessWebSocket.lobbies.get(gameId).addPlayer(new ABCutoffAIV2(4, true));
+      int diff = receivedPayload.get("difficulty").getAsInt();
 
-      GUI.GAME_ID_TO_SESSIONS.get(gameId).add(session);
+
+      ChessWebSocket.lobbies.get(gameId)
+          .addPlayer(new ABCutoffAIV2(2 + 2 * diff, gameType(g.getGameType())));
+
+      // addNextSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
 
       checkForStartGame(g, gameId);
     } else if (messageInt == MESSAGE_TYPE.LEAVE_GAME.ordinal()) {
@@ -143,14 +168,16 @@ public class JoinWebSocket {
       int gameId = receivedPayload.get("gameId").getAsInt();
       int userId = receivedPayload.get("userId").getAsInt();
       MenuGame g = GUI.GAME_LIST.getGame(gameId);
-      g.removeUser(userId);
+      if (g != null) {
+        g.removeUser(userId);
+      }
 
-      GUI.GAME_ID_TO_SESSIONS.get(gameId).remove(session);
+      removeSession(GUI.GAME_ID_TO_SESSIONS.get(gameId), session);
 
       sendUpdate(g, gameId);
     }
   }
-  
+
   private void sendUpdate(MenuGame g, int gameId) throws IOException {
     JsonObject payload = new JsonObject();
     payload.addProperty("list", menuGameToUsersHtml(g));
@@ -159,13 +186,34 @@ public class JoinWebSocket {
     toSend.addProperty("type", MESSAGE_TYPE.UPDATE.ordinal());
     toSend.add("payload", payload);
 
-    List<Session> sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
+    Session[] sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
     for (Session s : sessions) {
-      s.getRemote().sendString(GSON.toJson(toSend));
-
+      if (s != null) {
+        s.getRemote().sendString(GSON.toJson(toSend));
+      }
     }
   }
-  
+
+  private void addNextSession(Session[] sessions, Session s) {
+    for (int i = 0; i < sessions.length; i++) {
+      Session session = sessions[i];
+      if (session == null) {
+        sessions[i] = s;
+        return;
+      }
+    }
+  }
+
+  private void removeSession(Session[] sessions, Session s) {
+    for (int i = 0; i < sessions.length; i++) {
+      Session session = sessions[i];
+      if (s.equals(session)) {
+        sessions[i] = null;
+        return;
+      }
+    }
+  }
+
   private void checkForStartGame(MenuGame g, int gameId) throws IOException {
     JsonObject payload = new JsonObject();
     payload.addProperty("list", menuGameToUsersHtml(g));
@@ -174,43 +222,55 @@ public class JoinWebSocket {
     toSend.addProperty("type", MESSAGE_TYPE.UPDATE.ordinal());
     toSend.add("payload", payload);
 
-    List<Session> sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
+    Session[] sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
     for (Session s : sessions) {
-      s.getRemote().sendString(GSON.toJson(toSend));
+      if (s != null) {
+        s.getRemote().sendString(GSON.toJson(toSend));
+      }
     }
-    
+
     if (g.getGameType().equals("Chess") && g.getCurrPlayersSize() == 2) {
       // toSend.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
       // toSend.add("payload", payload);
 
-      for (Session s : sessions) {
-        JsonObject toSendB = new JsonObject();
-        toSendB.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
-        JsonObject payloadB = new JsonObject();
-        payloadB.addProperty("gamePosition", sessions.indexOf(s));
-        toSendB.add("payload", payloadB);
-        s.getRemote().sendString(GSON.toJson(toSendB));
+      for (int i = 0; i < sessions.length; i++) {
+        Session s = sessions[i];
+        if (s != null) {
+          JsonObject toSendB = new JsonObject();
+          toSendB.addProperty("type", MESSAGE_TYPE.START_CHESS_GAME.ordinal());
+          JsonObject payloadB = new JsonObject();
+          payloadB.addProperty("gamePosition", i);
+          toSendB.add("payload", payloadB);
+          s.getRemote().sendString(GSON.toJson(toSendB));
+        }
       }
       GUI.GAME_LIST.removeGame(g);
     } else if (g.getGameType().equals("Bughouse")
         && g.getCurrPlayersSize() == 4) {
-      for (Session s : sessions) {
-        JsonObject toSendB = new JsonObject();
-        toSendB.addProperty("type",
-            MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
-        JsonObject payloadB = new JsonObject();
-        payloadB.addProperty("gamePosition", sessions.indexOf(s));
-        toSendB.add("payload", payloadB);
-        s.getRemote().sendString(GSON.toJson(toSendB));
+      for (int i = 0; i < sessions.length; i++) {
+        Session s = sessions[i];
+        if (s != null) {
+          JsonObject toSendB = new JsonObject();
+          toSendB.addProperty("type",
+              MESSAGE_TYPE.START_BUGHOUSE_GAME.ordinal());
+          JsonObject payloadB = new JsonObject();
+          payloadB.addProperty("gamePosition", i);
+          toSendB.add("payload", payloadB);
+          s.getRemote().sendString(GSON.toJson(toSendB));
+        }
       }
       GUI.GAME_LIST.removeGame(g);
     }
   }
-  
+
   private void switchUsers(int index1, int index2, User[] users, int gameId) {
     User u = users[index1];
     users[index1] = users[index2];
     users[index2] = u;
+    Session[] sessions = GUI.GAME_ID_TO_SESSIONS.get(gameId);
+    Session s = sessions[index1];
+    sessions[index1] = sessions[index2];
+    sessions[index2] = s;
   }
 
   private boolean gameType(String s) {
@@ -223,24 +283,61 @@ public class JoinWebSocket {
 
     User[] users = g.getCurrPlayers();
     String html = "";
-    for (int i = 0; i < users.length; i++) {
-      html += "<div class='col' style='margin-top: 2%'><div class='card text-center'>"
-          + "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>"
-          + colorPicker(i) + "</h2>";
-      if (users[i] == null) {
-        html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
-            + "onclick='addAI(" + i + ")'>Add AI Player</button>";
-      } else if (users[i].getUsername().equals("AI Player")) {
-        html += "<p class='card-text'>" + users[i].getUsername()
-            + "</p><button class='btn btn-info'"
-            + "onclick='removeAI()'>Remove AI</button>";
-      } else {
-        html += "<p class='card-text'>" + users[i].getUsername()
-            + "</p><button class='btn btn-info'"
-            + "onclick='switchTeam()'>Switch Team</button>";
+    if (users.length == 2) {
+      for (int i = 0; i < users.length; i++) {
+        html += "<div class='col' style='margin-top: 2%'><div class='card text-center'>"
+            + "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>"
+            + colorPicker(i) + "</h2>";
+        if (users[i] == null) {
+          html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
+              + "onclick='getAIDifficulty(" + i + ")'>Add AI Player</button>";
+        } else if (users[i].getUsername().equals("AI Player")) {
+          html += "<p class='card-text'>" + users[i].getUsername() + "</p>";
+        } else {
+          html += "<p class='card-text'>" + users[i].getUsername()
+              + "</p><button class='btn btn-info'"
+              + "onclick='switchTeam()'>Switch Team</button>";
+        }
+        html += "</div></div></div>";
+      }
+    } else if (users.length == 4) {
+      html += "<div class='col'><div class='card-deck'><div class='card text-center' style='margin-top: 2%'><div class='card-header' style='padding-bottom:0px'><h2 class='card-title' style='margin-top:0px'>Team 1</h2></div><div class='card-body'><div class='card-deck'>";
+      for (int i = 0; i < 2; i++) {
+        html += "<div class='card text-center' style='margin-top: 10px'>"
+            + "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>"
+            + colorPicker(i) + "</h2>";
+        if (users[i] == null) {
+          html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
+              + "onclick='getAIDifficulty(" + i + ")'>Add AI Player</button>";
+        } else if (users[i].getUsername().equals("AI Player")) {
+          html += "<p class='card-text'>" + users[i].getUsername() + "</p>";
+        } else {
+          html += "<p class='card-text'>" + users[i].getUsername()
+              + "</p><button class='btn btn-info'"
+              + "onclick='switchTeam()'>Switch Team</button>";
+        }
+        html += "</div></div>";
+      }
+      html += "</div></div></div><div class='card text-center' style='margin-top: 2%'><div class='card-header' style='padding-bottom:0px'><h2 class='card-title' style='margin-top:0px'>Team 2</h2></div><div class='card-body'><div class='card-deck'>";
+      for (int i = 2; i < 4; i++) {
+        html += "<div class='card text-center' style='margin-top: 10px'>"
+            + "<div class='card-body'><h2 class='card-title' style='margin-top:0px'>"
+            + colorPicker(i) + "</h2>";
+        if (users[i] == null) {
+          html += "<p class='card-text'>Waiting for Player...</p><button class='btn btn-info'"
+              + "onclick='getAIDifficulty(" + i + ")'>Add AI Player</button>";
+        } else if (users[i].getUsername().equals("AI Player")) {
+          html += "<p class='card-text'>" + users[i].getUsername() + "</p>";
+        } else {
+          html += "<p class='card-text'>" + users[i].getUsername()
+              + "</p><button class='btn btn-info'"
+              + "onclick='switchTeam()'>Switch Team</button>";
+        }
+        html += "</div></div>";
       }
       html += "</div></div></div>";
     }
+
     return html;
   }
 

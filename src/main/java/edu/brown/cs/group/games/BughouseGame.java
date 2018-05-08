@@ -65,7 +65,7 @@ public class BughouseGame implements Game {
     p1.setBoard(board2);
     p3.setBoard(board2);
     Player[] t1 = { p0, p1 };
-    Player[] t2 = { p3, p2 };
+    Player[] t2 = { p2, p3 };
     team1 = t1;
     team2 = t2;
     p0.setColor(0);
@@ -127,7 +127,7 @@ public class BughouseGame implements Game {
           if (p != null) {
             teams[getTeam(turn, b)][Math.abs(b - 1)].acceptPiece(p);
             System.out.println("sending " + p.type() + " to " + getTeam(turn, b)
-                + " " + Math.abs(b - 1));
+                + " " + Math.abs(b - 1) + " from " + turn + " " + b);
           }
           turn = Math.abs(turn - 1);
           // System.out.println("Moved from " + m.start().col() + ","

@@ -33,13 +33,32 @@
 	<div id='users' class="row align-items-center" style="margin-top: 4%">
 		${users}
 	</div>
-	<div class="row" style="margin-top: 15%">
+	<div class="row" style="margin-top: 5%">
 		<div class="col-sm-12 offset-sm-5">
 			<button class="btn btn-danger btn-lg" onclick="leaveGame()">Leave Game</button>
 		</div>
 	</div>
-
 </div>
+
+
+<div class="modal fade" id="AIDifficulty">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title" style="margin-top: 0">Choose AI Difficulty:</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+          <button id="0" type="button" class="btn btn-outline-primary">Easy</button>
+          <button id="1" type="button" class="btn btn-outline-primary">Hard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 
 
 

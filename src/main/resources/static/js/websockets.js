@@ -13,15 +13,27 @@ const MESSAGE_TYPE = {
   DISPLAY: 11,
   BANKADD: 12,
   REQUEST: 13,
-  BOOP: 14
+  BOOP: 14,
+  PUPDATE: 15,
+  REDIRECT: 16
 };
 
 let conn;
 let myId = -1;
+//let ip;
 
 // Setup the WebSocket connection for live updating of scores.
 const setup_live_moves = () => {
-  conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
+ let ip;
+ const postParameters = {};
+ $.post("/getIp", postParameters, responseJSON => {
+
+    // Parse the JSON response into a JavaScript object.
+   const responseObject = JSON.parse(responseJSON);
+  	ip = responseObject.ip;
+  	console.log(ip);
+   conn = new WebSocket("ws://localhost:4567/play"); //TODO: change this
+   //conn = new WebSocket("ws://" + ip + ":4567/play");
 
   conn.onerror = err => {
     console.log('Connection error:', err);
@@ -56,7 +68,6 @@ const setup_live_moves = () => {
         }
         break;
       case MESSAGE_TYPE.UPDATE:
-        console.log(data.payload.moveFrom);
         if (data.payload.moveFrom === "0,0") {
           let piece = data.payload.piece;
           let color = data.payload.color; // 0 for white, 1 for black
@@ -75,22 +86,21 @@ const setup_live_moves = () => {
         printGameOver(winner);
         break;
       case MESSAGE_TYPE.PROMOTE:
-        $('#modal').modal({backdrop: 'static', keyboard: false});
         let position = convertBackToFrontCoordinates(data.payload.position);
         promotePiece(position);
         myTurn = false;
         printTurn(myTurn);
+        console.log("promote sent");
         break;
       case MESSAGE_TYPE.DISPLAY:
         initializeBoard(data.payload.color);
-        console.log(data.payload.game);
         if (data.payload.game == false) { // false = bughouse
-          console.log("it's bughouse!!!");
           initializeBank(data.payload.color);
           $('#listRequest').show();
         }
         if (data.payload.color == 0) { // 0 = false
           myTurn = true;
+          black = false;
         }
         printTurn(myTurn);
         break;
@@ -100,9 +110,19 @@ const setup_live_moves = () => {
         break;
       case MESSAGE_TYPE.BOOP:
         let piece = data.payload.piece;
-        //TODO: finish
+        createRequestAlert(piece);
+        break;
+      case MESSAGE_TYPE.PUPDATE:
+        console.log("recieved pupdate")
+        let type = data.payload.type;
+        cachedCoordinates = convertBackToFrontCoordinates(data.payload.position);
+        setPromotionPiecePupdate(type);
+        break;
+      case MESSAGE_TYPE.REDIRECT:
+        window.location.replace("localhost:4567/home");
     }
   };
+  });
 }
 
 
@@ -140,7 +160,8 @@ const new_promotion = (piece, position) => {
   let toSendPayload = {
     id: myId,
     piece: piece,
-    position: position
+    position: position,
+    gameId: $("#gameId").html()
   }
 
   let toSend = {
@@ -181,7 +202,5 @@ const new_request = (piece, gameId) => {
   }
 
   conn.send(JSON.stringify(toSend));
+
 }
-
-
-

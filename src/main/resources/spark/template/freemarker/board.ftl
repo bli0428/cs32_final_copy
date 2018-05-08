@@ -26,33 +26,44 @@
       <p id="message"></p>
     </div>
   </div>
-  <div class="row" style="margin-top: 3%">
+  <div class="row justify-content-center" style="margin-top: 3%">
     <div class="col"></div>
-    <div class="col-7">
+    <div class="col-auto" style="min-width: 120px">
       <table id="chessboard"></table>
     </div>
     <div class="col">
-      <ul id='listRequest' class="list-group" style="display: none">
-        <li class="list-group-item disabled">Request a Piece:</li>
-        <li id='p' class="list-group-item list-group-item-action">Pawn</li>
-        <li id='r' class="list-group-item list-group-item-action">Rook</li>
-        <li id='k' class="list-group-item list-group-item-action">Knight</li>
-        <li id='b' class="list-group-item list-group-item-action">Bishop</li>
-        <li id='q' class="list-group-item list-group-item-action">Queen</li>
-      </ul>
+        <div class="row" style='max-width: 350px;min-height: 170px;'>
+          <div class="col" id='alertBox'>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-auto">
+            <ul id='listRequest' class="list-group" style="display: none;bottom: 0">
+              <li class="list-group-item disabled">Request a Piece:</li>
+              <li id='p' class="list-group-item list-group-item-action">Pawn</li>
+              <li id='r' class="list-group-item list-group-item-action">Rook</li>
+              <li id='k' class="list-group-item list-group-item-action">Knight</li>
+              <li id='b' class="list-group-item list-group-item-action">Bishop</li>
+              <li id='q' class="list-group-item list-group-item-action">Queen</li>
+            </ul>
+          </div>
+        </div>
     </div>
   </div>
-  <div class="row" style="margin-top: 3%">
-    <table id="bank"></table>
+  <div class="row" style="margin-top: 3%;margin-bottom: 5%">
+    <div class="col">
+      <table id="bank"></table>
+    </div>
   </div> 
 </div>
 
 
-<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <h2 class="modal-title" style="margin-top: 0;padding:5px">Choose Promotion:</h2>
+        <h2 class="modal-title" style="margin-top: 0;padding:5px;">Choose Promotion:</h2>
         <ul id="promotionMenu" class="list-group list-group-flush" style="margin-top: 0">
           <li id="rook" class="promoteOption list-group-item list-group-item-action">Rook</li>
           <li id="queen" class="promoteOption list-group-item list-group-item-action">Queen</li>
@@ -63,6 +74,8 @@
     </div>
   </div>
 </div>
+
+
 
 
 <!-- <label class="switch">

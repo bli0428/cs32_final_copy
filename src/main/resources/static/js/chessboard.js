@@ -105,7 +105,7 @@ function printTurn(myTurn) {
     if (myTurn) {
         $("#message").html("It's your turn!");
     } else {
-        $("#message").html("Wait!");
+        $("#message").html("Wait!<div class='loader'></div>");
     }
 }
 
@@ -134,6 +134,14 @@ function convertBackToFrontCoordinates(stringCoordinates) {
     var col = parseInt(splitCoordinates[0]) - 1;
     var toReturn = row.toString() + "-" + col.toString();
     return toReturn;
+}
+
+function isPieceBlack(piece) {
+    if (piece == "♖" || piece == "♘" || piece == "♗" || piece == "♔" || piece == "♕" || piece == "♙") {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 

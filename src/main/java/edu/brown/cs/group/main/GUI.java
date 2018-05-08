@@ -8,10 +8,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.jetty.websocket.api.Session;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -45,7 +45,7 @@ public final class GUI {
   private static REPL repl;
   public final static ConcurrentHashMap<String, User> SESSIONS = new ConcurrentHashMap<>();
   public final static GameList GAME_LIST = new GameList();
-  public final static ConcurrentHashMap<Integer, List<org.eclipse.jetty.websocket.api.Session>> GAME_ID_TO_SESSIONS = new ConcurrentHashMap<>();
+  public final static ConcurrentHashMap<Integer, org.eclipse.jetty.websocket.api.Session[]> GAME_ID_TO_SESSIONS = new ConcurrentHashMap<>();
   private static Game game;
 
   /**
@@ -264,6 +264,13 @@ public final class GUI {
       String username = qm.value("username");
       String password = qm.value("password");
       String password2 = qm.value("password2");
+      
+
+      if (User.checkChar(username)) {
+        Map<String, Object> variables = ImmutableMap.of("title",
+           "Chess32: Create Account", "message", "Invalid Username");
+        return new ModelAndView(variables, "newaccount.ftl");
+      }
       if (!password.equals(password2)) {
         Map<String, Object> variables = ImmutableMap.of("title",
             "Chess32: Create Account", "message", "Passwords don't match.");
@@ -366,6 +373,14 @@ public final class GUI {
       }
 
       String newUsername = qm.value("newusername");
+      
+      if (User.checkChar(newUsername)) {
+        Map<String, Object> variables = ImmutableMap.of("title",
+            "Chess32: Change Username", "message",
+            "Invalid Username");
+        return new ModelAndView(variables, "changeusername.ftl");
+      }
+      
       String message = repl.getDbm().changeUsername(currUsername, password,
           newUsername);
       if (message != null) {
@@ -388,13 +403,17 @@ public final class GUI {
 
       int gameId;
 
+      int numPlayers;
       if (gameType.equals("bughouse")) {
-        gameId = GAME_LIST.addGame(4);
+        numPlayers = 4;
       } else {
-        gameId = GAME_LIST.addGame(2);
+        numPlayers = 2;
       }
 
-      GAME_ID_TO_SESSIONS.put(gameId, new ArrayList<>());
+      // System.out.println("here is bad more than once");
+      gameId = GAME_LIST.addGame(numPlayers);
+
+      GAME_ID_TO_SESSIONS.put(gameId, new Session[numPlayers]);
 
       Map<String, Object> variables = ImmutableMap.of("games",
           GAME_LIST.printListHtml());
@@ -414,12 +433,18 @@ public final class GUI {
       String gameId = java.net.URLDecoder.decode(request.params(":something"),
           "UTF-8");
       MenuGame game = GAME_LIST.getGame(Integer.parseInt(gameId));
-      if (game.getCurrPlayersSize() == game.getNumPlayers()) {
+      if (game == null || game.getCurrPlayersSize() >= game.getNumPlayers()) {
         response.redirect("/home");
       }
+
+      System.out.println("id:" + gameId);
+
+      System.out.println("aha!");
+
+      game.removeUser(u);
       game.addUser(u);
 
-
+      System.out.println(game.getCurrPlayersSize());
       Map<String, Object> variables = ImmutableMap.of("title",
           "Chess32: Join Game", "gameId", gameId, "users", "");
       return new ModelAndView(variables, "join.ftl");
