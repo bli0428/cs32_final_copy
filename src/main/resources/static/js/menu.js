@@ -13,6 +13,8 @@ let menuConn;
 let myMenuId = -1;
 let ip;
 
+var difficulty = "";
+
 const setupMenu = () => {
   const postParameters = {};
   $.post("/getIp", postParameters, responseJSON => {
@@ -61,10 +63,15 @@ const setupMenu = () => {
 }
 
 function addAI(index) {
+  if (difficulty == "") { // if user presses close button
+    return;
+  }
+
   let toSendPayload = {
     id: myId,
     gameId: $("#gameId").html(),
-    index: index
+    index: index,
+    difficulty: difficulty
   }
 
   let toSend = {
@@ -72,7 +79,25 @@ function addAI(index) {
     payload: toSendPayload
   }
   menuConn.send(JSON.stringify(toSend));
+  difficulty = "";
 }
+
+
+
+
+function getAIDifficulty(index) {
+  $('#AIDifficulty').modal('show');
+  console.log("difficulty:" + difficulty);
+
+  $("#AIDifficulty").on("click", "button", function(e){
+    console.log(e.target.id);
+    difficulty = e.target.id;
+    $('#AIDifficulty').modal('hide');
+    addAI(index);
+  });  
+}
+
+
 
 function switchTeam() {
   const postParameters = {};
