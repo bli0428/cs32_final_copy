@@ -155,6 +155,7 @@ public class JoinWebSocket {
 
       int diff = receivedPayload.get("difficulty").getAsInt();
 
+
       ChessWebSocket.lobbies.get(gameId)
           .addPlayer(new ABCutoffAIV2(2 + 2 * diff, gameType(g.getGameType())));
 

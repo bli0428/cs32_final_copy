@@ -474,10 +474,10 @@ public class Board {
    * @return a reference to the piece that was at dest, or null if there was
    *         nothing there
    */
-  public Piece processPlace(Position start, Position dest, Piece p)
+  public Piece processPlace(Position dest, Piece p)
       throws InvalidMoveException {
 
-    assert start instanceof BankPosition;
+    
     assert placable().contains(dest);
 
     Piece out = null;
@@ -486,7 +486,6 @@ public class Board {
     // positions map.
     p.move(dest);
     places.put(dest, p);
-    places.remove(start);
     System.out.println(toString());
     return out;
   }
